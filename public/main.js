@@ -70,7 +70,7 @@ async function buildText(text = "") {
 
     formatToText(textResult.responseTextFormatted);
     console.log("");
-    console.log("ResponseText Text Formatted: " + responseTextFormatted);
+    console.log("ResponseText Text Formatted: " + extResult.responseTextFormatted);
     console.log("");
 
     if (voiceLLM) {
