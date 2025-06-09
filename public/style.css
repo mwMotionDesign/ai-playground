@@ -667,7 +667,7 @@ h1 {
 
 .dropzone.dragoverInputValid {
     color: var(--buttonFontColor);
-    background-color: var(--red);
+    background-color: var(--green);
     cursor: pointer;
 }
 
