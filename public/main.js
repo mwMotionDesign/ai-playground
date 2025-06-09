@@ -3,8 +3,6 @@ console.clear();
 
 focusInputField();
 addDescription();
-addDescription();
-addDescription();
 
 
 let typeTemp = "";
@@ -96,22 +94,18 @@ async function buildImages(text = "") {
 }
 
 async function buildTranscript() {
-    let recorderResult;
     let transcriptResult = "";
 
     if (!isRecording) {
         addInitialLog("Transcript", keyRequest);
         keyRequest = false;
 
+        outputText("header", "Transcript");
+
         transcriptResult = await generateRecording();
 
-        // outputText("header", "InputAudio");
-        // outputText("noLink", "InputAudio");
-        // outputAudio(recorderResult);
-
-        outputText("header", "Transcript");
         outputText("link", transcriptResult.text);
-        outputAudio(transcriptResult.audioPath, false);
+        // outputAudio(transcriptResult.audioPath, false);
 
         if (cbValues.createVoice) {
             addReturnText("", "... forwarding to Voice");
@@ -288,20 +282,23 @@ async function generateRecording() {
         let chunks = [];
 
         currentStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorder = new MediaRecorder(currentStream, { type: 'audio/webm' });
+        mediaRecorder = new MediaRecorder(currentStream);
         console.log("Mediarecorder Start!");
 
         button3.querySelector("p").innerHTML = "STOP RECORDING";
         button3.style.backgroundColor = "var(--red)";
 
+        mediaRecorder.start(1000);
+
         isRecording = true
 
-        mediaRecorder.start();
-
         return new Promise(async resolve => {
-            mediaRecorder.ondataavailable = e => chunks.push(e.data);
+            mediaRecorder.ondataavailable = e => {
+                chunks.push(e.data);
+            };
             mediaRecorder.onstop = async () => {
-                const audio = new Blob(chunks, { type: 'audio/webm' });
+                const audio = new Blob(chunks);
+                outputAudio(URL.createObjectURL(audio), false);
                 const transcript = await generateTranscript(audio);
                 resolve(transcript);
             };
@@ -309,12 +306,9 @@ async function generateRecording() {
 
     }
     else if (isRecording) {
-
         mediaRecorder.stop();
         currentStream.getTracks().forEach(track => track.stop());
-        // outputAudio(currentStream);
 
-        // isRecording = false;
         button3.querySelector("p").innerHTML = buttonText.toString();
         button3.style.backgroundColor = "var(--buttonBGColor)";
     }

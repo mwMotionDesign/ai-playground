@@ -8,7 +8,6 @@ import { spawn } from "child_process";
 import { } from "dotenv/config";
 import { Configuration, OpenAIApi } from "openai";
 import { writeFile } from "fs";
-import ffmpeg from 'fluent-ffmpeg';
 
 // VARIABLES
 let systemPrompt = "";
@@ -276,11 +275,8 @@ app.post("/transcribeAudio", uploadAudio.single("audio"), (request, response) =>
     console.log("Filepath: " + request.file.path);
     console.log("");
 
-    ffmpeg(request.file.path)
-        .toFormat('wav')
-        .output('./Audiofiles/' + filename)
-        .on('end', () => console.log('FFMPEG Converted File'))
-        .run();
+
+    console.log('FFMPEG Converted File');
 
     const pythonProcess = spawn('python', ['./scripts/whisperScript.py', request.file.path]);
 
