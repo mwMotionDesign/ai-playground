@@ -1,0 +1,16 @@
+{
+    "watch": [
+        "server.js",
+        "public/main.js",
+        "public/index.html",
+        "public/style.css"
+    ],
+    "ignore": [
+        "Memory/*",
+        "Audiofiles/*",
+        "_archive/*",
+        "_Voice Samples/*",
+        "*.json",
+        "*.wav"
+    ]
+}

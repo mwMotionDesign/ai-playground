@@ -1,0 +1,7 @@
+https://fonts.google.com/icons
+
+https://fontawesome.com/
+
+
+ToDo:
+Alte Anfragen laden weiter und befüllen die Results, wenn mann eine neue Anfrage stellt

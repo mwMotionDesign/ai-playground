@@ -1,0 +1,28 @@
+{
+  "name": "02-whisper-to-chatterbox",
+  "version": "1.0.0",
+  "description": "Whisper to Chatterbox",
+  "license": "ISC",
+  "author": "Michael Weidenfeld",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "loop": "nodemon server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "fluent-ffmpeg": "^2.1.3",
+    "multer": "^2.0.1",
+    "openai": "^3.2.1"
+  },
+  "engines": {
+    "node": "18.15.0"
+  },
+  "keywords": [
+    "express",
+    "node",
+    "api"
+  ]
+}

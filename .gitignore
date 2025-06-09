@@ -1,0 +1,10 @@
+_archive/
+_rest/
+db/
+node_modules/
+.DS_Store
+.env
+desktop.ini
+_Voice Samples/
+Audiofiles/
+Memory/
