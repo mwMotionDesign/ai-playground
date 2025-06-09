@@ -376,11 +376,12 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
 
         if (exag > 0) {
             formData.append("exaggeration", exag);
+            console.log("Exag set to: " + exag);
         }
         else {
             formData.append("exaggeration", cbValues.cbExaggeration);
+            console.log("Exag set to: " + cbValues.cbExaggeration);
         }
-        console.log("Exag set to: " + exag);
 
         // formData.append("pase", cbValues.cbPase);                    //Manual set Pase
         let tempPase = Math.round(text.length / 12) / 100;
@@ -388,7 +389,7 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
         formData.append("pase", tempPase);
 
         formData.append("temperature", cbValues.cbTemperature);
-        console.log("Exag set to: " + exag);
+        console.log("Temperature set to: " + cbValues.cbTemperature);
 
         // Fetch
         const res = await fetch("/generateSpeech", {
