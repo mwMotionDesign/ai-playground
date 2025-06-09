@@ -68,10 +68,7 @@ async function buildText(text = "") {
     outputText("header", "LLM");
     outputText("link", textResult.responseTextFormatted);
 
-    formatToText(textResult.responseTextFormatted);
-    console.log("");
-    console.log("ResponseText Text Formatted: " + extResult.responseTextFormatted);
-    console.log("");
+    textResult.responseTextFormatted = formatToText(textResult.responseTextFormatted);
 
     if (voiceLLM) {
         addReturnText("", "... forwarding to Voice");
@@ -171,10 +168,10 @@ async function generateText(text = "") {
         console.log("New Text Length: " + responseText.length);
 
         console.log("");
-        console.log("ResponseText: " + responseText);
-        let responseTextFormatted = formatAIanswer(responseText);
+        console.log("Unformated AI Response Text: " + responseText);
         console.log("");
-        console.log("ResponseText AI Formatted: " + responseTextFormatted);
+
+        let responseTextFormatted = formatAIanswer(responseText);
 
         return { inputText, responseTextFormatted, llmExag };
     }
@@ -357,7 +354,6 @@ let nOfFiles = 0;
 async function generateSpeechFromText(text = "", newFile = true, exag = -1, itteration = 0) {
     addReturnText("", "...  Chatterbot: Generating Voice");
 
-    let spliceAudio = false;
     itteration++;
 
     try {
@@ -374,7 +370,6 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
         }
 
         if (text.length > voiceSliceCharackters) {
-            spliceAudio = true;
             if (nOfFiles == 0) {
                 nOfFiles = Math.ceil(text.length / voiceSliceCharackters);
                 outputText("noLink", "Generating " + (nOfFiles - (itteration - 1)) + " Voicefiles");

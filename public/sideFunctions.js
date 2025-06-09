@@ -215,15 +215,16 @@ function formatAIanswer(inputText) {
     let text = inputText;
 
     try {
-        // text = text.replace(/[.,!?:;]/g, "");
-        // text = text.replace(/\n/g, "");
-        // text = text.replace(/../g, ".");
-        // text = text.replace(/1/g, "1.");
+        text = text.replace(/\n/g, "<br>")
+            // .replace(/[.,!?:;]/g, "")
+            // .replace(/\n/g, "")
+            // .replace(/../g, ".")
+            // .replace(/1/g, "1.")
+            ;
 
-        text = text.replace(/\n/g, "<br>");
-        text = text.replace(/<[^>]*>/g, ' ');
-
-        console.log("Formatted AI Text: " + text);
+        console.log("");
+        console.log("Formatted to DOM Text: " + text);
+        console.log("");
 
         return text;
     } catch (error) {
@@ -236,7 +237,8 @@ function formatToText(inputText) {
     let text = inputText;
 
     try {
-        text = text.replace(/<br>/g, " ")
+        text = text
+            .replace(/<br>/g, " ")
             // .replace(/[.,!?:;]/g, "")
             // .replace(/\n/g, "")
             // .replace(/../g, ".")
@@ -249,9 +251,14 @@ function formatToText(inputText) {
             .replace(/Ä/g, "&Auml;")
             .replace(/Ö/g, "&Ouml;")
             .replace(/Ü/g, "&Uuml;")
-            .replace(/ß/g, "&szlig;");
+            .replace(/ß/g, "&szlig;")
+            .replace(/\s+/g, ' ')
+            .trim()
+            ;
 
-        console.log("Formatted Text: " + text);
+        console.log("");
+        console.log("Formatted to normal Text: " + text);
+        console.log("");
 
         return text;
     } catch (error) {
