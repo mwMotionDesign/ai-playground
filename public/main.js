@@ -68,6 +68,11 @@ async function buildText(text = "") {
     outputText("header", "LLM");
     outputText("link", textResult.responseTextFormatted);
 
+    formatToText(textResult.responseTextFormatted);
+    console.log("");
+    console.log("ResponseText Text Formatted: " + responseTextFormatted);
+    console.log("");
+
     if (voiceLLM) {
         addReturnText("", "... forwarding to Voice");
         await buildVocie(textResult.responseTextFormatted, true, textResult.llmExag);
@@ -158,13 +163,18 @@ async function generateText(text = "") {
         text = promptPre.concat(inputText);
 
         let responseText = await fetchText(text, nOfTokens);
-        let responseTextFormatted = formatAIanswer(responseText);
 
-        let llmExag = responseTextFormatted.slice(0, 3);
-        console.log("Response Text Length: " + responseTextFormatted.length);
+        console.log("Response Text Length: " + responseText.length);
+        let llmExag = responseText.slice(0, 3);
         console.log("Exaggeration Extract: " + llmExag);
-        responseTextFormatted = responseTextFormatted.slice(4, responseTextFormatted.length);
-        console.log("Response Text Extract: " + responseTextFormatted);
+        responseText = responseText.slice(4, responseText.length);
+        console.log("New Text Length: " + responseText.length);
+
+        console.log("");
+        console.log("ResponseText: " + responseText);
+        let responseTextFormatted = formatAIanswer(responseText);
+        console.log("");
+        console.log("ResponseText AI Formatted: " + responseTextFormatted);
 
         return { inputText, responseTextFormatted, llmExag };
     }
@@ -208,6 +218,8 @@ async function fetchText(prompt, tokens) {
         addReturnText("<div class='material-symbols-outlined returnIcons cGreen'>done</div>", " " + (jsonAI.cost).toFixed(2) + " Cents");
 
         responseCost = responseCost + parseFloat(jsonAI.cost);
+
+        console.log("Return Text: ", jsonAI.data);
 
         return jsonAI.data;
     } catch (error) {
@@ -351,6 +363,7 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
     try {
         // Form Data
         const formData = new FormData();
+        console.log("");
 
         if (cbValues.sendAudioSample) {
             formData.append("voiceSample", audioSampleFile.files[0]);
@@ -369,6 +382,8 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
 
             textTemp = text.slice(voiceSliceCharackters, text.length);
             text = text.slice(0, voiceSliceCharackters);
+            console.log("Text to Voice: " + text);
+            console.log("Text to Voice Later: " + textTemp);
 
         }
         formData.append("text", text);
@@ -376,20 +391,20 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
 
         if (exag > 0) {
             formData.append("exaggeration", exag);
-            console.log("Exag set to: " + exag);
+            console.log("Exaggeration: " + exag);
         }
         else {
             formData.append("exaggeration", cbValues.cbExaggeration);
-            console.log("Exag set to: " + cbValues.cbExaggeration);
+            console.log("Exagxaggeration: " + cbValues.cbExaggeration);
         }
 
         // formData.append("pase", cbValues.cbPase);                    //Manual set Pase
         let tempPase = Math.round(text.length / 12) / 100;
-        console.log("Pase set to: " + tempPase);
         formData.append("pase", tempPase);
+        console.log("Pase: " + tempPase);
 
         formData.append("temperature", cbValues.cbTemperature);
-        console.log("Temperature set to: " + cbValues.cbTemperature);
+        console.log("Temperature: " + cbValues.cbTemperature);
 
         // Fetch
         const res = await fetch("/generateSpeech", {

@@ -221,6 +221,7 @@ function formatAIanswer(inputText) {
         // text = text.replace(/1/g, "1.");
 
         text = text.replace(/\n/g, "<br>");
+        text = text.replace(/<[^>]*>/g, ' ');
 
         console.log("Formatted AI Text: " + text);
 
