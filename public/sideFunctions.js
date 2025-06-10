@@ -22,7 +22,7 @@ function addDescription() {
         "./images/startImage2.png",
         "./images/startImage3.png",
         "./images/startImage4.png"
-    ], "Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images");
+    ], "Prompt used to generate images");
     outputText("noLink", "<span class='tBold'>Tipp:</span> Click on any picture to view fullscreen.");
 }
 
@@ -182,11 +182,15 @@ function addReturnText(html, text) {
 }
 
 function startLoading() {
+    controlHide.style.display = "inherit";
+    isLoading = true;
     logoIMG.style.display = "none";
     loadingIMG.style.display = "inherit";
 }
 
 function endLoading() {
+    controlHide.style.display = "none";
+    isLoading = false;
     loadingIMG.style.display = "none";
     logoIMG.style.display = "inherit";
 }

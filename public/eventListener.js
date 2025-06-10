@@ -1,5 +1,8 @@
 // Buttons
 
+const controlHide = document.getElementById("hideControls");
+controlHide.style.display = "none";
+
 const button1 = document.getElementById("button1");
 const button2 = document.getElementById("button2");
 const button3 = document.getElementById("button3");
@@ -9,36 +12,36 @@ const buttonClearResults = document.getElementById("clearResultButton");
 
 button1.addEventListener("click", (event) => {
     event.preventDefault;
-    console.log("\n\nButton Generate Text: ");
+    console.log("\n\n-> Button Generate Text");
     generateResponse("text");
     focusInputField();
 });
 button2.addEventListener("click", (event) => {
     event.preventDefault;
-    console.log("\n\nButton Generate Images: ");
+    console.log("\n\n-> Button Generate Images");
     generateResponse("images");
     focusInputField();
 });
 button3.addEventListener("click", (event) => {
     event.preventDefault;
     if (!isRecording) {
-        console.log("\n\nButton Transcribe Audio: ");
+        console.log("\n\n-> Button Transcribe Audio");
     }
     else {
-        console.log("Button Stop Audio: ");
+        console.log("-> Button Stop Audio");
     }
     generateResponse("audio");
     focusInputField();
 });
 button4.addEventListener("click", (event) => {
     event.preventDefault;
-    console.log("\n\nButton Generate Voice: ");
+    console.log("\n\n-> Button Generate Voice");
     generateResponse("voice");
     focusInputField();
 });
 buttonClearResults.addEventListener("click", (event) => {
     event.preventDefault;
-    console.log("\n\nClearing Results!\n\n");
+    console.log("\n\n-> Button Clearing Results");
     clearResults();
     addDescription();
     focusInputField();
@@ -48,43 +51,53 @@ document.addEventListener("keydown", (event) => {
     if (event.shiftKey && event.altKey) {
         if (event.key === "Enter") {
             event.preventDefault();
-            console.log("\n\nHotkey Generate Images: ");
-            generateResponse("images");
-            focusInputField();
+            if (!isLoading) {
+                console.log("\n\n-> Hotkey Generate Images");
+                generateResponse("images");
+                focusInputField();
+            }
         }
     }
     else if (event.ctrlKey && !event.shiftKey && !event.altKey) {
         if (event.key === "Enter") {
             event.preventDefault();
-            if (!isRecording) {
-                console.log("\n\nButton Transcribe Audio: ");
+            if (!isLoading) {
+                if (!isRecording) {
+                    console.log("\n\n-> Hotkey Transcribe Audio");
+                }
+                else {
+                    console.log("-> Hotkey Stop Audio");
+                }
+                generateResponse("audio");
+                focusInputField();
             }
-            else {
-                console.log("Button Stop Audio: ");
-            }
-            generateResponse("audio");
-            focusInputField();
         }
         if (event.key === "Backspace") {
             event.preventDefault();
-            console.log("\n\nHotkey Clearing Results!");
-            clearResults();
-            addDescription();
-            focusInputField();
+            if (!isLoading) {
+                console.log("\n\n-> Hotkey Clearing Results");
+                clearResults();
+                addDescription();
+                focusInputField();
+            }
         }
         if (event.key === "+") {
             event.preventDefault();
-            console.log("\n\nHotkey List Models: ");
-            getAImodels();
-            focusInputField();
+            if (!isLoading) {
+                console.log("\n\n-> Hotkey List Models");
+                getAImodels();
+                focusInputField();
+            }
         }
     }
     else if (event.shiftKey && !event.ctrlKey && !event.altKey) {
         if (event.key === "Enter") {
             event.preventDefault();
-            console.log("\n\nHotkey Generate Text: ");
-            generateResponse("text");
-            focusInputField();
+            if (!isLoading) {
+                console.log("\n\n-> Hotkey Generate Text");
+                generateResponse("text");
+                focusInputField();
+            }
         }
     }
     else if (event.key === "Enter") {

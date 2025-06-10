@@ -3,8 +3,6 @@
 focusInputField();
 addDescription();
 
-
-let typeTemp = "";
 let keyRequest = true;
 let costSum = 0;
 
@@ -12,41 +10,54 @@ async function generateResponse(type) {
     keyRequest = true;
     responseCost = 0;
 
-    if (type != typeTemp || typeTemp == "") {
-        typeTemp = type;
-    }
-
     if (firstAction) {
         clearResults();
         firstAction = false;
     }
 
-    startLoading();
 
-    if (type == "text") {
-        await buildText();
+    // TEXT & IMAGES
+    if ((type == "text" || type == "images") && inputField.value != "") {
+        startLoading();
+        if (type == "text") {
+            await buildText();
+        }
+
+        if (type == "images") {
+            await buildImages();
+        }
+        ending();
     }
 
-    if (type == "images") {
-        await buildImages();
-    }
-
+    // TRANSCRIPT
     if (type == "audio") {
-        await buildTranscript();
+        if (!isRecording) {
+            console.log("--- with !isRcording");
+            await buildTranscript();
+            ending();
+        }
+        else if (isRecording) {
+            console.log("--- with isRcording");
+            startLoading();
+            console.log("--- TEST");
+            buildTranscript();
+        }
     }
 
+    // VOICE
     if (type == "voice") {
+        startLoading();
         await buildVocie();
+        ending();
     }
 
-    if (!isRecording) {
+
+    function ending() {
+        isRecording = false;
         costSum = costSum + responseCost;
         addReturnText("", "Cost sum: " + (responseCost).toFixed(2) + " / " + (costSum).toFixed(2) + " Cents");
         endLoading();
         outputDivider();
-    }
-    else {
-        isRecording = false;
     }
 }
 
@@ -57,7 +68,7 @@ async function buildText(text = "", isForwarded = false) {
     addInitialLog("Text", keyRequest);
     keyRequest = false;
 
-    if (text == "") {
+    if (text == "" && inputField.value != "") {
         outputText("header", "Input");
         outputText("link", inputField.value);
     }
@@ -161,10 +172,6 @@ async function generateText(systemPrompt = "", text = "", nOfTokens = 10, buildH
     if (text != "") {
         textFromLLM = true;
         inputText = text;
-    }
-
-    if (!textFromLLM && inputField.value == "") {
-        addReturnText("<div class='material-symbols-outlined returnIcons cRed'>close</div>", "Input Field Empty!");
     }
     else {
         text = promptPre.concat(inputText);
@@ -316,8 +323,6 @@ let currentStream;
 
 async function generateRecording() {
     if (!isRecording) {
-        addReturnText("", "... Recording");
-
         let chunks = [];
 
         currentStream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -328,7 +333,7 @@ async function generateRecording() {
 
         mediaRecorder.start(1000);
 
-        isRecording = true
+        isRecording = true;
 
         return new Promise(async resolve => {
             mediaRecorder.ondataavailable = e => {

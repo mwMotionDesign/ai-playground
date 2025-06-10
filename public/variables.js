@@ -104,6 +104,7 @@ promptIMGpre = "";
 let promptIMGpost = ", Concept Art, Golden Hour, Wide Shot, Amazing Style";
 promptIMGpost = "";
 
+let isLoading = false;
 
 // Global Variables - Change
 
