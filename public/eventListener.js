@@ -147,11 +147,12 @@ dropzone.addEventListener('dragover', (e) => {
 dropzone.addEventListener('dragleave', () => {
     dropzone.classList.remove('dragover');
 });
-dropzone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
+dropzone.addEventListener('drop', (event) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files[0];
 
     isValidFile(file);
+    audioSampleFile.files = event.dataTransfer.files;
 });
 audioSampleFile.addEventListener('change', () => {
     const file = audioSampleFile.files[0];
@@ -166,13 +167,11 @@ function isValidFile(file) {
         dropzone.classList.remove('dragoverInputInvalid');
         dropzone.classList.add('dragoverInputValid');
         dropzone.innerHTML = file.name;
-        audioSampleFile.files = e.dataTransfer.files;
     }
     else {
         dropzone.classList.remove('dragoverInputValid');
         dropzone.classList.add('dragoverInputInvalid');
         dropzone.innerHTML = file.name;
-        audioSampleFile.files = e.dataTransfer.files;
     }
 }
 

@@ -884,10 +884,53 @@ h1 {
 }
 
 .resultIMGprompt {
-    color: var(--middle-color);
-    font-size: 15px;
     width: calc(100% - 10px);
     text-align: right;
+    padding: 2px;
+    /* margin: 10px 0; */
+    position: relative;
+}
+
+.resultIMGpromptText {
+    position: absolute;
+    bottom: 25px;
+    right: 10px;
+    width: 80%;
+    font-size: 15px;
+    text-align: right;
+    padding: 10px 15px 13px;
+    text-align: left;
+    background-color: var(--background-color);
+    color: var(--logText);
+}
+
+.resultIMGpromptSummary {
+    color: var(--middle-color);
+    font-size: 15px;
+    text-align: right;
+    cursor: pointer;
+    /* UNCLICKABLE */
+    padding-right: 15px;
+    list-style: none;
+    user-select: none;
+    color: var(--brighter-color)
+}
+
+.resultIMGpromptSummary::marker {
+    display: none;
+}
+
+.resultIMGpromptSummary::after {
+    content: "▼";
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    transition: 0.3s ease;
+    transform: rotate(calc(90deg));
+}
+
+.resultIMGprompt[open] .resultIMGpromptSummary::after {
+    transform: rotate(calc(150deg));
 }
 
 .resultDivider {

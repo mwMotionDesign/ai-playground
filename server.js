@@ -147,6 +147,22 @@ app.post("/createAIimages", async (request, response) => {
     console.log("--- Generating IMG ---");
 
     const data = request.body;
+
+    // console.log("");
+    // if (data.safetyFilterLevel == "false") {
+    //     console.log("Safety Filer Level: ");
+    //     console.log(data.safetyFilterLevel);
+    //     data.safetyFilterLevel = false;
+    //     console.log("Safety Filer Level: ");
+    //     console.log(data.safetyFilterLevel);
+    // }
+    // else {
+    //     console.log("Safety Filer Level unchaged: ");
+    //     console.log(data.safetyFilterLevel);
+    // }
+
+    data.n = parseFloat(data.n);
+
     let aiPrompt = {
         imgModel: data.imgModel,
         prompt: data.prompt,
@@ -158,12 +174,8 @@ app.post("/createAIimages", async (request, response) => {
     }
 
     console.log("");
-    console.log("Data");
-    console.log(data);
-    console.log("");
-    console.log("AI Prompt: ");
-    console.log(aiPrompt);
-    console.log("");
+    console.log("Prompt:");
+    console.log(data.prompt);
 
     const filename = getTimestampFilename("").concat("_", aiPrompt.imgModel, ".png");
     const imgDIR = "Images/";
@@ -246,10 +258,13 @@ app.post("/createAIimages", async (request, response) => {
         aiPrompt.imgModel = imgModel2;
 
         let imagenPrompt = {
-            sampleCount: aiPrompt.n,
-            aspectRatio: aiPrompt.aspectRatio,
-            safetyFilterLevel: aiPrompt.safetyFilterLevel,
-            personGeneration: aiPrompt.personGeneration
+            sampleCount: aiPrompt.n,                                // 1 - 8
+            aspectRatio: aiPrompt.aspectRatio,                      // "1:1" | "3:4" | "4:3" | "9:16" | "16:9"
+            // safetyFilterLevel: aiPrompt.safetyFilterLevel,
+            safetySetting: aiPrompt.safetyFilterLevel,              // "block_low_and_above" | "block_medium_and_above" | "block_only_high"
+            personGeneration: aiPrompt.personGeneration,            // "allow_adult" | "dont_allow"
+            // includeRaiReason: false,                                // Begründung für Ablehnung von KI - true | false
+            // includeSafetyAttributes: false                          // "Death, Harm & Tragedy" | "Firearms & Weapons" | "Hate" | "Health" | "Illicit Drugs" | "Politics" | "Porn" | "Religion & Belief" | "Toxic" | "Violence" | "Vulgarity" | "War & Conflict" | false
         }
 
         console.log("");
@@ -330,11 +345,16 @@ app.post("/createAIimages", async (request, response) => {
             return uris;
 
         } catch (error) {
-            console.error('Fehler beim Aufruf der Imagen API:', error);
-            if (error.details) {
-                console.error('Fehlerdetails:', error.details);
+            console.log("AI RESPONSE ERROR:");
+            if (error.response) {
+                console.log(error.response.status);
+                console.log(error.response.data);
+                console.log(error.response.headers);
             }
-            throw error;
+            else {
+                console.log(error.message);
+            }
+            response.end();
         }
     }
 });

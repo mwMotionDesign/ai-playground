@@ -88,7 +88,7 @@ async function buildText(text = "", isForwarded = false) {
         systemPrompt = generateSystemPrompt(systemPromptNameIMG);
         const imgPromptResult = await generateText(systemPrompt, JSON.stringify(conversationHistory), nOfTokensIMG, false);
         addReturnText("", "... forwarding to Image");
-        await buildImages(imgPromptResult);
+        await buildImages(imgPromptResult.responseText);
     }
 }
 
@@ -243,7 +243,7 @@ async function generateImages(text, imgModel) {
         let size = "1024x1024"
         let responseIMGs = [];
         let aspectRatio = "1:1"
-        let safetyFilterLevel = "false"
+        let safetyFilterLevel = "block_only_high"
         let personGeneration = "allow_adult"
 
         const imgData = {
