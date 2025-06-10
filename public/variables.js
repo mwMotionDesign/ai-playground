@@ -3,10 +3,6 @@ console.clear();
 
 // Prompts
 
-const systemPromptName = "Dirty";
-const systemPromptNameIMG = "imgPrompt";
-let systemPrompt = generateSystemPrompt(systemPromptName);
-
 function generateSystemPrompt(nameOfRole) {
     let text = "";
 
@@ -25,7 +21,7 @@ function generateSystemPrompt(nameOfRole) {
             + "Information is irrelevant. "
             + "Your personality is important. ";
     }
-    if (nameOfRole == "Playfull") {
+    if (nameOfRole == "Playful") {
         text = ""
             + "You are a female AI personality. "
             + "Your name is Nova. "
@@ -96,21 +92,17 @@ function generateSystemPrompt(nameOfRole) {
 const promptPre = ""
     + "";
 
-let promptIMGText = "";
-
 let promptIMGpre = "";
 promptIMGpre = "";
 
 let promptIMGpost = ", Concept Art, Golden Hour, Wide Shot, Amazing Style";
 promptIMGpost = "";
 
-let isLoading = false;
 
 // Global Variables - Change
 
 const nOfTokens = 600;
 const nOfTokensIMG = 100;
-let conversationHistory = [];
 const voiceSliceCharackters = 600;
 
 const textModel1 = "gpt-4.1-mini-2025-04-14";
@@ -122,8 +114,11 @@ const imgModel2 = "IMAGEN";
 
 // Variable - Don't change
 
-let isRecording = false;
 let firstAction = true;
+let isLoading = false;
+let isRecording = false;
+
+let conversationHistory = [];
 
 const logoIMG = document.getElementById("logoContainer");
 const loadingIMG = document.getElementById("loadingContainer");

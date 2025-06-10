@@ -70,7 +70,6 @@ async function buildText(text = "", isForwarded = false) {
         outputText("link", inputField.value);
     }
 
-    systemPrompt = generateSystemPrompt(systemPromptName);
     textResult = await generateText(systemPrompt, text, nOfTokens, true);
 
     if (!isForwarded) {
@@ -83,18 +82,15 @@ async function buildText(text = "", isForwarded = false) {
         outputText("link", textResult.responseTextFormatted);
     }
 
-    textResult.responseTextFormatted = formatToText(textResult.responseTextFormatted);
-
     if (voiceLLM && !isForwarded) {
         addReturnText("", "... forwarding to Voice");
-        await buildVocie(textResult.responseTextFormatted, true, textResult.llmExag);
+        await buildVocie(textResult.responseText, true, textResult.llmExag);
     }
     if (imgWithText && !isForwarded) {
         addReturnText("", "... forwarding to Prompt Generation");
         console.log("");
         console.log("Conversation History: ", conversationHistory);
-        systemPrompt = generateSystemPrompt(systemPromptNameIMG);
-        const imgPromptResult = await generateText(systemPrompt, JSON.stringify(conversationHistory), nOfTokensIMG, false);
+        const imgPromptResult = await generateText(systemPromptIMG, JSON.stringify(conversationHistory), nOfTokensIMG, false);
         addReturnText("", "... forwarding to Image");
         await buildImages(imgPromptResult.responseText);
     }
@@ -162,37 +158,31 @@ async function buildVocie(text = "", newFile = true, exag = -1, itteration = 0) 
 
 let responseCost = 0;
 
-async function generateText(systemPrompt = "", text = "", nOfTokens = 10, buildHistory = false) {
-    let textFromLLM = false;
+async function generateText(systemPromptToSend = "", text = "", nOfTokens = 10, buildHistory = false) {
     let inputText = inputField.value;
+    if (text != "") { inputText = text; }
 
-    if (text != "") {
-        textFromLLM = true;
-        inputText = text;
+    text = promptPre.concat(inputText);
+
+    let responseText = await fetchText(systemPromptToSend, text, nOfTokens, buildHistory);
+    let responseTextFormatted = formatAIanswer(responseText);
+    responseText = formatToText(responseText);
+
+    let llmExag = cbExaggeration;
+    if (systemPromptToSend != systemPromptIMG) {
+        console.log("Response Generate Text Length: " + responseText.length);
+        let llmExag = responseText.slice(0, 3);
+        console.log("Exaggeration Extract: " + llmExag);
+        responseText = responseText.slice(4, responseText.length);
+        console.log("Cut Text Length: " + responseText.length);
     }
-    else {
-        text = promptPre.concat(inputText);
 
-        let responseText = await fetchText(systemPrompt, text, nOfTokens, buildHistory);
-
-        let llmExag = cbExaggeration;
-        if (systemPrompt != generateSystemPrompt(systemPromptNameIMG)) {
-            console.log("Response Generate Text Length: " + responseText.length);
-            let llmExag = responseText.slice(0, 3);
-            console.log("Exaggeration Extract: " + llmExag);
-            responseText = responseText.slice(4, responseText.length);
-            console.log("Cut Text Length: " + responseText.length);
-        }
-
-        let responseTextFormatted = formatAIanswer(responseText);
-
-        return { inputText, responseText, responseTextFormatted, llmExag };
-    }
+    return { inputText, responseText, responseTextFormatted, llmExag };
 }
 
-async function fetchText(systemPrompt, prompt, tokens, buildHistory) {
+async function fetchText(systemPromptToSend, prompt, tokens, buildHistory) {
     const data = {
-        systemPrompt: systemPrompt,
+        systemPrompt: systemPromptToSend,
         prompt: prompt,
         tokens: tokens,
         model: model,
@@ -367,10 +357,11 @@ async function generateTranscript(audio) {
         });
 
         const result = await res.json();
+        result.text = formatToText(result.text);
+
         console.log("");
         console.log("Transkript Whisper:", result.text);
         console.log("Converted Original Audio:", result.audioPath);
-        result.text = formatToText(result.text);
 
         addReturnText("<div class='material-symbols-outlined returnIcons cGreen'>done</div>", " 0.00 Cents");
         return { text: result.text, audioPath: result.audioPath };
