@@ -4,4 +4,14 @@ https://fontawesome.com/
 
 
 ToDo:
-Alte Anfragen laden weiter und befüllen die Results, wenn mann eine neue Anfrage stellt
+Friend / Avatar Generator
+Persönlicher Avatar zum quatschen aus hochgeladenem Video und Stimme.
+- Image to Lipsync Video.
+- Memory ausbauen.
+- Verschiedene Persönlichkeiten auswählbar machen über Systemprompt.
+
+Realtime Story Engine
+Ich sage wozu ich Lust habe. GPT erstellt Geschichte. Stimme spricht und im Hintergrund werden Prompts für Bilder generiert.
+Auch möglich für Artikelseiten oder Ähnliches
+- Play next Audio Clip when Last one stopped.
+- Automatische Promptgenerierung im Hintergrund.

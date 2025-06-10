@@ -96,7 +96,6 @@ function outputIMGs(imgArray, imgPrompt) {
             let newIMG = document.createElement("img");
             newIMG.classList.add("resultIMG");
             console.log("Image URL Pushed as src:");
-            console.log("../".concat(imgArray[i]));
             newIMG.src = "../".concat(imgArray[i]);
 
             let newIMGdiv = document.createElement("div");
