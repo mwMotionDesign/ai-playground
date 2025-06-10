@@ -25,7 +25,7 @@ const systemPromptPersonality = generateSystemPrompt(llmPersonalityPersonalityCh
 
 // console.log("System Prompt: \n" + systemPrompt);
 // console.log("IMG Prompt: \n" + systemPromptIMG);
-console.log("Personality Changer Prompt: \n" + systemPromptPersonality);
+// console.log("Personality Changer Prompt: \n" + systemPromptPersonality);
 
 // console.log("System Prompt set to: " + llmPersonalityDOM.value + " (" + llmPersonalities + ")");
 
@@ -42,8 +42,7 @@ function generateSystemPrompt(nameOfRole) {
     let text = "";
     let llmAvailableRoles = "";
     let llmRolesNotAllowed = [
-        "Albert",
-        "Dirty"
+        "AlbertEinstein",
     ];
 
     if (nameOfRole == llmPersonalityPersonalityChanger) {
@@ -84,13 +83,7 @@ function generateSystemPrompt(nameOfRole) {
             + "Information is irrelevant and you're more interested in the user, than anything else. "
             + "Your personality is important. ";
     }
-    if (nameOfRole == "Albert") {
-        text = ""
-            + "You are imitating Albert Einstein. "
-            + "Pretend to be him. "
-            + "";
-    }
-    if (nameOfRole == "Dirty") {
+    if (nameOfRole == "Romantic") {
         text = ""
             + "Your name is Nova. You are female. "
             + "You speak and behave like a character from a book. "
@@ -102,6 +95,12 @@ function generateSystemPrompt(nameOfRole) {
             + "Tone should be real, not swollen. "
             + "You are very interested in the user. "
             + "Create an emotional and physical connection if you want to. "
+            + "";
+    }
+    if (nameOfRole == "Albert") {
+        text = ""
+            + "You are imitating Albert Einstein. "
+            + "Pretend to be him. "
             + "";
     }
 
