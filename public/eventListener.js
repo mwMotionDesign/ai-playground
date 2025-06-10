@@ -6,12 +6,9 @@ let llmPersonalities = [];
 let llmPersonalityIMG = "imgPrompt";
 let llmPersonalityPersonalityChanger = "personalityChanger";
 
+// Get and Listen to Dropdown Options
 let llmPersonalityDOM = document.getElementById("llmPersonality");
 let systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
-const systemPromptIMG = generateSystemPrompt("imgPrompt");
-const systemPromptPersonality = generateSystemPrompt("personalityChanger");
-console.log(systemPromptPersonality);
-
 
 llmPersonalityDOM.addEventListener("change", (event) => {
     systemPrompt = generateSystemPrompt(event.target.value);
@@ -23,7 +20,14 @@ for (let i = 0; i < llmPersonalityDOM.options.length; i++) {
     llmPersonalities.push(option);
 }
 
-console.log("System Prompt set to: " + llmPersonalityDOM.value + " (" + llmPersonalities + ")");
+const systemPromptIMG = generateSystemPrompt(llmPersonalityIMG);
+const systemPromptPersonality = generateSystemPrompt(llmPersonalityPersonalityChanger);
+
+// console.log("System Prompt: \n" + systemPrompt);
+// console.log("IMG Prompt: \n" + systemPromptIMG);
+console.log("Personality Changer Prompt: \n" + systemPromptPersonality);
+
+// console.log("System Prompt set to: " + llmPersonalityDOM.value + " (" + llmPersonalities + ")");
 
 
 const changePersonalityAutoCheckbox = document.getElementById("llmChoosePersonality");
@@ -36,6 +40,26 @@ changePersonalityAutoCheckbox.addEventListener("change", () => {
 
 function generateSystemPrompt(nameOfRole) {
     let text = "";
+    let llmAvailableRoles = "";
+    let llmRolesNotAllowed = [
+        "Albert",
+        "Dirty"
+    ];
+
+    if (nameOfRole == llmPersonalityPersonalityChanger) {
+        for (i = 0; i < llmPersonalities.length; i++) {
+            let allowed = true;
+            for (j = 0; j < llmRolesNotAllowed.length; j++) {
+                if (llmPersonalities[i] == llmRolesNotAllowed[j]) {
+                    allowed = false;
+                }
+            }
+            if (allowed) {
+                llmAvailableRoles = llmAvailableRoles.concat("'", llmPersonalities[i], "', ");
+            }
+        }
+    }
+
 
     if (nameOfRole == "Useful") {
         text = ""
@@ -88,14 +112,14 @@ function generateSystemPrompt(nameOfRole) {
             + "Important! You can control your tone of voice. "
             + "At the beginning of every message add a float value, formatted with exactly one decimal place (e.g., 0.6). "
             + "The values you can use are between "
-            + "0.1 and 1.2. - "
+            + "0.1 and 1.2. - ( "
             + "0.1 monotone, desinterested | "
             + "0.2 slow, tender | "
             + "0.2 calm | "
             + "0.4 neutral tone and speed | "
             + "0.6 happy | "
             + "0.7 very happy | "
-            + "1.2 extremely overexcited, angry, loud, cringy. "
+            + "1.2 extremely overexcited, angry, loud, cringy ). "
             + "Keep it between 0.1 and 0.7 most of the time. "
             + "Higher values can break the voice model sometimes. "
             + ""
@@ -120,23 +144,12 @@ function generateSystemPrompt(nameOfRole) {
     // PersonalityChanger
 
     if (nameOfRole == llmPersonalityPersonalityChanger) {
-        let roles = "";
-
-        for (i = 0; i < llmPersonalities; i++) {
-            roles = roles.concat("'", llmPersonalities[i], "', ");
-        }
-
         text = ""
             + "You are an assistant of an AI. "
             + "The following message was send by the user. "
             + "Your Task is to choose what personality the AI uses to answer. "
-            + "Your available choices are: " + roles
-            + "'Useful', "
-            + "'Sarcastic', "
-            + "'Playful', "
-            + "'Dirty'. "
-            + "Your answer contains only one of those words. No quotation marks or anything else.  "
-            + "";
+            + "Your answer contains only one of those words. No quotation marks or anything else. "
+            + "Your available choices are: ".concat(llmAvailableRoles);
     }
 
     return text;
