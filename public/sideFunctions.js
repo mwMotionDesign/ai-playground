@@ -95,7 +95,6 @@ function outputIMGs(imgArray, imgPrompt) {
 
             let newIMG = document.createElement("img");
             newIMG.classList.add("resultIMG");
-            console.log("Image URL Pushed as src:");
             newIMG.src = "../".concat(imgArray[i]);
 
             let newIMGdiv = document.createElement("div");
@@ -187,16 +186,14 @@ function addInitialLog(text, firstLine) {
     if (firstLine) {
         addReturnText("", "&nbsp;");
     }
-    addReturnText("", "AI request send for: " + text + " ...");
+    addReturnText("", "<span class='tBold'>AI request send for: " + text + " ...</span>");
 }
 
 function focusInputField() {
     if (isMobile()) {
-        // console.log("\n   ... Mobile Device detected: No Focus\n\n");
         inputField.blur();
     }
     else {
-        // console.log("\n   ... Desktop Device detected: Focus\n\n");
         inputField.focus();
         inputField.select();
     }
@@ -222,10 +219,6 @@ function formatAIanswer(inputText) {
             // .replace(/../g, ".")
             // .replace(/1/g, "1.")
             ;
-
-        console.log("");
-        console.log("Formatted to DOM Text: " + text);
-        console.log("");
 
         return text;
     } catch (error) {
@@ -257,10 +250,6 @@ function formatToText(inputText) {
             .trim()
             ;
 
-        console.log("");
-        console.log("Formatted to normal Text: " + text);
-        console.log("");
-
         return text;
     } catch (error) {
         console.log(text);
@@ -278,7 +267,7 @@ async function getAImodels() {
         const jsonAI = await responseAI.json();
         const aiObject = jsonAI.responseObject;
 
-        console.log("AI Models:");
+        console.log("\n\nAI Models:");
         let tempString = "";
 
         for (let i = 0; i < aiObject.length; i++) {
