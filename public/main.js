@@ -81,7 +81,7 @@ async function buildText(text = "") {
 }
 
 async function buildImages(text = "") {
-    let imgResult = "";
+    let imgResult = [];
     let imgPrompt = inputField.value;
     if (text != "") {
         imgPrompt = text;
@@ -90,8 +90,9 @@ async function buildImages(text = "") {
     addInitialLog("Images", keyRequest);
     keyRequest = false;
 
-    imgResult = await generateImages(imgPrompt);
+    imgResult = await generateImages(imgPrompt, imgModel);
 
+    console.log(imgResult.responseIMGs);
     outputIMGs(imgResult.responseIMGs, imgResult.text);
 }
 
@@ -226,23 +227,34 @@ async function fetchText(prompt, tokens) {
     }
 }
 
-async function generateImages(text) {
+async function generateImages(text, imgModel) {
     if (text != "") {
         let size = "1024x1024"
         let responseIMGs = [];
+        let aspectRatio = "1:1"
+        let safetyFilterLevel = "false"
+        let personGeneration = "allow_adult"
 
         const imgData = {
+            imgModel: "",
             prompt: "",
             n: "",
-            size: ""
+            size: "",
+            aspectRatio: "",
+            safetyFilterLevel: "",
+            personGeneration: ""
         };
 
         if (nIMGs) {
             imgData.prompt = promptIMGpre.concat(text, promptIMGpost);
             imgData.size = size;
             imgData.n = nIMGs;
+            imgData.imgModel = imgModel;
+            imgData.aspectRatio = aspectRatio;
+            imgData.safetyFilterLevel = safetyFilterLevel;
+            imgData.personGeneration = personGeneration;
 
-            addReturnText("", "... DALL-E: Generating Images");
+            addReturnText("", "... " + imgModel + ": Generating Images");
 
             for (i = 0; i < nIMGs; i++) {
                 try {
@@ -258,14 +270,14 @@ async function generateImages(text) {
                     const jsonAI = await responseAI.json();
 
                     console.log("AI Response:");
-                    console.log(jsonAI.data.length + " Images\n\n");
+                    console.log(jsonAI.data.length + " Images\n");
                     console.log(jsonAI.data);
 
                     addReturnText("<div class='material-symbols-outlined returnIcons cGreen'>done</div>", " " + (jsonAI.cost).toFixed(2) + " Cents");
 
                     responseCost = responseCost + parseFloat(jsonAI.cost);
 
-                    responseIMGs.push(jsonAI.data[0]);
+                    responseIMGs.push(...jsonAI.data);
                 } catch (error) {
                     addReturnText("<div class='material-symbols-outlined returnIcons cRed'>close</div>", " ERROR");
                     console.log("AI RESPONSE ERROR:");

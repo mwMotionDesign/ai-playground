@@ -16,7 +16,7 @@
     --highlightTextColor: rgb(255, 255, 255);
     --brighter-color: rgb(0, 194, 94);
     --bright-color: rgba(255, 255, 255, 0.7);
-    --middle-color: rgba(255, 255, 255, 0.2);
+    --middle-color: rgba(255, 255, 255, 0.6);
     --logText: rgba(255, 255, 255, 0.6);
 
     --textField-color: rgb(255, 255, 255);
@@ -183,6 +183,13 @@ h2 {
 
 .tBold {
     color: var(--brighter-color);
+}
+
+.tSmall {
+    font-size: 13px;
+    color: var(--brighter-color);
+    color: var(--middle-color);
+    vertical-align: super;
 }
 
 .tInBold {
@@ -439,7 +446,8 @@ h1 {
     align-items: flex-start;
     font-size: 16px;
     color: var(--bright-color);
-    border: 3px solid;
+    border: 2px solid;
+    border-radius: 4px;
 }
 
 .inputFieldsetLabel {

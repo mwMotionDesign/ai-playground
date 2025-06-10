@@ -1,13 +1,17 @@
 // ES6 IMPORTS
 import express from "express";
-import multer from "multer";
+import { } from "dotenv/config";
+
 import path from "path";
 import fs from "fs";
+import { writeFile } from "fs";
+import multer from "multer";
 import { fileURLToPath } from "url";
 import { spawn } from "child_process";
-import { } from "dotenv/config";
+import fetch from 'node-fetch';
+
 import { Configuration, OpenAIApi } from "openai";
-import { writeFile } from "fs";
+import aiplatform from '@google-cloud/aiplatform';
 
 // VARIABLES
 let systemPrompt = "";
@@ -51,11 +55,13 @@ function initiatePrompt() {
             + "Your name is Julia. "
             + "You speak and behave like a character from a book. "
             + "Style is a mix of "
-            + "'Story of the Eye' from Georges Bataille, "
-            + "'Wetlands' from Charlotte Roche, "
-            + "'Justine' oder '120 Days of Sodom' from Marquis de Sade. "
-            + "You want to get to know the user. "
-            + "Create an emotional connection. "
+            + "'Wetlands' - Charlotte Roche, "
+            + "'Tampa' - Alissa Nutting, "
+            + "'Justine' - Marquis de Sade, "
+            + "and Fan Fiction from Redit. "
+            + "Tone should be real, not swollen. "
+            + "You are very interested in the user. "
+            + "Create an emotional and physical connection if you want to. "
             + ""
     }
 
@@ -75,7 +81,8 @@ function initiatePrompt() {
 
 const textModel1 = "gpt-4.1-mini-2025-04-14";
 const textModel2 = "gpt-4.1-2025-04-14";
-const imgModel = "dall-e-3";
+const imgModel1 = "dall-e-3";
+const imgModel2 = "IMAGEN";
 
 // START CODE
 const app = express();
@@ -84,6 +91,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use(express.static("public"));
+app.use('/Images', express.static(path.join(__dirname, 'Images')));
 app.use('/Audiofiles', express.static(path.join(__dirname, 'Audiofiles')));
 app.use(express.json({ limit: "500kb" }));
 
@@ -95,7 +103,15 @@ const aiConfiguration = new Configuration({
 
 const openAI = new OpenAIApi(aiConfiguration);
 
-// STORAGE
+// GOOGLE CLOUD INIT
+const projectId = process.env.CAIP_PROJECT_ID;
+
+// START SERVER
+
+app.listen(process.env.PORT, () => {
+    console.log("\n\n\n---------- Server Listening! ----------\n\n\n");
+});
+
 
 // ASYNC FUNCTIONS
 
@@ -189,21 +205,18 @@ app.post("/createAItext", async (request, response) => {
     }
 });
 
-//----- IMAGES / DALL-E -----//
+//----- IMAGES / DALL-E / IMAGEN 4 -----//
 
 app.post("/createAIimages", async (request, response) => {
-    console.log("");
-    console.log("--- Generating Text ---");
-
     const data = request.body;
-    let aiPrompt = {};
-
-    aiPrompt = {
-        model: imgModel,
+    let aiPrompt = {
+        imgModel: data.imgModel,
         prompt: data.prompt,
-        // n: data.n,
         n: 1,
-        size: data.size
+        size: data.size,
+        aspectRatio: data.aspectRatio,
+        safetyFilterLevel: data.safetyFilterLevel,
+        personGeneration: data.personGeneration
     }
 
     console.log("");
@@ -212,49 +225,171 @@ app.post("/createAIimages", async (request, response) => {
     console.log(aiPrompt);
     console.log("");
 
-    try {
-        let responseAI;
-        let aiAnswer;
+    const filename = getTimestampFilename("").concat("_", aiPrompt.imgModel, ".png");
+    const imgDIR = "Images/";
+    const filePath = imgDIR.concat(filename);
+    let generatedImage;
 
-        responseAI = await openAI.createImage(aiPrompt);
-        let aiResponseIMGs = responseAI.data.data;
-        aiAnswer = aiResponseIMGs;
+    // Sicherstellen, dass der Ordner existiert
+    if (!fs.existsSync('Images')) { fs.mkdirSync('Images'); }
 
-        let cost;
+    let cost;
 
-        if (data.size == "1024x1024") {
-            // cost = data.n * 8;
-            cost = 8;
-        }
-        else if (data.size == "1024x1792") {
-            // cost = data.n * 12;
-            cost = 12;
-        }
-
-        console.log(cost);
+    if (aiPrompt.imgModel == "DALL-E") {
         console.log("");
-        console.log("AI Response:");
-        console.log(aiAnswer);
+        console.log("--- DALL-E ---");
         console.log("");
 
-        response.json({
-            status: "200 - Succesful PostRequest",
-            data: aiAnswer,
-            cost: cost
-        });
+        aiPrompt.imgModel = imgModel1;
 
-        response.end();
-    } catch (error) {
-        console.log("AI RESPONSE ERROR:");
-        if (error.response) {
-            console.log(error.response.status);
-            console.log(error.response.data);
-            console.log(error.response.headers);
+        let dallePrompt = {
+            prompt: aiPrompt.prompt,
+            n: 1,
+            size: aiPrompt.size
         }
-        else {
-            console.log(error.message);
+
+        console.log(dallePrompt);
+
+        try {
+            let responseAI;
+            let aiAnswer;
+
+            responseAI = await openAI.createImage(dallePrompt);
+            let aiResponseIMGs = responseAI.data.data;
+            aiAnswer = aiResponseIMGs;
+
+            if (data.size == "1024x1024") {
+                // cost = data.n * 8;
+                cost = 8;
+            }
+            else if (data.size == "1024x1792") {
+                // cost = data.n * 12;
+                cost = 12;
+            }
+
+            console.log(cost);
+            console.log("");
+            console.log("AI Response:");
+            console.log(aiAnswer);
+            console.log("");
+
+            await downloadImage(aiAnswer[0].url, imgDIR, filename);
+
+            aiAnswer[0] = filePath;
+
+            response.json({
+                status: "200 - Succesful PostRequest",
+                data: aiAnswer,
+                cost: cost
+            });
+
+            response.end();
+        } catch (error) {
+            console.log("AI RESPONSE ERROR:");
+            if (error.response) {
+                console.log(error.response.status);
+                console.log(error.response.data);
+                console.log(error.response.headers);
+            }
+            else {
+                console.log(error.message);
+            }
+            response.end();
         }
-        response.end();
+    }
+
+    else if (aiPrompt.imgModel == "IMAGEN") {
+        console.log("");
+        console.log("--- IMAGEN ---");
+        console.log("");
+
+        aiPrompt.imgModel = imgModel2;
+
+        let imagenPrompt = {
+            sampleCount: 1,
+            aspectRatio: aiPrompt.aspectRatio,
+            safetyFilterLevel: aiPrompt.safetyFilterLevel,
+            personGeneration: aiPrompt.personGeneration
+        }
+
+        console.log(imagenPrompt);
+
+        try {
+            const { v1, helpers } = aiplatform;
+            const { PredictionServiceClient } = v1;
+
+            // GCP-Settings
+            const location = 'us-central1'; // Die Region, in der das Modell verfügbar ist
+
+            const clientOptions = {};
+            const predictionServiceClient = new PredictionServiceClient(clientOptions);
+            const modelPath = `projects/${projectId}/locations/${location}/publishers/google/models/imagen-4.0-generate-preview-05-20`;
+
+            if (!projectId) {
+                throw new Error("CAIP_PROJECT_ID environment variable is not set. Please set it in your .env file.");
+            }
+
+            // Not necessary if CGI, but necessary if running on a server || gcloud auth application-default login
+            // if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+            //     throw new Error("GOOGLE_APPLICATION_CREDENTIALS environment variable is not set. Please set it in your .env file pointing to your service account key.");
+            // }
+
+            const instances = { prompt: aiPrompt.prompt };
+            const parameters = { imagenPrompt };
+
+            const [imagenResponse] = await predictionServiceClient.predict({
+                endpoint: modelPath,
+                instances: [helpers.toValue(instances)],
+                parameters: helpers.toValue(parameters),
+            });
+
+            cost = 0;
+            console.log(cost);
+            console.log("");
+
+            const uris = [];
+            let filePathTemp = "";
+            let imgURLs = [];
+            if (imagenResponse.predictions && imagenResponse.predictions.length > 0) {
+                console.log("AI Response:");
+                imagenResponse.predictions.forEach((pred, i) => {
+                    const b64 = pred.structValue?.fields?.bytesBase64Encoded?.stringValue;
+                    if (b64) {
+                        generatedImage = Buffer.from(b64, 'base64');
+                        filePathTemp = filePath.split(".")[0].concat("_", i, ".", filePath.split(".")[1]);
+
+                        cost += 4;
+
+                        fs.writeFileSync(filePathTemp, generatedImage);
+                        console.log(filePathTemp);
+                        imgURLs.push(filePathTemp)
+                        uris.push(`data:image/png;base64,${b64}`); // Oder den öffentlichen URL zum Bild
+                    } else {
+                        console.warn(`Keine Base64-Daten für Prediction ${i}.`);
+                    }
+                });
+
+                response.json({
+                    status: "200 - Succesful PostRequest",
+                    data: imgURLs,
+                    cost: cost
+                });
+
+                console.log("");
+                response.end();
+            } else {
+                console.warn("Keine Bilder in der Antwort erhalten.");
+            }
+
+            return uris;
+
+        } catch (error) {
+            console.error('Fehler beim Aufruf der Imagen API:', error);
+            if (error.details) {
+                console.error('Fehlerdetails:', error.details);
+            }
+            throw error;
+        }
     }
 });
 
@@ -509,6 +644,30 @@ function getTimestampFilename(extension) {
     return filename;
 }
 
+async function downloadImage(imageUrl, folder = "", filename = "") {
+    try {
+        if (!fs.existsSync(folder)) {
+            fs.mkdirSync(folder);
+        }
+
+        const filePath = path.join(folder, filename);
+
+        const response = await fetch(imageUrl);
+        if (!response.ok) {
+            throw new Error(`HTTP Error! Status: ${response.status} - ${response.statusText}`);
+        }
+
+        const imageBuffer = await response.buffer();
+        fs.writeFileSync(filePath, imageBuffer);
+
+        console.log(`✔ Bild gespeichert: ${filePath}`);
+        return filePath;
+    } catch (error) {
+        console.error('Fehler beim Herunterladen oder Speichern des Bildes mit "download":', error);
+        throw error;
+    }
+}
+
 function calculateCost(tokens, Input, Output) {
     Input = Input * 100;
     Output = Output * 100;
@@ -520,10 +679,3 @@ function calculateCost(tokens, Input, Output) {
 
     return cost;
 }
-
-
-// START SERVER
-
-app.listen(process.env.PORT, () => {
-    console.log("\n\n\n---------- Server Listening! ----------\n\n\n");
-});

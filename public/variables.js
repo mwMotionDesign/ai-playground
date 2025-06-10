@@ -18,6 +18,9 @@ const voiceSliceCharackters = 600;
 const textModel1 = "gpt-4.1-mini-2025-04-14";
 const textModel2 = "gpt-4.1-2025-04-14";
 
+const imgModel1 = "DALL-E";
+const imgModel2 = "IMAGEN";
+
 
 // Variable - Don't change
 

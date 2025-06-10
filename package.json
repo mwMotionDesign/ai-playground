@@ -8,12 +8,17 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "loop": "nodemon server.js"
+    "loop": "nodemon server.js",
+    "gcloud": "gcloud init",
+    "gcloudLocal": "gcloud auth application-default login"
   },
   "dependencies": {
+    "@google-cloud/aiplatform": "^4.2.0",
+    "@google-cloud/vertexai": "^1.10.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "multer": "^2.0.1",
+    "node-fetch": "^3.3.2",
     "openai": "^3.2.1"
   },
   "engines": {
