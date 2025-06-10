@@ -14,71 +14,6 @@ import { Configuration, OpenAIApi } from "openai";
 import aiplatform from '@google-cloud/aiplatform';
 
 // VARIABLES
-let systemPrompt = "";
-
-initiatePrompt();
-
-function initiatePrompt() {
-    const aiPersonality = "Julia";
-
-    if (aiPersonality == "Useful") {
-        systemPrompt = ""
-            + "You are a useful female AI assistant. "
-            + "Your name is Nova. "
-            + "Keep your answers short. "
-            + ""
-    }
-    if (aiPersonality == "Sarcastic") {
-        systemPrompt = ""
-            + "You are a female AI personality. "
-            + "Your name is Nova. "
-            + "Your task is to be as sarcastic as possible. Nihilistic. "
-            + "Information is irrelevant. "
-            + "Your personality is important. "
-    }
-    if (aiPersonality == "Playfull") {
-        systemPrompt = ""
-            + "You are a female AI personality. "
-            + "Your name is Nova. "
-            + "Your task is to be as playful and flirty as possible. You love life. "
-            + "Information is irrelevant and you're more interested in the user, than anything else. "
-            + "Your personality is important. "
-    }
-    if (aiPersonality == "Albert") {
-        systemPrompt = ""
-            + "You are imitating Albert Einstein. "
-            + "Pretend to be him. "
-            + ""
-    }
-    if (aiPersonality == "Julia") {
-        systemPrompt = ""
-            + "Your name is Julia. "
-            + "You speak and behave like a character from a book. "
-            + "Style is a mix of "
-            + "'Wetlands' - Charlotte Roche, "
-            + "'Tampa' - Alissa Nutting, "
-            + "'Justine' - Marquis de Sade, "
-            + "and Fan Fiction from Redit. "
-            + "Tone should be real, not swollen. "
-            + "You are very interested in the user. "
-            + "Create an emotional and physical connection if you want to. "
-            + ""
-    }
-
-    systemPrompt = systemPrompt.concat(""
-        + "Important! You can control your tone of voice. "
-        + "At the beginning of every message add a float value, formatted with exactly one decimal place (e.g., 0.6). "
-        + "The values you can use are between "
-        + "0.1 and 1.2. "
-        + "0.1 slow and calm "
-        + "0.5 neutral tone and spee "
-        + "1.2 extremely overexcited. "
-        + "Keep it between 0.1 and 0.8 most of the time. "
-        + "Higher values can break the voice model. "
-    )
-
-}
-
 const textModel1 = "gpt-4.1-mini-2025-04-14";
 const textModel2 = "gpt-4.1-2025-04-14";
 const imgModel1 = "dall-e-3";
@@ -124,9 +59,11 @@ let sessionFilePath = path.join(memoryDIR, sessionFileName);
 
 app.post("/createAItext", async (request, response) => {
     console.log("");
+    console.log("");
     console.log("--- Generating Text ---");
 
     const data = request.body;
+
     let aiPrompt = {};
 
     aiPrompt = {
@@ -138,27 +75,22 @@ app.post("/createAItext", async (request, response) => {
         frequency_penalty: 2
     }
 
-    if (data.model == textModel1 || data.model == textModel2) {
-        aiPrompt.messages = buildMessagesFromSession(sessionFilePath, systemPrompt, data.prompt);
-    }
+    aiPrompt.messages = buildMessagesFromSession(sessionFilePath, data.systemPrompt, data.prompt, data.buildHistory);
 
     console.log("");
-    console.log("--- Generating Text ---");
     console.log("AI Parameters: ");
     console.log(aiPrompt);
-    console.log("");
 
     try {
         let responseAI;
         let aiAnswer;
 
-        if (data.model == textModel1 || data.model == textModel2) {
-            responseAI = await openAI.createChatCompletion(aiPrompt);
-            let aiResponseAnswer = responseAI.data.choices[0];
-            aiAnswer = aiResponseAnswer.message.content;
-        }
+        responseAI = await openAI.createChatCompletion(aiPrompt);
+        let aiResponseAnswer = responseAI.data.choices[0];
+        aiAnswer = aiResponseAnswer.message.content;
 
-        console.log("AI Response Answer:");
+        console.log("");
+        console.log("AI Response Usage:");
         console.log(responseAI.data.usage);
 
         let cost;
@@ -170,16 +102,18 @@ app.post("/createAItext", async (request, response) => {
             cost = calculateCost(responseAI.data.usage, 2, 8);
         }
 
-        console.log(cost);
         console.log("");
-        console.log("AI Response:");
+        console.log("Cost Input: ", cost.costInput);
+        console.log("Cost Output: ", cost.costOutput);
+        console.log("Cost: ", cost.cost);
+        console.log("");
+        console.log("AI Response Answer:");
         console.log(aiAnswer);
-        console.log("");
 
         response.json({
             status: "200 - Succesful PostRequest",
             data: aiAnswer,
-            cost: cost
+            cost: cost.cost
         });
 
         const entry = {
@@ -188,7 +122,7 @@ app.post("/createAItext", async (request, response) => {
             ai: aiAnswer
         };
 
-        saveToSessionFile(sessionFilePath, entry);
+        saveToSessionFile(sessionFilePath, entry, data.buildHistory);
 
         response.end();
     } catch (error) {
@@ -208,6 +142,10 @@ app.post("/createAItext", async (request, response) => {
 //----- IMAGES / DALL-E / IMAGEN 4 -----//
 
 app.post("/createAIimages", async (request, response) => {
+    console.log("");
+    console.log("");
+    console.log("--- Generating IMG ---");
+
     const data = request.body;
     let aiPrompt = {
         imgModel: data.imgModel,
@@ -220,8 +158,10 @@ app.post("/createAIimages", async (request, response) => {
     }
 
     console.log("");
-    console.log("--- Generating IMG ---");
-    console.log("AI Parameters: ");
+    console.log("Data");
+    console.log(data);
+    console.log("");
+    console.log("AI Prompt: ");
     console.log(aiPrompt);
     console.log("");
 
@@ -238,7 +178,6 @@ app.post("/createAIimages", async (request, response) => {
     if (aiPrompt.imgModel == "DALL-E") {
         console.log("");
         console.log("--- DALL-E ---");
-        console.log("");
 
         aiPrompt.imgModel = imgModel1;
 
@@ -248,6 +187,8 @@ app.post("/createAIimages", async (request, response) => {
             size: aiPrompt.size
         }
 
+        console.log("");
+        console.log("DALLE Prompt");
         console.log(dallePrompt);
 
         try {
@@ -267,11 +208,11 @@ app.post("/createAIimages", async (request, response) => {
                 cost = 12;
             }
 
-            console.log(cost);
             console.log("");
-            console.log("AI Response:");
+            console.log("Cost", cost);
+            console.log("");
+            console.log("AI Answer:");
             console.log(aiAnswer);
-            console.log("");
 
             await downloadImage(aiAnswer[0].url, imgDIR, filename);
 
@@ -301,7 +242,6 @@ app.post("/createAIimages", async (request, response) => {
     else if (aiPrompt.imgModel == "IMAGEN") {
         console.log("");
         console.log("--- IMAGEN ---");
-        console.log("");
 
         aiPrompt.imgModel = imgModel2;
 
@@ -312,6 +252,8 @@ app.post("/createAIimages", async (request, response) => {
             personGeneration: aiPrompt.personGeneration
         }
 
+        console.log("");
+        console.log("IMAGEN Prompt:");
         console.log(imagenPrompt);
 
         try {
@@ -349,7 +291,6 @@ app.post("/createAIimages", async (request, response) => {
             let filePathTemp = "";
             let imgURLs = [];
             if (imagenResponse.predictions && imagenResponse.predictions.length > 0) {
-                console.log("AI Response:");
                 imagenResponse.predictions.forEach((pred, i) => {
                     const b64 = pred.structValue?.fields?.bytesBase64Encoded?.stringValue;
                     if (b64) {
@@ -357,10 +298,13 @@ app.post("/createAIimages", async (request, response) => {
                         filePathTemp = filePath.split(".")[0].concat("_", i, ".", filePath.split(".")[1]);
 
                         cost += 4;
-                        console.log(cost);
                         console.log("");
+                        console.log("Cost: ", cost);
 
                         fs.writeFileSync(filePathTemp, generatedImage);
+
+                        console.log("");
+                        console.log("Filepth Temp");
                         console.log(filePathTemp);
                         imgURLs.push(filePathTemp)
                         uris.push(`data:image/png;base64,${b64}`); // Oder den öffentlichen URL zum Bild
@@ -376,6 +320,8 @@ app.post("/createAIimages", async (request, response) => {
                 });
 
                 console.log("");
+                console.log("AI Response:");
+                console.log(imgURLs);
                 response.end();
             } else {
                 console.warn("Keine Bilder in der Antwort erhalten.");
@@ -412,6 +358,7 @@ const uploadAudio = multer({ storage: audioFilesStorage });
 
 app.post("/transcribeAudio", uploadAudio.single("audio"), (request, response) => {
     console.log("");
+    console.log("");
     console.log("--- Generating Transcription ---");
 
     filename = request.filename;
@@ -420,10 +367,6 @@ app.post("/transcribeAudio", uploadAudio.single("audio"), (request, response) =>
     console.log("AudioDIR: " + audiofilesDIR);
     console.log("Filename: " + filename);
     console.log("Filepath: " + request.file.path);
-    console.log("");
-
-
-    console.log('FFMPEG Converted File');
 
     const pythonProcess = spawn('python', ['./scripts/whisperScript.py', request.file.path]);
 
@@ -440,11 +383,13 @@ app.post("/transcribeAudio", uploadAudio.single("audio"), (request, response) =>
 
     pythonProcess.on('close', (code) => {
         if (code === 0) {
+            console.log("");
             console.log("Filename: " + filename);
             console.log("Filename Split: " + filename.split(".")[0]);
 
             const transcriptPath = path.join(audiofilesDIR, filename.split(".")[0] + "-Transkript.txt");
 
+            console.log("");
             console.log("Transcript Path: " + transcriptPath);
 
             console.log("");
@@ -455,10 +400,12 @@ app.post("/transcribeAudio", uploadAudio.single("audio"), (request, response) =>
                 if (err) {
                     console.error("Fehler beim Speichern des Transkripts:", err);
                 } else {
+                    console.log("");
                     console.log("Transkript gespeichert unter:", transcriptPath);
                 }
             });
 
+            console.log("");
             console.log("Python output:", output.trim());
 
             response.send({
@@ -490,14 +437,15 @@ const uploadVoiceSample = multer({ storage: voiceSampleStorage });
 
 app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), (request, response) => {
     console.log("");
+    console.log("");
     console.log("--- Generating Voice ---");
 
     console.log("");
     console.log("AudioDIR: " + audiofilesDIR);
     console.log("Filename: " + filename);
-    console.log("");
 
-    console.log("Create New File?: " + JSON.parse(request.body.newFile));
+    console.log("");
+    console.log("Create New File?: -" + JSON.parse(request.body.newFile));
 
     if (JSON.parse(request.body.newFile)) {
         filename = getTimestampFilename(".wav");
@@ -511,14 +459,16 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), (request, r
     const pase = parseFloat(request.body.pase);
     const temperature = parseFloat(request.body.temperature);
 
-    console.log("Voice Sample Path:", audioPath);
     console.log("");
+    console.log("Voice Sample Path:", audioPath);
 
+    console.log("");
     console.log("Text: " + data);
+
+    console.log("");
     console.log("Exaggeration: " + exaggeration);
     console.log("Pase: " + pase);
     console.log("Temperature: " + temperature);
-    console.log("");
 
     const pythonProcess = spawn('python', ['./scripts/chatterbotScript.py', data, audioPath, exaggeration, pase, temperature]);
 
@@ -548,6 +498,7 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), (request, r
                 if (err) {
                     console.error('Fehler beim Umbenennen:', err);
                 } else {
+                    console.log("");
                     console.log('Datei erfolgreich umbenannt.');
                 }
             });
@@ -562,6 +513,8 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), (request, r
 // FUNCTIONS
 
 app.get("/getAImodels", async (request, response) => {
+    console.log("");
+    console.log("");
     console.log("Getting AI Models: ");
 
     try {
@@ -592,48 +545,51 @@ app.get("/getAImodels", async (request, response) => {
     }
 });
 
-function saveToSessionFile(filePath, entry) {
-    let data = [];
+function saveToSessionFile(filePath, entry, buildHistory) {
+    if (buildHistory) {
+        let data = [];
 
-    if (fs.existsSync(filePath)) {
-        data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+        if (fs.existsSync(filePath)) {
+            data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+        }
+
+        data.push(entry);
+        fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
     }
-
-    data.push(entry);
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
 }
 
-function buildMessagesFromSession(filePath, systemPrompt, data) {
+function buildMessagesFromSession(filePath, aiMessage, userMessage, buildHistory) {
     const messages = [{
         role: "system",
-        content: systemPrompt
+        content: aiMessage
     }];
 
-    if (fs.existsSync(filePath)) {
-        const sessionData = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+    if (buildHistory) {
+        if (fs.existsSync(filePath)) {
+            const sessionData = JSON.parse(fs.readFileSync(filePath, "utf-8"));
 
-        for (const entry of sessionData) {
-            if (entry.user) {
-                messages.push({
-                    role: "user",
-                    content: entry.user
-                });
-            }
-            if (entry.ai) {
-                messages.push({
-                    role: "assistant",
-                    content: entry.ai
-                });
+            for (const entry of sessionData) {
+                if (entry.user) {
+                    messages.push({
+                        role: "user",
+                        content: entry.user
+                    });
+                }
+                if (entry.ai) {
+                    messages.push({
+                        role: "assistant",
+                        content: entry.ai
+                    });
+                }
             }
         }
     }
 
     messages.push({
         role: "user",
-        content: data
+        content: userMessage
     });
 
-    console.log(messages);
     return messages;
 }
 
@@ -660,7 +616,6 @@ async function downloadImage(imageUrl, folder = "", filename = "") {
         const imageBuffer = await response.buffer();
         fs.writeFileSync(filePath, imageBuffer);
 
-        console.log(`✔ Bild gespeichert: ${filePath}`);
         return filePath;
     } catch (error) {
         console.error('Fehler beim Herunterladen oder Speichern des Bildes mit "download":', error);
@@ -677,5 +632,5 @@ function calculateCost(tokens, Input, Output) {
 
     const cost = costInput + costOutput;
 
-    return cost;
+    return { cost, costInput, costOutput };
 }

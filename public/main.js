@@ -1,5 +1,4 @@
-console.clear();
-// console.log = function () { }
+
 
 focusInputField();
 addDescription();
@@ -51,7 +50,8 @@ async function generateResponse(type) {
     }
 }
 
-async function buildText(text = "") {
+async function buildText(text = "", isForwarded = false) {
+    let message = {};
     let textResult = "";
 
     addInitialLog("Text", keyRequest);
@@ -62,21 +62,33 @@ async function buildText(text = "") {
         outputText("link", inputField.value);
     }
 
-    textResult = await generateText(text);
-    // return { inputText, responseTextFormatted, llmExag }
+    systemPrompt = generateSystemPrompt(systemPromptName);
+    textResult = await generateText(systemPrompt, text, nOfTokens, true);
 
-    outputText("header", "LLM");
-    outputText("link", textResult.responseTextFormatted);
+    if (!isForwarded) {
+        message = ({ role: "Person 1", message: textResult.inputText });
+        conversationHistory.push(message);
+        message = ({ role: "Person 2", message: textResult.responseText });
+        conversationHistory.push(message);
+
+        outputText("header", "LLM");
+        outputText("link", textResult.responseTextFormatted);
+    }
 
     textResult.responseTextFormatted = formatToText(textResult.responseTextFormatted);
 
-    if (voiceLLM) {
+    if (voiceLLM && !isForwarded) {
         addReturnText("", "... forwarding to Voice");
         await buildVocie(textResult.responseTextFormatted, true, textResult.llmExag);
     }
-    if (imgWithText) {
+    if (imgWithText && !isForwarded) {
+        addReturnText("", "... forwarding to Prompt Generation");
+        console.log("");
+        console.log("Conversation History: ", conversationHistory);
+        systemPrompt = generateSystemPrompt(systemPromptNameIMG);
+        const imgPromptResult = await generateText(systemPrompt, JSON.stringify(conversationHistory), nOfTokensIMG, false);
         addReturnText("", "... forwarding to Image");
-        await buildImages(textResult.responseTextFormatted);
+        await buildImages(imgPromptResult);
     }
 }
 
@@ -92,6 +104,7 @@ async function buildImages(text = "") {
 
     imgResult = await generateImages(imgPrompt, imgModel);
 
+    console.log("");
     console.log(imgResult.responseIMGs);
     outputIMGs(imgResult.responseIMGs, imgResult.text);
 }
@@ -114,13 +127,9 @@ async function buildTranscript() {
             addReturnText("", "... forwarding to Voice");
             await buildVocie(transcriptResult.text, false);
         }
-        if (textToLLM && !imgWithText) {
+        if (textToLLM) {
             addReturnText("", "... forwarding to LLM");
             await buildText(transcriptResult.text);
-        }
-        else if (textToLLM && imgWithText) {
-            addReturnText("", "... forwarding to LLM");
-            await buildImages(transcriptResult.text);
         }
     }
     else {
@@ -145,7 +154,7 @@ async function buildVocie(text = "", newFile = true, exag = -1, itteration = 0) 
 
 let responseCost = 0;
 
-async function generateText(text = "") {
+async function generateText(systemPrompt = "", text = "", nOfTokens = 10, buildHistory = false) {
     let textFromLLM = false;
     let inputText = inputField.value;
 
@@ -160,29 +169,30 @@ async function generateText(text = "") {
     else {
         text = promptPre.concat(inputText);
 
-        let responseText = await fetchText(text, nOfTokens);
+        let responseText = await fetchText(systemPrompt, text, nOfTokens, buildHistory);
 
-        console.log("Response Text Length: " + responseText.length);
-        let llmExag = responseText.slice(0, 3);
-        console.log("Exaggeration Extract: " + llmExag);
-        responseText = responseText.slice(4, responseText.length);
-        console.log("New Text Length: " + responseText.length);
-
-        console.log("");
-        console.log("Unformated AI Response Text: " + responseText);
-        console.log("");
+        let llmExag = cbExaggeration;
+        if (systemPrompt != generateSystemPrompt(systemPromptNameIMG)) {
+            console.log("Response Generate Text Length: " + responseText.length);
+            let llmExag = responseText.slice(0, 3);
+            console.log("Exaggeration Extract: " + llmExag);
+            responseText = responseText.slice(4, responseText.length);
+            console.log("Cut Text Length: " + responseText.length);
+        }
 
         let responseTextFormatted = formatAIanswer(responseText);
 
-        return { inputText, responseTextFormatted, llmExag };
+        return { inputText, responseText, responseTextFormatted, llmExag };
     }
 }
 
-async function fetchText(prompt, tokens) {
+async function fetchText(systemPrompt, prompt, tokens, buildHistory) {
     const data = {
+        systemPrompt: systemPrompt,
         prompt: prompt,
         tokens: tokens,
-        model: model
+        model: model,
+        buildHistory: buildHistory
     };
 
     let modelName
@@ -205,9 +215,10 @@ async function fetchText(prompt, tokens) {
             body: JSON.stringify(data)
         };
 
-        console.log("Data:");
+        console.log("");
+        console.log("Fetch Text Data:");
         console.log(data);
-        console.log("Options:");
+        console.log("Fetch Text Options:");
         console.log(options);
 
         const responseAI = await fetch("/createAItext", options);
@@ -217,7 +228,7 @@ async function fetchText(prompt, tokens) {
 
         responseCost = responseCost + parseFloat(jsonAI.cost);
 
-        console.log("Return Text: ", jsonAI.data);
+        console.log("Return Fetch Text: ", jsonAI.data);
 
         return jsonAI.data;
     } catch (error) {
@@ -275,7 +286,8 @@ async function generateImages(text, imgModel) {
                     const responseAI = await fetch("/createAIimages", options);
                     const jsonAI = await responseAI.json();
 
-                    console.log("AI Response:");
+                    console.log("");
+                    console.log("IMG Response:");
                     console.log(jsonAI.data.length + " Images\n");
                     console.log(jsonAI.data);
 
@@ -310,7 +322,6 @@ async function generateRecording() {
 
         currentStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         mediaRecorder = new MediaRecorder(currentStream);
-        console.log("Mediarecorder Start!");
 
         button3.querySelector("p").innerHTML = "STOP RECORDING";
         button3.style.backgroundColor = "var(--red)";
@@ -354,6 +365,7 @@ async function generateTranscript(audio) {
         });
 
         const result = await res.json();
+        console.log("");
         console.log("Transkript Whisper:", result.text);
         console.log("Converted Original Audio:", result.audioPath);
         result.text = formatToText(result.text);
@@ -382,7 +394,7 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
         if (cbValues.sendAudioSample) {
             formData.append("voiceSample", audioSampleFile.files[0]);
             if (audioSampleFile.files[0]) {
-                console.log("voiceSample:");
+                console.log("Generate Speech voiceSample:");
                 console.log(audioSampleFile.files[0].name);
             }
         }
@@ -395,8 +407,8 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
 
             textTemp = text.slice(voiceSliceCharackters, text.length);
             text = text.slice(0, voiceSliceCharackters);
-            console.log("Text to Voice: " + text);
-            console.log("Text to Voice Later: " + textTemp);
+            console.log("Generate Speech Text: " + text);
+            console.log("Generate Speech Text Later: " + textTemp);
 
         }
         formData.append("text", text);
@@ -426,7 +438,7 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
         });
 
         const result = await res.json();
-        console.log("TranskribeAudiopath:", result.audioPath);
+        console.log("Generate Speech Result Audiopath:", result.audioPath);
 
         if (nOfFiles <= 1 && itteration == 1) {
             outputAudio(result.audioPath, true);

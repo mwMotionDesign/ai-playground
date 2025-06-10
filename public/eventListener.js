@@ -92,8 +92,6 @@ document.addEventListener("keydown", (event) => {
 });
 
 let buttonText = button3.querySelector("p").innerHTML.toString();
-console.log("");
-console.log(buttonText);
 
 
 // Open AI Settings
@@ -109,12 +107,6 @@ let voiceLLM = createVoiceLLM.checked;
 let imgModel = imgModel2;
 let nIMGs = nOfImgs.value;
 let imgWithText = createIMGwithText.checked;
-
-console.log("Initial Text Model: " + model);
-console.log("Initial Voice from LLM: " + voiceLLM);
-console.log("Initial Image Model: " + imgModel);
-console.log("Initial Number of Images: " + nIMGs);
-console.log("Initial Image with Text: " + imgWithText);
 
 for (let i = 0; i < modelRadio.length; i++) {
     modelRadio[i].addEventListener("change", () => {
@@ -249,12 +241,3 @@ cbPase.addEventListener("input", () => {
 cbTemperature.addEventListener("input", () => {
     temperatureValue.textContent = Number(cbTemperature.value).toFixed(2).concat(" - ", temperatureValueContent);
 });
-
-console.log(" ");
-console.log("Initial Text to LLM: " + textToLLM);
-
-console.log("Initial Create Voice: " + cbValues.createVoice);
-console.log("Initial Send Audio Sample: " + cbValues.sendAudioSample);
-console.log("Initial cbExaggeration: " + cbValues.cbExaggeration);
-console.log("Initial cbPase: " + cbValues.cbPase);
-console.log("Initial cbTemperature: " + cbValues.cbTemperature);
