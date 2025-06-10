@@ -69,6 +69,16 @@ async function buildText(text = "", isForwarded = false) {
         outputText("header", "Input");
         outputText("link", inputField.value);
     }
+    if (changePersonalityAuto && !isForwarded) {
+        addReturnText("", "... forwarding to Personality Generation");
+        const newPersonalityResult = await generateText(systemPromptPersonality, text, nOfTokensPersonality, false);
+        addReturnText("", "... forwarding to Text");
+
+        llmPersonalityDOM.value = newPersonalityResult.responseText;
+        systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
+        console.log("");
+        console.log("LLM set its personality to: " + llmPersonalityDOM.value);
+    }
 
     textResult = await generateText(systemPrompt, text, nOfTokens, true);
 
@@ -165,17 +175,18 @@ async function generateText(systemPromptToSend = "", text = "", nOfTokens = 10, 
     text = promptPre.concat(inputText);
 
     let responseText = await fetchText(systemPromptToSend, text, nOfTokens, buildHistory);
-    let responseTextFormatted = formatAIanswer(responseText);
-    responseText = formatToText(responseText);
 
     let llmExag = cbExaggeration;
-    if (systemPromptToSend != systemPromptIMG) {
+    if (systemPromptToSend != systemPromptIMG && systemPromptToSend != systemPromptPersonality) {
         console.log("Response Generate Text Length: " + responseText.length);
         let llmExag = responseText.slice(0, 3);
         console.log("Exaggeration Extract: " + llmExag);
         responseText = responseText.slice(4, responseText.length);
         console.log("Cut Text Length: " + responseText.length);
     }
+
+    let responseTextFormatted = formatAIanswer(responseText);
+    responseText = formatToText(responseText);
 
     return { inputText, responseText, responseTextFormatted, llmExag };
 }
@@ -186,7 +197,8 @@ async function fetchText(systemPromptToSend, prompt, tokens, buildHistory) {
         prompt: prompt,
         tokens: tokens,
         model: model,
-        buildHistory: buildHistory
+        buildHistory: buildHistory,
+        personality: llmPersonalityDOM.value
     };
 
     let modelName

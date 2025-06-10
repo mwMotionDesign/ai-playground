@@ -116,13 +116,16 @@ app.post("/createAItext", async (request, response) => {
             cost: cost.cost
         });
 
-        const entry = {
-            timestamp: getTimestampFilename(""),
-            user: data.prompt,
-            ai: aiAnswer
-        };
+        if (data.buildHistory) {
+            const entry = {
+                timestamp: getTimestampFilename(""),
+                user: data.prompt,
+                ai: aiAnswer,
+                personality: data.personality
+            };
 
-        saveToSessionFile(sessionFilePath, entry, data.buildHistory);
+            saveToSessionFile(sessionFilePath, entry);
+        }
 
         response.end();
     } catch (error) {
@@ -565,17 +568,15 @@ app.get("/getAImodels", async (request, response) => {
     }
 });
 
-function saveToSessionFile(filePath, entry, buildHistory) {
-    if (buildHistory) {
-        let data = [];
+function saveToSessionFile(filePath, entry) {
+    let data = [];
 
-        if (fs.existsSync(filePath)) {
-            data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-        }
-
-        data.push(entry);
-        fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
+    if (fs.existsSync(filePath)) {
+        data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
     }
+
+    data.push(entry);
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
 }
 
 function buildMessagesFromSession(filePath, aiMessage, userMessage, buildHistory) {
