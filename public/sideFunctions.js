@@ -18,10 +18,10 @@ function addDescription() {
         + "- Click me to send to Input");
     outputText("noLink", "Here are the generated images:");
     outputIMGs([
-        { url: "./images/startImage1.png" },
-        { url: "./images/startImage2.png" },
-        { url: "./images/startImage3.png" },
-        { url: "./images/startImage4.png" }
+        "./images/startImage1.png",
+        "./images/startImage2.png",
+        "./images/startImage3.png",
+        "./images/startImage4.png"
     ], "Prompt used to generate images");
     outputText("noLink", "<span class='tBold'>Tipp:</span> Click on any picture to view fullscreen.");
 }
@@ -95,7 +95,9 @@ function outputIMGs(imgArray, imgPrompt) {
 
             let newIMG = document.createElement("img");
             newIMG.classList.add("resultIMG");
-            newIMG.src = imgArray[i].url;
+            console.log("Image URL Pushed as src:");
+            console.log("../".concat(imgArray[i]));
+            newIMG.src = "../".concat(imgArray[i]);
 
             let newIMGdiv = document.createElement("div");
             newIMGdiv.classList.add("resultIMGs");
@@ -110,7 +112,7 @@ function outputIMGs(imgArray, imgPrompt) {
 
             let newIMGXL = document.createElement("img");
             newIMGXL.classList.add("resultIMGXL");
-            newIMGXL.src = imgArray[i].url;
+            newIMGXL.src = imgArray[i];
 
             let newIMGdivXL = document.createElement("div");
             newIMGdivXL.classList.add("resultIMGsXL");

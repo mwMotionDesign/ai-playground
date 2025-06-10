@@ -80,17 +80,25 @@
                                 <p class="inputHeader">Large Language Model</p>
                                 <div class="inputContainer inputRadioContainer">
                                     <input type="radio" class="inputInput inputRadioButton gptRadio" id="radioChatGPT" name="model" value="gpt-4.1-mini-2025-04-14" checked>
-                                    <label for="radioChatGPT" class="inputLabel inputRadioLabel">GPT4.1 mini<br>$ 0.4 (0.1) | 1.6 / mil</label>
+                                    <label for="radioChatGPT" class="inputLabel inputRadioLabel">GPT4.1 mini<br><span class="tSmall">$ 0.4 | 1.6 / mil</span></label>
                                 </div>
                                 <div class="inputContainer inputRadioContainer">
                                     <input type="radio" class="inputInput inputRadioButton gptRadio" id="radioGPT4" name="model" value="gpt-4.1-2025-04-14">
-                                    <label for="radioGPT4" class="inputLabel inputRadioLabel">GPT4.1<br>$ 2 (0.5) | 8 / mil</label>
+                                    <label for="radioGPT4" class="inputLabel inputRadioLabel">GPT4.1<br><span class="tSmall">$ 2 | 8 / mil</span></label>
                                 </div>
                                 <div class="inputContainer inputCheckboxContainer">
                                     <input type="checkbox" class="inputInput inputCheckbox" id="createVoiceLLM" name="createVoiceLLM">
                                     <label for="createVoiceLLM" class="inputLabel inputCheckboxLabel">create Voice<br>from LLM</label>
                                 </div>
-                                <p class="inputHeader">DALL-E</p>
+                                <p class="inputHeader">Image Model</p>
+                                <div class="inputContainer inputRadioContainer">
+                                    <input type="radio" class="inputInput inputRadioButton imgRadio" id="radioIMAGE" name="imgModel" value="IMAGEN" checked>
+                                    <label for="radioIMAGE" class="inputLabel inputRadioLabel">IMAGEN<br><span class="tSmall">$ 0.16 - 4 imgs / call</span></label>
+                                </div>
+                                <div class="inputContainer inputRadioContainer">
+                                    <input type="radio" class="inputInput inputRadioButton imgRadio" id="radioDALLE" name="imgModel" value="DALL-E">
+                                    <label for="radioDALLE" class="inputLabel inputRadioLabel">DALL-E<br><span class="tSmall">$ 0.08</span></label>
+                                </div>
                                 <div class="inputContainer inputImagesContainer">
                                     <select name="NumberOfImages" class="inputInput inputDropdown" id="nOfIMGs">
                                         <option value="1" selected>1</option>
@@ -98,7 +106,7 @@
                                         <option value="3">3</option>
                                         <option value="4">4</option>
                                     </select>
-                                    <label for="NumberOfImages" class="inputLabel inputDropdownlLabel">Amount<br>$ 0.08</label>
+                                    <label for="NumberOfImages" class="inputLabel inputDropdownlLabel">Amount</label>
                                 </div>
                                 <div class="inputContainer inputCheckboxContainer">
                                     <input type="checkbox" class="inputInput inputCheckbox" id="createIMGwithText" name="createIMGwithText">

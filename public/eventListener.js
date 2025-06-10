@@ -99,17 +99,20 @@ console.log(buttonText);
 // Open AI Settings
 
 const modelRadio = document.querySelectorAll(".gptRadio");
+const createVoiceLLM = document.getElementById("createVoiceLLM");
+const imgRadio = document.querySelectorAll(".imgRadio");
 const nOfImgs = document.getElementById("nOfIMGs");
 const createIMGwithText = document.getElementById("createIMGwithText");
-const createVoiceLLM = document.getElementById("createVoiceLLM");
 
 let model = textModel1;
 let voiceLLM = createVoiceLLM.checked;
+let imgModel = imgModel2;
 let nIMGs = nOfImgs.value;
 let imgWithText = createIMGwithText.checked;
 
 console.log("Initial Text Model: " + model);
 console.log("Initial Voice from LLM: " + voiceLLM);
+console.log("Initial Image Model: " + imgModel);
 console.log("Initial Number of Images: " + nIMGs);
 console.log("Initial Image with Text: " + imgWithText);
 
@@ -123,6 +126,12 @@ createVoiceLLM.addEventListener("change", () => {
     console.log("Changing VoiceLLM: " + createVoiceLLM.checked);
     voiceLLM = createVoiceLLM.checked;
 });
+for (let i = 0; i < imgRadio.length; i++) {
+    imgRadio[i].addEventListener("change", () => {
+        console.log("Changing Model: " + imgRadio[i].value);
+        imgModel = imgRadio[i].value;
+    });
+}
 nOfImgs.addEventListener("change", (event) => {
     nIMGs = parseInt(event.target.value);
     console.log("Changing Images: " + nIMGs);
