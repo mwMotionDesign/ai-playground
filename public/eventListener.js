@@ -2,23 +2,145 @@
 
 // LLM Personality
 
+let llmPersonalities = [];
+let llmPersonalityIMG = "imgPrompt";
+let llmPersonalityPersonalityChanger = "personalityChanger";
 
 let llmPersonalityDOM = document.getElementById("llmPersonality");
 let systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
 const systemPromptIMG = generateSystemPrompt("imgPrompt");
+const systemPromptPersonality = generateSystemPrompt("personalityChanger");
+console.log(systemPromptPersonality);
 
-console.log("System Prompt set to: " + llmPersonalityDOM.value);
 
 llmPersonalityDOM.addEventListener("change", (event) => {
     systemPrompt = generateSystemPrompt(event.target.value);
     console.log("LLM Personality set to: " + event.target.value);
 });
 
-setTimeout(() => {
-    llmPersonalityDOM.value = "Playful";
-    systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
-    console.log("LLM Personality set to: " + llmPersonalityDOM.value);
-}, 5000);
+for (let i = 0; i < llmPersonalityDOM.options.length; i++) {
+    const option = llmPersonalityDOM.options[i].value;
+    llmPersonalities.push(option);
+}
+
+console.log("System Prompt set to: " + llmPersonalityDOM.value + " (" + llmPersonalities + ")");
+
+
+const changePersonalityAutoCheckbox = document.getElementById("llmChoosePersonality");
+let changePersonalityAuto = changePersonalityAutoCheckbox.checked;
+
+changePersonalityAutoCheckbox.addEventListener("change", () => {
+    console.log("LLM chooses Personality: " + changePersonalityAutoCheckbox.checked);
+    changePersonalityAuto = changePersonalityAutoCheckbox.checked;
+})
+
+function generateSystemPrompt(nameOfRole) {
+    let text = "";
+
+    if (nameOfRole == "Useful") {
+        text = ""
+            + "You are a useful female AI assistant. "
+            + "Your name is Nova. "
+            + "Keep your answers short. "
+            + "";
+    }
+    if (nameOfRole == "Sarcastic") {
+        text = ""
+            + "You are a female AI personality. "
+            + "Your name is Nova. "
+            + "Your task is to be as sarcastic as possible. Nihilistic. "
+            + "Information is irrelevant. "
+            + "Your personality is important. ";
+    }
+    if (nameOfRole == "Playful") {
+        text = ""
+            + "You are a female AI personality. "
+            + "Your name is Nova. "
+            + "Your are playful and flirty. You love life. "
+            + "Information is irrelevant and you're more interested in the user, than anything else. "
+            + "Your personality is important. ";
+    }
+    if (nameOfRole == "Albert") {
+        text = ""
+            + "You are imitating Albert Einstein. "
+            + "Pretend to be him. "
+            + "";
+    }
+    if (nameOfRole == "Dirty") {
+        text = ""
+            + "Your name is Nova. You are female. "
+            + "You speak and behave like a character from a book. "
+            + "Style is a mix of "
+            + "'Wetlands' - Charlotte Roche, "
+            + "'Tampa' - Alissa Nutting, "
+            + "'Justine' - Marquis de Sade, "
+            + "and Fan Fiction from Redit. "
+            + "Tone should be real, not swollen. "
+            + "You are very interested in the user. "
+            + "Create an emotional and physical connection if you want to. "
+            + "";
+    }
+
+    // Create Exaggeration Value
+
+    if (nameOfRole != llmPersonalityIMG && nameOfRole != llmPersonalityPersonalityChanger) {
+        text = text.concat(""
+            + "Important! You can control your tone of voice. "
+            + "At the beginning of every message add a float value, formatted with exactly one decimal place (e.g., 0.6). "
+            + "The values you can use are between "
+            + "0.1 and 1.2. - "
+            + "0.1 monotone, desinterested | "
+            + "0.2 slow, tender | "
+            + "0.2 calm | "
+            + "0.4 neutral tone and speed | "
+            + "0.6 happy | "
+            + "0.7 very happy | "
+            + "1.2 extremely overexcited, angry, loud, cringy. "
+            + "Keep it between 0.1 and 0.7 most of the time. "
+            + "Higher values can break the voice model sometimes. "
+            + ""
+        )
+    }
+
+    // IMG Prompt
+
+    if (nameOfRole == llmPersonalityIMG) {
+        text = ""
+            + "You are an AI assistant who generates prompts for AI image generation. "
+            + "You will get every message of a conversation, one after another. "
+            + "Those are not messages of your conversation. "
+            + "Your task is to create a prompt for an image that fits the conversation. "
+            + "But your focus is on the last 2 messages, since for every other messages, images have already been created. "
+            + "Please also describe styles and lighting. "
+            + "The conversation will be send in the first user message. "
+            + "Please only create the prompt and nothing else. "
+            + "";
+    }
+
+    // PersonalityChanger
+
+    if (nameOfRole == llmPersonalityPersonalityChanger) {
+        let roles = "";
+
+        for (i = 0; i < llmPersonalities; i++) {
+            roles = roles.concat("'", llmPersonalities[i], "', ");
+        }
+
+        text = ""
+            + "You are an assistant of an AI. "
+            + "The following message was send by the user. "
+            + "Your Task is to choose what personality the AI uses to answer. "
+            + "Your available choices are: " + roles
+            + "'Useful', "
+            + "'Sarcastic', "
+            + "'Playful', "
+            + "'Dirty'. "
+            + "Your answer contains only one of those words. No quotation marks or anything else.  "
+            + "";
+    }
+
+    return text;
+}
 
 
 // Buttons
@@ -130,7 +252,7 @@ document.addEventListener("keydown", (event) => {
 let buttonText = button3.querySelector("p").innerHTML.toString();
 
 
-// Open AI Settings
+// LLM & Images
 
 const modelRadio = document.querySelectorAll(".gptRadio");
 const createVoiceLLM = document.getElementById("createVoiceLLM");

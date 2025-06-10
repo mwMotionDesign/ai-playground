@@ -79,13 +79,17 @@
                             <fieldset class="inputFieldset" id="modelsFieldset">
                                 <legend class="inputFieldsetLabel" id="modelsLabel">LLM & Images</legend>
                                 <p class="inputHeader">Large Language Model</p>
+                                <div class="inputContainer inputCheckboxContainer">
+                                    <input type="checkbox" class="inputInput inputCheckbox" id="llmChoosePersonality" name="llmChoosePersonality">
+                                    <label for="llmChoosePersonality" class="inputLabel inputCheckboxLabel">let LLM choose</label>
+                                </div>
                                 <div class="inputContainer inputLLMpersonality">
                                     <select name="NumberOfImages" class="inputInput inputDropdown" id="llmPersonality">
                                         <option value="Useful" selected>Useful</option>
                                         <option value="Sarcastic">Sarcastic</option>
                                         <option value="Playful">Playful</option>
                                         <option value="Dirty">Dirty</option>
-                                        <option value="Albert">Einstein</option>
+                                        <!-- <option value="Albert">Einstein</option> -->
                                     </select>
                                     <!-- <label for="NumberOfImages" class="inputLabel inputDropdownlLabel">Personality</label> -->
                                 </div>
