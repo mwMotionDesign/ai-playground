@@ -667,15 +667,15 @@ h1 {
     background-color: var(--green);
 }
 
-.dropzone .browse {
+.dropzone.dragoverInputValid {
     color: var(--buttonFontColor);
     background-color: var(--green);
     cursor: pointer;
 }
 
-.dropzone.dragoverInputValid {
+.dropzone.dragoverInputInvalid {
     color: var(--buttonFontColor);
-    background-color: var(--green);
+    background-color: var(--red);
     cursor: pointer;
 }
 

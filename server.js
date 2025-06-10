@@ -335,7 +335,7 @@ app.post("/createAIimages", async (request, response) => {
             // }
 
             const instances = { prompt: aiPrompt.prompt };
-            const parameters = { imagenPrompt };
+            const parameters = imagenPrompt;
 
             const [imagenResponse] = await predictionServiceClient.predict({
                 endpoint: modelPath,
@@ -344,8 +344,6 @@ app.post("/createAIimages", async (request, response) => {
             });
 
             cost = 0;
-            console.log(cost);
-            console.log("");
 
             const uris = [];
             let filePathTemp = "";
@@ -359,6 +357,8 @@ app.post("/createAIimages", async (request, response) => {
                         filePathTemp = filePath.split(".")[0].concat("_", i, ".", filePath.split(".")[1]);
 
                         cost += 4;
+                        console.log(cost);
+                        console.log("");
 
                         fs.writeFileSync(filePathTemp, generatedImage);
                         console.log(filePathTemp);
