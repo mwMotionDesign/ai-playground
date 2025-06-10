@@ -15,3 +15,7 @@ Ich sage wozu ich Lust habe. GPT erstellt Geschichte. Stimme spricht und im Hint
 Auch möglich für Artikelseiten oder Ähnliches
 - Play next Audio Clip when Last one stopped.
 - Automatische Promptgenerierung im Hintergrund.
+
+Außerden:
+- Integration Lokales LLM? Für versauten Kram.
+- Deutsches Chatterbot.

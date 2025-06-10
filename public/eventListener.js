@@ -157,25 +157,32 @@ dropzone.addEventListener('dragleave', () => {
 });
 dropzone.addEventListener('drop', (e) => {
     e.preventDefault();
-    dropzone.classList.remove('dragover');
-
     const file = e.dataTransfer.files[0];
-    if (file) {
-        dropzone.classList.remove('dragover');
+
+    isValidFile(file);
+});
+audioSampleFile.addEventListener('change', () => {
+    const file = audioSampleFile.files[0];
+
+    isValidFile(file);
+});
+
+function isValidFile(file) {
+    dropzone.classList.remove('dragover');
+    const validTypes = ['audio/wav', 'audio/mpeg', 'audio/mp3'];
+    if (file && validTypes.includes(file.type)) {
+        dropzone.classList.remove('dragoverInputInvalid');
         dropzone.classList.add('dragoverInputValid');
         dropzone.innerHTML = file.name;
         audioSampleFile.files = e.dataTransfer.files;
     }
-});
-audioSampleFile.addEventListener('change', () => {
-    const file = audioSampleFile.files[0];
-    if (file) {
-        dropzone.classList.remove('dragover');
-        dropzone.classList.add('dragoverInputValid');
+    else {
+        dropzone.classList.remove('dragoverInputValid');
+        dropzone.classList.add('dragoverInputInvalid');
         dropzone.innerHTML = file.name;
+        audioSampleFile.files = e.dataTransfer.files;
     }
-});
-
+}
 
 // Voice Settings
 
