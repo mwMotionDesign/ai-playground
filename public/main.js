@@ -32,14 +32,11 @@ async function generateResponse(type) {
     // TRANSCRIPT
     if (type == "audio") {
         if (!isRecording) {
-            console.log("--- with !isRcording");
             await buildTranscript();
             ending();
         }
         else if (isRecording) {
-            console.log("--- with isRcording");
             startLoading();
-            console.log("--- TEST");
             buildTranscript();
         }
     }
