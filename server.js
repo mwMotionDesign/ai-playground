@@ -212,7 +212,7 @@ app.post("/createAIimages", async (request, response) => {
     let aiPrompt = {
         imgModel: data.imgModel,
         prompt: data.prompt,
-        n: 1,
+        n: data.n,
         size: data.size,
         aspectRatio: data.aspectRatio,
         safetyFilterLevel: data.safetyFilterLevel,
@@ -306,7 +306,7 @@ app.post("/createAIimages", async (request, response) => {
         aiPrompt.imgModel = imgModel2;
 
         let imagenPrompt = {
-            sampleCount: 1,
+            sampleCount: aiPrompt.n,
             aspectRatio: aiPrompt.aspectRatio,
             safetyFilterLevel: aiPrompt.safetyFilterLevel,
             personGeneration: aiPrompt.personGeneration

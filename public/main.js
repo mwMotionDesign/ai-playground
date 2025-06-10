@@ -256,7 +256,13 @@ async function generateImages(text, imgModel) {
 
             addReturnText("", "... " + imgModel + ": Generating Images");
 
-            for (i = 0; i < nIMGs; i++) {
+            let nIMGsTemp = nIMGs;
+
+            if (imgModel == "IMAGEN") {
+                nIMGsTemp = 1;
+            }
+
+            for (i = 0; i < nIMGsTemp; i++) {
                 try {
                     const options = {
                         method: "POST",
