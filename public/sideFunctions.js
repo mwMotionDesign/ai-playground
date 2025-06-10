@@ -22,7 +22,7 @@ function addDescription() {
         "./images/startImage2.png",
         "./images/startImage3.png",
         "./images/startImage4.png"
-    ], "Prompt used to generate images");
+    ], "Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images Prompt used to generate images");
     outputText("noLink", "<span class='tBold'>Tipp:</span> Click on any picture to view fullscreen.");
 }
 
@@ -74,11 +74,20 @@ function outputText(type, text) {
         result.appendChild(newText);
     }
     else if (type == "imgPrompt") {
-        let newText = document.createElement("p");
-        newText.classList.add("resultIMGprompt");
-        newText.innerHTML = "Prompt: ".concat(text);
+        let newDetails = document.createElement("details");
+        newDetails.classList.add("resultIMGprompt");
 
-        result.appendChild(newText);
+        let newSummary = document.createElement("summary");
+        newSummary.classList.add("resultIMGpromptSummary");
+        newSummary.innerHTML = "Show Prompt";
+
+        let newText = document.createElement("p");
+        newText.classList.add("resultIMGpromptText");
+        newText.innerHTML = text;
+
+        newDetails.appendChild(newSummary);
+        newDetails.appendChild(newText);
+        result.appendChild(newDetails);
     }
 
     resultPage.scrollTop = resultPage.scrollHeight;
