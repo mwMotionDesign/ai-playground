@@ -521,11 +521,17 @@ h1 {
 }
 
 .inputDropdown {
-    padding: 4px;
+    padding: 2px 4px;
+    margin: 5px 0px 2px 0px;
     background-color: var(--background-color);
     color: var(--brighter-color);
     border: 1px solid var(--bright-color);
     outline: none;
+    text-align: left;
+}
+
+#llmPersonality {
+    width: calc(100% - 10px);
 }
 
 .inputCheckbox {

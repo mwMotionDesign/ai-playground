@@ -29,15 +29,15 @@
             <div class="containerVert" id="flexSearch">
                 <h1>Input:</h1>
                 <label for="inputField"></label>
-                <textarea type="text" id="inputFieldSearch" class="textarea" placeholder="Text eingeben"></textarea>
+                <textarea type="text" id="inputFieldSearch" class="textarea" placeholder="Enter Text"></textarea>
                 <div class="divider"></div>
-                <div class="containerHor">
+                <div class="containerHor" id="buttonsContainer">
                     <div class="containerVert relative">
                         <div class="containerHor">
                             <div id="buttonContainer">
                                 <button class="optionButtons" id="button1">
                                     <div class="material-symbols-outlined buttonIcons">format_list_bulleted</div>
-                                    <p class="buttonText">Generate Text</p>
+                                    <p class="buttonText">Generate Text<br>(from Input)</p>
                                 </button>
                             </div>
                             <div class="divider dividerButtonVer"></div>
@@ -76,9 +76,19 @@
                 <div class="containerHor">
                     <div class="inputFlexChoice" id="flexChoice">
                         <form class="inputForm" id="choiceForm">
-                            <fieldset class="inputFieldset" id="choiceFieldset">
-                                <legend class="inputFieldsetLabel" id="choiceLabel">OpenAI Settings</legend>
+                            <fieldset class="inputFieldset" id="modelsFieldset">
+                                <legend class="inputFieldsetLabel" id="modelsLabel">LLM & Images</legend>
                                 <p class="inputHeader">Large Language Model</p>
+                                <div class="inputContainer inputLLMpersonality">
+                                    <select name="NumberOfImages" class="inputInput inputDropdown" id="llmPersonality">
+                                        <option value="Useful" selected>Useful</option>
+                                        <option value="Sarcastic">Sarcastic</option>
+                                        <option value="Playful">Playful</option>
+                                        <option value="Dirty">Dirty</option>
+                                        <option value="Albert">Einstein</option>
+                                    </select>
+                                    <!-- <label for="NumberOfImages" class="inputLabel inputDropdownlLabel">Personality</label> -->
+                                </div>
                                 <div class="inputContainer inputRadioContainer">
                                     <input type="radio" class="inputInput inputRadioButton gptRadio" id="radioChatGPT" name="model" value="gpt-4.1-mini-2025-04-14" checked>
                                     <label for="radioChatGPT" class="inputLabel inputRadioLabel">GPT4.1 mini<br><span class="tSmall">$ 0.4 | 1.6 / mil</span></label>
@@ -87,11 +97,20 @@
                                     <input type="radio" class="inputInput inputRadioButton gptRadio" id="radioGPT4" name="model" value="gpt-4.1-2025-04-14">
                                     <label for="radioGPT4" class="inputLabel inputRadioLabel">GPT4.1<br><span class="tSmall">$ 2 | 8 / mil</span></label>
                                 </div>
-                                <div class="inputContainer inputCheckboxContainer">
-                                    <input type="checkbox" class="inputInput inputCheckbox" id="createVoiceLLM" name="createVoiceLLM">
-                                    <label for="createVoiceLLM" class="inputLabel inputCheckboxLabel">create Voice<br>from LLM</label>
-                                </div>
                                 <p class="inputHeader">Image Model</p>
+                                <div class="inputContainer inputImagesContainer">
+                                    <select name="NumberOfImages" class="inputInput inputDropdown" id="nOfIMGs">
+                                        <option value="1" selected>1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                    </select>
+                                    <label for="NumberOfImages" class="inputLabel inputDropdownlLabel">Amount</label>
+                                </div>
                                 <div class="inputContainer inputRadioContainer">
                                     <input type="radio" class="inputInput inputRadioButton imgRadio" id="radioIMAGE" name="imgModel" value="IMAGEN" checked>
                                     <label for="radioIMAGE" class="inputLabel inputRadioLabel">IMAGEN<br><span class="tSmall">$ 0.04</span></label>
@@ -100,18 +119,9 @@
                                     <input type="radio" class="inputInput inputRadioButton imgRadio" id="radioDALLE" name="imgModel" value="DALL-E">
                                     <label for="radioDALLE" class="inputLabel inputRadioLabel">DALL-E<br><span class="tSmall">$ 0.08</span></label>
                                 </div>
-                                <div class="inputContainer inputImagesContainer">
-                                    <select name="NumberOfImages" class="inputInput inputDropdown" id="nOfIMGs">
-                                        <option value="1" selected>1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                    </select>
-                                    <label for="NumberOfImages" class="inputLabel inputDropdownlLabel">Amount</label>
-                                </div>
                                 <div class="inputContainer inputCheckboxContainer">
                                     <input type="checkbox" class="inputInput inputCheckbox" id="createIMGwithText" name="createIMGwithText">
-                                    <label for="createIMGwithText" class="inputLabel inputCheckboxLabel">create with<br>LLM request</label>
+                                    <label for="createIMGwithText" class="inputLabel inputCheckboxLabel">with LLM answer</label>
                                 </div>
                             </fieldset>
                         </form>
@@ -124,16 +134,20 @@
                                 <p class="inputHeader">Transcribe Audio</p>
                                 <div class="inputContainer inputCheckboxContainer">
                                     <input type="checkbox" class="inputInput inputCheckbox" id="sendTextToLLM" name="sendTextToLLM">
-                                    <label for="sendTextToLLM" class="inputLabel inputCheckboxLabel">send to<br>LLM / DALL-E</label>
+                                    <label for="sendTextToLLM" class="inputLabel inputCheckboxLabel">send to LLM</label>
+                                </div>
+                                <p class="inputHeader">Create Voice</p>
+                                <div class="inputContainer inputCheckboxContainer">
+                                    <input type="checkbox" class="inputInput inputCheckbox" id="createVoiceLLM" name="createVoiceLLM">
+                                    <label for="createVoiceLLM" class="inputLabel inputCheckboxLabel">for LLM</label>
                                 </div>
                                 <div class="inputContainer inputCheckboxContainer">
                                     <input type="checkbox" class="inputInput inputCheckbox" id="createVoice" name="createVoice">
-                                    <label for="createVoice" class="inputLabel inputCheckboxLabel">Voice from<br>Record</label>
+                                    <label for="createVoice" class="inputLabel inputCheckboxLabel">for Transcript</label>
                                 </div>
-                                <p class="inputHeader">Audio Sample</p>
                                 <div class="inputContainer inputCheckboxContainer">
                                     <input type="checkbox" class="inputInput inputCheckbox" id="sendAudioSample" name="sendAudioSample" checked>
-                                    <label for="sendAudioSample" class="inputLabel inputCheckboxLabel">Use</label>
+                                    <label for="sendAudioSample" class="inputLabel inputCheckboxLabel">Use Audio<br>Sample</label>
                                 </div>
                                 <p class="inputHeader">Parameters</p>
                                 <p class="inputHeader valueHeader" id="exaggerationValue">Exaggeration</p>
