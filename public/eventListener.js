@@ -25,10 +25,10 @@ button2.addEventListener("click", (event) => {
 button3.addEventListener("click", (event) => {
     event.preventDefault;
     if (!isRecording) {
-        console.log("\n\n-> Button Transcribe Audio");
+        console.log("\n\n-> Button Transcribe Audio - Record");
     }
     else {
-        console.log("-> Button Stop Audio");
+        console.log("-> Button Transcribe Audio - Record Stop");
     }
     generateResponse("audio");
     focusInputField();
@@ -63,10 +63,10 @@ document.addEventListener("keydown", (event) => {
             event.preventDefault();
             if (!isLoading) {
                 if (!isRecording) {
-                    console.log("\n\n-> Hotkey Transcribe Audio");
+                    console.log("\n\n-> Hotkey Transcribe Audio - Record");
                 }
                 else {
-                    console.log("-> Hotkey Stop Audio");
+                    console.log("-> Hotkey Transcribe Audio - Record Stop");
                 }
                 generateResponse("audio");
                 focusInputField();
