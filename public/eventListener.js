@@ -1,3 +1,26 @@
+
+
+// LLM Personality
+
+
+let llmPersonalityDOM = document.getElementById("llmPersonality");
+let systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
+const systemPromptIMG = generateSystemPrompt("imgPrompt");
+
+console.log("System Prompt set to: " + llmPersonalityDOM.value);
+
+llmPersonalityDOM.addEventListener("change", (event) => {
+    systemPrompt = generateSystemPrompt(event.target.value);
+    console.log("LLM Personality set to: " + event.target.value);
+});
+
+setTimeout(() => {
+    llmPersonalityDOM.value = "Playful";
+    systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
+    console.log("LLM Personality set to: " + llmPersonalityDOM.value);
+}, 5000);
+
+
 // Buttons
 
 const controlHide = document.getElementById("hideControls");
