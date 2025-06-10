@@ -1,5 +1,10 @@
 
 
+focusInputField();
+addDescription();
+
+let keyRequest = true;
+let costSum = 0;
 
 async function generateResponse(type) {
     keyRequest = true;
