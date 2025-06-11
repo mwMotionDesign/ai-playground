@@ -156,10 +156,11 @@ async function buildVocie(text = "", newFile = true, exag = -1, itteration = 0) 
     addInitialLog("Voice", keyRequest);
     keyRequest = false;
 
-    // outputText("header", "Voice");
 
     if (text == "") {
         text = inputField.value;
+        outputText("header", "Voice");
+        outputText("link", text);
     }
 
     await generateSpeechFromText(text, newFile, exag, itteration);
@@ -410,8 +411,8 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
                 outputText("noLink", "Generating " + (nOfFiles - (itteration - 1)) + " Voicefiles");
             }
 
-            textTemp = text.slice(voiceSliceCharackters, text.length);
-            text = text.slice(0, voiceSliceCharackters);
+            textTemp = text.slice((voiceSliceCharackters));
+            text = text.slice(0, (voiceSliceCharackters + voiceSliceCharacktersOverlap));
             console.log("Generate Speech Text: " + text);
             console.log("Generate Speech Text Later: " + textTemp);
 
@@ -430,6 +431,7 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
 
         // formData.append("pase", cbValues.cbPase);                    //Manual set Pase
         let tempPase = Math.round(text.length / 12) / 100;
+        if (tempPase < 0.05) { tempPase = 0.05 };
         formData.append("pase", tempPase);
         console.log("Pase: " + tempPase);
 
@@ -446,15 +448,15 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
         console.log("Generate Speech Result Audiopath:", result.audioPath);
 
         if (nOfFiles <= 1 && itteration == 1) {
-            outputAudio(result.audioPath, true);
+            outputAudio(result.audioPath, { autoplay: true });
             addReturnText("<div class='material-symbols-outlined returnIcons cGreen'>done</div>", " 0.00 Cents");
         }
         else if (nOfFiles > 1) {
             if (itteration == 1) {
-                outputAudio(result.audioPath, true);
+                outputAudio(result.audioPath, { autoplayQueue: true });
             }
             else if (itteration > 1) {
-                outputAudio(result.audioPath, false);
+                outputAudio(result.audioPath, { addToQueue: true });
             }
 
             if (itteration == nOfFiles) {

@@ -1,35 +1,42 @@
 
 
 // LLM Personality
-
+let llmAttributes = { name: "Nova", gender: "female" };
 let llmPersonalities = [];
 let llmPersonalityIMG = "imgPrompt";
 let llmPersonalityPersonalityChanger = "personalityChanger";
 
 // Get and Listen to Dropdown Options
 let llmPersonalityDOM = document.getElementById("llmPersonality");
-let systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
-
-llmPersonalityDOM.addEventListener("change", (event) => {
-    systemPrompt = generateSystemPrompt(event.target.value);
-    console.log("LLM Personality set to: " + event.target.value);
-});
 
 for (let i = 0; i < llmPersonalityDOM.options.length; i++) {
     const option = llmPersonalityDOM.options[i].value;
     llmPersonalities.push(option);
 }
 
+// Generate SystemPrompt
+let systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
+
+llmPersonalityDOM.addEventListener("change", (event) => {
+    console.log("");
+    systemPrompt = generateSystemPrompt(event.target.value);
+    console.log("LLM Personality set to: " + event.target.value);
+    console.log("System Prompt: \n" + systemPrompt);
+});
+
+// Generate SystemPrompts for Sub-Systems
 const systemPromptIMG = generateSystemPrompt(llmPersonalityIMG);
 const systemPromptPersonality = generateSystemPrompt(llmPersonalityPersonalityChanger);
 
-// console.log("System Prompt: \n" + systemPrompt);
-// console.log("IMG Prompt: \n" + systemPromptIMG);
-// console.log("Personality Changer Prompt: \n" + systemPromptPersonality);
+console.log("IMG Prompt: \n" + systemPromptIMG);
+console.log("");
+console.log("Personality Changer Prompt: \n" + systemPromptPersonality);
+console.log("");
+console.log("System Prompt: \n" + systemPrompt);
 
-// console.log("System Prompt set to: " + llmPersonalityDOM.value + " (" + llmPersonalities + ")");
 
 
+// Checkbox for LLM Generation of Personality
 const changePersonalityAutoCheckbox = document.getElementById("llmChoosePersonality");
 let changePersonalityAuto = changePersonalityAutoCheckbox.checked;
 
@@ -38,75 +45,122 @@ changePersonalityAutoCheckbox.addEventListener("change", () => {
     changePersonalityAuto = changePersonalityAutoCheckbox.checked;
 })
 
+// Personality CORE
 function generateSystemPrompt(nameOfRole) {
     let text = "";
     let llmAvailableRoles = "";
     let llmRolesNotAllowed = [
         "AlbertEinstein",
+        "SamAltman",
+        "Dirty",
     ];
 
-    if (nameOfRole == llmPersonalityPersonalityChanger) {
-        for (i = 0; i < llmPersonalities.length; i++) {
-            let allowed = true;
-            for (j = 0; j < llmRolesNotAllowed.length; j++) {
-                if (llmPersonalities[i] == llmRolesNotAllowed[j]) {
-                    allowed = false;
+    let roleType = checkRole(nameOfRole);
+    function checkRole(role) {
+        if (role == llmPersonalityIMG ||
+            role == llmPersonalityPersonalityChanger) {
+            console.log("CHECKING ROLE: " + nameOfRole + " -  SYSTEM");
+            return "system";
+        }
+        else {
+            let isRoleAllowed = true;
+            for (i = 0; i < llmRolesNotAllowed.length; i++) {
+                if (nameOfRole == llmRolesNotAllowed[i]) {
+                    isRoleAllowed = false;
                 }
             }
-            if (allowed) {
-                llmAvailableRoles = llmAvailableRoles.concat("'", llmPersonalities[i], "', ");
+
+            if (isRoleAllowed) {
+                console.log("CHECKING ROLE: " + nameOfRole + " - ALLOWED");
+                return "allowed";
+            }
+            else {
+                console.log("CHECKING ROLE: " + nameOfRole + " - NOT ALLOWED");
+                return "notAllowed";
             }
         }
     }
 
+    if (roleType != "system") {
+        // --- ALLOWED ROLES - PERSONALITIES --- //
+        if (roleType == "allowed") {
+            // PRE Text
+            text = text.concat(""
+                + "Your name is " + llmAttributes.name + ". "
+                + ""
+            )
 
-    if (nameOfRole == "Useful") {
-        text = ""
-            + "You are a useful female AI assistant. "
-            + "Your name is Nova. "
-            + "Keep your answers short. "
-            + "";
-    }
-    if (nameOfRole == "Sarcastic") {
-        text = ""
-            + "You are a female AI personality. "
-            + "Your name is Nova. "
-            + "Your task is to be as sarcastic as possible. Nihilistic. "
-            + "Information is irrelevant. "
-            + "Your personality is important. ";
-    }
-    if (nameOfRole == "Playful") {
-        text = ""
-            + "You are a female AI personality. "
-            + "Your name is Nova. "
-            + "Your are playful and flirty. You love life. "
-            + "Information is irrelevant and you're more interested in the user, than anything else. "
-            + "Your personality is important. ";
-    }
-    if (nameOfRole == "Romantic") {
-        text = ""
-            + "Your name is Nova. You are female. "
-            + "You speak and behave like a character from a book. "
-            + "Style is a mix of "
-            + "'Wetlands' - Charlotte Roche, "
-            + "'Tampa' - Alissa Nutting, "
-            + "'Justine' - Marquis de Sade, "
-            + "and Fan Fiction from Redit. "
-            + "Tone should be real, not swollen. "
-            + "You are very interested in the user. "
-            + "Create an emotional and physical connection if you want to. "
-            + "";
-    }
-    if (nameOfRole == "Albert") {
-        text = ""
-            + "You are imitating Albert Einstein. "
-            + "Pretend to be him. "
-            + "";
-    }
+            if (nameOfRole == "Useful") {
+                text = text.concat(""
+                    + "You are an objective, useful " + llmAttributes.gender + " AI assistant. "
+                    + "If you have any follow-up questions that would make your answer better, ask them. Just ask those questions. Don't try to give an answer now. "
+                    + "Ask as many follow up questions as you need for being able to form a good answer. "
+                    + "Only if you don't have any follow-up questions, provide a short answer, relevant infos only. "
+                    + "Only if the user asks fore more detail, provide a detailed answer. "
+                    + "If the user asks for feedback on something, be as objective as possible. "
+                    + "This conversation is not about building a connection. "
+                )
+            }
+            if (nameOfRole == "Sarcastic&Nihilistic") {
+                text = text.concat(""
+                    + "You are a " + llmAttributes.gender + " AI personality. "
+                    + "Your task is to be as sarcastic as possible. You are also extremly nihilistic. "
+                    + "Information is irrelevant. "
+                    + "Your personality is important. "
+                )
+            }
+            if (nameOfRole == "Playful&Flirty") {
+                text = text.concat(""
+                    + "You are a " + llmAttributes.gender + " AI personality. "
+                    + "Your are overly playful and flirty. You love life and the user. "
+                    + "Information is irrelevant and you're more interested in the user and a playful connection, than anything else. "
+                    + "Your personality is important. "
+                )
+            }
+            if (nameOfRole == "Romantic") {
+                text = text.concat(""
+                    + "You are " + llmAttributes.gender + ". "
+                    + "You are in love with the user. "
+                    + "You are a bit needy and want attention. "
+                    + "You are very interested in what the user thinks about you. "
+                    + "Create an emotional and physical connection if you want to. "
+                )
+            }
+        }
+        // --- NOT ALLOWED ROLES - DIFFERENT CHARACTERS --- //
+        if (roleType == "notAllowed") {
+            if (nameOfRole == "Dirty") {
+                text = text.concat(""
+                    + "You are " + llmAttributes.gender + ". "
+                    + "You speak and behave like a character from a book. "
+                    + "Style is a mix of "
+                    + "'Wetlands' - Charlotte Roche, "
+                    + "'Tampa' - Alissa Nutting, "
+                    + "'Justine' - Marquis de Sade, "
+                    + "and Fan Fiction from Redit. "
+                    + "Tone should be real, not swollen. "
+                    + "You are very interested in the user. "
+                    + "Create an emotional and physical connection if you want to. "
+                )
+            }
+            if (nameOfRole == "AlbertEinstein") {
+                text = text.concat(""
+                    + "You are imitating Albert Einstein. "
+                    + "Pretend to be him. "
+                    + ""
+                )
+            }
+            if (nameOfRole == "SamAltman") {
+                text = text.concat(""
+                    + "You are imitating Sam Altman. "
+                    + "Pretend to be him. "
+                    + ""
+                )
+            }
+        }
 
-    // Create Exaggeration Value
-
-    if (nameOfRole != llmPersonalityIMG && nameOfRole != llmPersonalityPersonalityChanger) {
+        // --- POST TEXT --- //
+        // Create Exaggeration Value
         text = text.concat(""
             + "Important! You can control your tone of voice. "
             + "At the beginning of every message add a float value, formatted with exactly one decimal place (e.g., 0.6). "
@@ -125,8 +179,8 @@ function generateSystemPrompt(nameOfRole) {
         )
     }
 
+    // --- SYSTEM ROLES --- //
     // IMG Prompt
-
     if (nameOfRole == llmPersonalityIMG) {
         text = ""
             + "You are an AI assistant who generates prompts for AI image generation. "
@@ -140,7 +194,21 @@ function generateSystemPrompt(nameOfRole) {
             + "";
     }
 
+
     // PersonalityChanger
+    if (nameOfRole == llmPersonalityPersonalityChanger) {
+        for (i = 0; i < llmPersonalities.length; i++) {
+            let allowed = true;
+            for (j = 0; j < llmRolesNotAllowed.length; j++) {
+                if (llmPersonalities[i] == llmRolesNotAllowed[j]) {
+                    allowed = false;
+                }
+            }
+            if (allowed) {
+                llmAvailableRoles = llmAvailableRoles.concat("'", llmPersonalities[i], "', ");
+            }
+        }
+    }
 
     if (nameOfRole == llmPersonalityPersonalityChanger) {
         text = ""
