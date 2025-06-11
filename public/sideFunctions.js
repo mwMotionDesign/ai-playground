@@ -24,9 +24,28 @@ function addDescription() {
         "./images/startImage4.png"
     ], "Prompt used to generate images");
     outputText("noLink", "<span class='tBold'>Tipp:</span> Click on any picture to view fullscreen.");
+    outputDivider();
+    outputText("header", "Assistant Examples:");
+    outputText("noLink", "<span class='tBold'>Useful</span>");
+    outputAudio("./audio/Useful.wav");
+    outputText("noLink", "<span class='tBold'>Sarcastic & Nihilistic</span>");
+    outputAudio("./audio/SarcasticAndNihilistic.wav");
+    outputText("noLink", "<span class='tBold'>Playful & Positive</span>");
+    outputAudio("./audio/PlayfulAndPositive.wav");
+    outputText("noLink", "<span class='tBold'>Romantic</span>");
+    outputAudio("./audio/Romantic.wav");
+    outputText("noLink", "<span class='tBold'>Getting Real</span>");
+    outputAudio("./audio/GettingReal.wav");
+    outputText("noLink", "<span class='tBold'>Albert Einstein</span>");
+    outputAudio("./audio/AlbertEinstein.wav");
+    outputText("noLink", "<span class='tBold'>Sam Altman</span>");
+    outputAudio("./audio/SamAltman.wav");
+    resultPage.scrollTop = "0px";
 }
 
 function outputText(type, text) {
+    formatAIanswer(text);
+
     if (type == "link") {
         let newA = document.createElement("a");
         newA.classList.add("resultLink");
@@ -147,19 +166,73 @@ function outputIMGs(imgArray, imgPrompt) {
     }
 }
 
-function outputAudio(path, autoplay) {
+let audioItteration = -1;
+let autoplayQueues = [];
+
+function outputAudio(path, { autoplay = false, autoplayQueue = false, addToQueue = false } = {}) {
+    let newAudioDiv = document.createElement("div");
+    newAudioDiv.classList.add("resultAudioDiv");
+
     let newAudio = document.createElement("audio");
     newAudio.classList.add("resultAudio");
     newAudio.src = path;
     if (autoplay) {
         newAudio.autoplay = true;
     }
+    if (autoplayQueue || addToQueue) {
+        if (autoplayQueue) {
+            audioItteration++;
+            console.log("");
+            console.log("Audio Itterater: " + audioItteration++);
+            newAudio.autoplay = true;
+        }
+        if (!autoplayQueues[audioItteration]) {
+            autoplayQueues[audioItteration] = [];
+        }
+        autoplayQueues[audioItteration].push(newAudio);
+
+        newAudio.addEventListener('ended', () => {
+            playAduioQueue(newAudio, audioItteration);
+        });
+    }
     newAudio.controls = true;
     newAudio.volume = 0.75;
 
-    result.appendChild(newAudio);
+    newAudioDiv.appendChild(newAudio);
+    result.appendChild(newAudioDiv);
     resultPage.scrollTop = resultPage.scrollHeight;
 }
+
+let audioSearchItteration = 0;
+
+function playAduioQueue(currentAudio, placeInQueue) {
+    for (let i = 0; i < autoplayQueues[placeInQueue].length; i++) {
+        if (autoplayQueues[placeInQueue][i] == currentAudio) {
+            if (autoplayQueues[placeInQueue][i + 1]) {
+                console.log("Audio Found on Place: " + (i + 1) + " - Queue Place: " + placeInQueue);
+                autoplayQueues[placeInQueue][i + 1].currentTime = 0;
+                autoplayQueues[placeInQueue][i + 1].play();
+                audioSearchItteration = 0;
+                break;
+            } else {
+                console.log("Place: " + (i) + " - Queue Place: " + placeInQueue + "\nEnd reached - Waiting for next Audio");
+                audioSearchItteration++
+                if (audioSearchItteration < 20) {
+                    setTimeout(() => { playAduioQueue(currentAudio, placeInQueue); }, 1000);
+                }
+                else {
+                    audioSearchItteration = 0;
+                }
+            }
+            // autoplayQueues[placeInQueue][i].currentTime = 0;
+            // autoplayQueues[placeInQueue][i].play();
+            // break;
+        }
+    }
+}
+
+// “The Clockmaker’s Bird” In a quiet town nestled between fog-wrapped hills, an old clockmaker lived in solitude. His shop smelled of oil and old wood, ticking filled the air like whispers of time itself. People rarely visited anymore. The town had grown fond of digital silence. One rainy morning, the clockmaker found a broken music box on his doorstep. It was shaped like a birdcage, delicate brass twisted into vines and feathers. Inside sat a silent mechanical bird - its eyes dulled, its wings frozen in rust. He took it in with the reverence of a priest holding a forgotten relic. For days, he worked with trembling hands and magnifying glasses, polishing gears, rewinding springs, breathing old songs into the quiet metal. At last, one evening, the bird moved. It fluttered once, then sang - just once - a clear, aching note. The sound echoed like something remembered from a dream. The next day, the clockmaker was gone. His shop stood open, the birdcage on the counter, ticking faintly, softly glowing from within. Some say he left to find the place the song had come from. Others believe the bird was never a machine at all - but a key. A door. And the old man, tired of fixing time, had finally slipped between its cracks.
+
 
 function outputDivider() {
     let newText = document.createElement("div");
@@ -227,10 +300,12 @@ function formatAIanswer(inputText) {
 
     try {
         text = text.replace(/\n/g, "<br>")
+            .replace(/—/g, " - ")
             // .replace(/[.,!?:;]/g, "")
             // .replace(/\n/g, "")
             // .replace(/../g, ".")
             // .replace(/1/g, "1.")
+            .trim()
             ;
 
         return text;
@@ -246,12 +321,9 @@ function formatToText(inputText) {
     try {
         text = text
             .replace(/<br>/g, " ")
-            // .replace(/[.,!?:;]/g, "")
-            // .replace(/\n/g, "")
-            // .replace(/../g, ".")
-            // .replace(/1/g, "1.")
             // .replace(/<br>/g, "\n")
             .replace(/\<[^>]*\>/g, "")
+            .replace(/—/g, " - ")
             .replace(/&auml;/g, "ä")
             .replace(/&ouml;/g, "ö")
             .replace(/&uuml;/g, "ü")
@@ -259,6 +331,7 @@ function formatToText(inputText) {
             .replace(/&Ouml;/g, "Ö")
             .replace(/&Uuml;/g, "Ü")
             .replace(/&szlig;/g, "ß")
+            .replace(/\s+/g, ' ')
             // .replace(/ä/g, "&auml;")
             // .replace(/ö/g, "&ouml;")
             // .replace(/ü/g, "&uuml;")
@@ -266,7 +339,9 @@ function formatToText(inputText) {
             // .replace(/Ö/g, "&Ouml;")
             // .replace(/Ü/g, "&Uuml;")
             // .replace(/ß/g, "&szlig;")
-            .replace(/\s+/g, ' ')
+            // .replace(/[.,!?:;]/g, "")
+            // .replace(/../g, ".")
+            // .replace(/1/g, "1.")
             .trim()
             ;
 

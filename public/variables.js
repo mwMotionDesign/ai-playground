@@ -18,7 +18,9 @@ promptIMGpost = "";
 const nOfTokens = 600;
 const nOfTokensIMG = 100;
 const nOfTokensPersonality = 10;
+
 const voiceSliceCharackters = 600;
+const voiceSliceCharacktersOverlap = 0;
 
 const textModel1 = "gpt-4.1-mini-2025-04-14";
 const textModel2 = "gpt-4.1-2025-04-14";
