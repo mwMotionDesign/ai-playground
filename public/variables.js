@@ -19,8 +19,10 @@ const nOfTokens = 600;
 const nOfTokensIMG = 100;
 const nOfTokensPersonality = 10;
 
-const voiceSliceCharackters = 600;
-const voiceSliceCharacktersOverlap = 0;
+const voiceSliceCharackters = 550;
+const voiceSliceCharacktersOverlap = 50;
+
+let pushLLMmessage = "CREATE CONVERSATION";
 
 const textModel1 = "gpt-4.1-mini-2025-04-14";
 const textModel2 = "gpt-4.1-2025-04-14";
@@ -31,11 +33,19 @@ const imgModel2 = "IMAGEN";
 
 // Variable - Don't change
 
+let randomStartTimeValue = 1000;
+let randomStartTime = randomStartTimeValue;
 let firstAction = true;
 let isLoading = false;
 let isRecording = false;
 
 let conversationHistory = [];
+
+let minimumRandomTimeInMinutes;
+let maximumRandomTimeInMinutes;
+
+let randomTimeInMinutes = 30.13;
+let pushLLMessageConstructed = "[" + pushLLMmessage + " | " + randomTimeInMinutes + "m]"
 
 const logoIMG = document.getElementById("logoContainer");
 const loadingIMG = document.getElementById("loadingContainer");

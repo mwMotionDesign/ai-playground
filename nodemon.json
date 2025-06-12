@@ -1,9 +1,6 @@
 {
     "watch": [
-        "server.js",
-        "public/main.js",
-        "public/index.html",
-        "public/style.css"
+        "server.js"
     ],
     "ignore": [
         "Memory/*",

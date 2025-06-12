@@ -6,9 +6,10 @@ addDescription();
 let keyRequest = true;
 let costSum = 0;
 
-async function generateResponse(type) {
+async function generateResponse(type, text = "") {
     keyRequest = true;
     responseCost = 0;
+    stopRandomTimer();
 
     if (firstAction) {
         clearResults();
@@ -26,6 +27,11 @@ async function generateResponse(type) {
         if (type == "images") {
             await buildImages();
         }
+        ending();
+    }
+    else if (type == "text" && text != "") {
+        startLoading();
+        await buildText(text);
         ending();
     }
 
@@ -65,13 +71,25 @@ async function buildText(text = "", isForwarded = false) {
     addInitialLog("Text", keyRequest);
     keyRequest = false;
 
+    if (!isForwarded) {
+        if (text != "") {
+
+            message = ({ role: "Person 1", message: text });
+        }
+        else if (inputField.value != "") {
+            message = ({ role: "Person 1", message: inputField.value });
+        }
+        conversationHistory.push(message);
+        console.log("Conversation History: ", conversationHistory);
+    }
+
     if (text == "" && inputField.value != "") {
         outputText("header", "Input");
         outputText("link", inputField.value);
     }
     if (changePersonalityAuto && !isForwarded) {
         addReturnText("", "... forwarding to Personality Generation");
-        const newPersonalityResult = await generateText(systemPromptPersonality, text, nOfTokensPersonality, false);
+        const newPersonalityResult = await generateText(systemPromptPersonality, JSON.stringify(conversationHistory), nOfTokensPersonality, false);
         addReturnText("", "... forwarding to Text");
 
         llmPersonalityDOM.value = newPersonalityResult.responseText;
@@ -83,8 +101,6 @@ async function buildText(text = "", isForwarded = false) {
     textResult = await generateText(systemPrompt, text, nOfTokens, true);
 
     if (!isForwarded) {
-        message = ({ role: "Person 1", message: textResult.inputText });
-        conversationHistory.push(message);
         message = ({ role: "Person 2", message: textResult.responseText });
         conversationHistory.push(message);
 
@@ -135,7 +151,6 @@ async function buildTranscript() {
         transcriptResult = await generateRecording();
 
         outputText("link", transcriptResult.text);
-        // outputAudio(transcriptResult.audioPath, false);
 
         if (cbValues.createVoice) {
             addReturnText("", "... forwarding to Voice");
@@ -173,14 +188,21 @@ async function generateText(systemPromptToSend = "", text = "", nOfTokens = 10, 
     let inputText = inputField.value;
     if (text != "") { inputText = text; }
 
+    let responseText
     text = promptPre.concat(inputText);
 
-    let responseText = await fetchText(systemPromptToSend, text, nOfTokens, buildHistory);
+    try {
+        responseText = await fetchText(systemPromptToSend, text, nOfTokens, buildHistory);
+    } catch (error) {
+        addReturnText("<div class='material-symbols-outlined returnIcons cRed'>close</div>", " ERROR");
+        console.log("AI RESPONSE ERROR:");
+        console.error(error);
+    }
 
     let llmExag = cbExaggeration;
     if (systemPromptToSend != systemPromptIMG && systemPromptToSend != systemPromptPersonality) {
         console.log("Response Generate Text Length: " + responseText.length);
-        let llmExag = responseText.slice(0, 3);
+        llmExag = responseText.slice(0, 3);
         console.log("Exaggeration Extract: " + llmExag);
         responseText = responseText.slice(4, responseText.length);
         console.log("Cut Text Length: " + responseText.length);
@@ -341,7 +363,7 @@ async function generateRecording() {
             };
             mediaRecorder.onstop = async () => {
                 const audio = new Blob(chunks);
-                outputAudio(URL.createObjectURL(audio), false);
+                // outputAudio(URL.createObjectURL(audio), false);
                 const transcript = await generateTranscript(audio);
                 resolve(transcript);
             };
@@ -405,7 +427,7 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
             }
         }
 
-        if (text.length > voiceSliceCharackters) {
+        if (text.length > (voiceSliceCharackters + voiceSliceCharacktersOverlap)) {
             if (nOfFiles == 0) {
                 nOfFiles = Math.ceil(text.length / voiceSliceCharackters);
                 outputText("noLink", "Generating " + (nOfFiles - (itteration - 1)) + " Voicefiles");

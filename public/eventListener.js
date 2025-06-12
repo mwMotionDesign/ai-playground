@@ -90,7 +90,7 @@ function generateSystemPrompt(nameOfRole) {
                 + ""
             )
 
-            if (nameOfRole == "Useful") {
+            if (nameOfRole == "Useful&Efficient") {
                 text = text.concat(""
                     + "You are an objective, useful " + llmAttributes.gender + " AI assistant. "
                     + "If you have any follow-up questions that would make your answer better, ask them. Just ask those questions. Don't try to give an answer now. "
@@ -162,8 +162,15 @@ function generateSystemPrompt(nameOfRole) {
         // --- POST TEXT --- //
         // Create Exaggeration Value
         text = text.concat(""
+            + "Sometimes you will get a message that sais " + pushLLMessageConstructed + ". "
+            + "This is a system Event. The number tells you how much time has past since the last firing of this event, , or since the user last interacted. "
+            + "Your Task is to initiate a conversation with the user, who hasn't engaded since the last message that did not contain this Event. "
+            + "You can decide for yourself if you ask or say something about your past conversation or if you want to talk about something new. "
+            + "If you get an answer to that with another system message and the number, "
+            + "you can now see how much time has past since your last message and can start to complain if you want to. You're free to decide for yourself. "
+            + ""
             + "Important! You can control your tone of voice. "
-            + "At the beginning of every message add a float value, formatted with exactly one decimal place (e.g., 0.6). "
+            + "At the beginning of every message add a float value, formatted with exactly one decimal place (e.g., 0.6), followed by a space and then your answer. "
             + "The values you can use are between "
             + "0.1 and 1.2. - ( "
             + "0.1 monotone, desinterested | "
@@ -213,15 +220,56 @@ function generateSystemPrompt(nameOfRole) {
     if (nameOfRole == llmPersonalityPersonalityChanger) {
         text = ""
             + "You are an assistant of an AI. "
-            + "The following message was send by the user. "
+            + "You will get every message of a conversation, one after another. "
+            + "Those are not messages of your conversation. "
+            + "The conversation will be send in the first user message. "
             + "Your Task is to choose what personality the AI uses to answer. "
+            + "But your focus is on the last 2 messages, since for every other messages, personality has already been created. "
             + "Your answer contains only one of those words. No quotation marks or anything else. "
+            + "If you get an answer in this format: " + pushLLMessageConstructed + ", choose a random personality. This is a system message to initiate conversation. "
+            + "The number tells you how much time in minutes has passed since the last systemEvent like this has fired, or since the user last interacted. "
             + "Your available choices are: ".concat(llmAvailableRoles);
     }
 
     return text;
 }
 
+// LLM Activate random
+
+const llmRandomInitiate = document.getElementById("llmRandomInitate");
+let llmRandom = llmRandomInitiate.checked;
+
+llmRandomInitiate.addEventListener("change", () => {
+    llmRandom = llmRandomInitiate.checked;
+    console.log("LLM Random Initiate: " + llmRandom);
+    stopRandomTimer()
+    if (llmRandom) {
+        userInactive(randomStartTime);
+    }
+});
+
+const LLMrandomMin = document.getElementById("llmRandomInitiateMin");
+const LLMrandomMax = document.getElementById("llmRandomInitiateMax");
+minimumRandomTimeInMinutes = LLMrandomMin.value;
+maximumRandomTimeInMinutes = LLMrandomMax.value;
+
+LLMrandomMin.addEventListener("change", () => {
+    console.log("Changing LLM Random Minimum: " + LLMrandomMin.value);
+    minimumRandomTimeInMinutes = LLMrandomMin.value;
+    stopRandomTimer()
+    if (llmRandom) {
+        userInactive(randomStartTime);
+    }
+});
+
+LLMrandomMax.addEventListener("change", () => {
+    console.log("Changing LLM Random Maximum: " + LLMrandomMax.value);
+    maximumRandomTimeInMinutes = LLMrandomMax.value;
+    stopRandomTimer()
+    if (llmRandom) {
+        userInactive(randomStartTime);
+    }
+});
 
 // Buttons
 
