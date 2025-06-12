@@ -3,13 +3,19 @@
     --debugColor: rgba(255, 255, 255, 0.0);
 
 
-    --background-color: rgb(10, 10, 10);
+    --backgroundColor: rgb(10, 10, 10);
     --backgroundDarkener: rgba(0, 0, 0, 0.7);
-    --backgroundBrightener: rgb(255, 255, 255, 0.05);
-    --backgroundResults: rgba(255, 255, 255, 0.05);
+    --backgroundBrightener: rgb(0, 0, 0);
 
-    --red: rgb(204, 7, 30);
-    --green: rgb(88, 214, 83);
+    --firstHighlight: rgb(255, 166, 0);
+    --secondHighlight: rgb(0, 194, 94);
+    /* --firstHighlight: rgb(87, 136, 177); */
+    /* --secondHighlight: rgb(192, 62, 90); */
+
+    --buttonBakckground: var(--firstHighlight);
+    --buttonText: rgb(0, 0, 0);
+    --buttonsHover: rgb(255, 255, 255);
+    --buttonTextHover: rgb(0, 0, 0);
 
     --normalTextAndOutlines: rgba(255, 255, 255, 0.7);
     --boldNormalText: rgb(255, 255, 255);
@@ -20,13 +26,18 @@
     --inputFieldPlaceholderText: rgba(0, 0, 0, 0.4);
     --inputFieldText: rgb(0, 0, 0);
 
-    --firstHighlight: rgb(87, 136, 177);
-    --secondHighlight: rgb(192, 62, 90);
-    --buttonBakckground: var(--firstHighlight);
-    --buttonText: rgb(255, 255, 255);
-    --buttonsHover: rgb(255, 255, 255);
+    --resultLinkColor: rgb(0, 0, 0);
+    --resultLinkColorHover: rgb(30, 0, 0);
+
+    --backgroundResults: rgba(255, 255, 255, 0.04);
+    /* --backgroundResults: rgba(255, 0, 0, 0.04); */
+    --backgroundIMGs: rgb(30, 0, 0);
+    /* --backgroundIMGs: rgba(255, 255, 255, 0.02); */
 
     --dividerColor: rgba(255, 255, 255, 0.03);
+
+    --red: rgb(204, 7, 30);
+    --green: rgb(88, 214, 83);
 
 
     --heightBottom: 30px;
@@ -245,13 +256,13 @@ h2 {
     justify-content: flex-start;
     align-items: stretch;
     overflow: hidden;
-    background-color: var(--background-color);
+    background-color: var(--backgroundColor);
 }
 
 #footerContainer {
     width: 100%;
     height: var(--heightBottom);
-    background-color: var(--background-color);
+    background-color: var(--backgroundColor);
 }
 
 .relative {
@@ -441,6 +452,14 @@ h1 {
     color: var(--buttonText);
 }
 
+.optionButtons:hover p {
+    color: var(--buttonTextHover);
+}
+
+.optionButtons:hover .buttonIcons {
+    color: var(--buttonTextHover);
+}
+
 /* CHOICES */
 
 .inputFlexChoice {
@@ -531,13 +550,13 @@ h1 {
 
     border: 1px solid var(--normalTextAndOutlines);
     background-color: var(--normalTextAndOutlines);
-    box-shadow: inset 0px 0px 0px 5px var(--background-color);
+    box-shadow: inset 0px 0px 0px 5px var(--backgroundColor);
 }
 
 .inputDropdown {
     padding: 2px 4px;
     margin: 7px 0px 7px 0px;
-    background-color: var(--background-color);
+    background-color: var(--backgroundColor);
     color: var(--secondHighlight);
     border: 1px solid var(--normalTextAndOutlines);
     outline: none;
@@ -563,7 +582,7 @@ h1 {
 
     border: 1px solid var(--normalTextAndOutlines);
     background-color: var(--normalTextAndOutlines);
-    box-shadow: inset 0px 0px 0px 5px var(--background-color);
+    box-shadow: inset 0px 0px 0px 5px var(--backgroundColor);
 }
 
 .inputNumberContainer {
@@ -583,7 +602,7 @@ h1 {
     margin: 0px 0px 0px 0px;
     text-align: center;
 
-    background-color: var(--background-color);
+    background-color: var(--backgroundColor);
     color: var(--secondHighlight);
     border: 1px solid var(--normalTextAndOutlines);
     outline: none;
@@ -620,13 +639,13 @@ h1 {
 .inputRadioButton:hover {
     border: 1px solid var(--boldNormalText);
     background-color: var(--boldNormalText);
-    box-shadow: inset 0px 0px 0px 3px var(--background-color);
+    box-shadow: inset 0px 0px 0px 3px var(--backgroundColor);
 }
 
 .inputRadioButton:checked {
     border: 1px solid var(--boldNormalText);
     background-color: var(--firstHighlight);
-    box-shadow: inset 0px 0px 0px 0px var(--background-color);
+    box-shadow: inset 0px 0px 0px 0px var(--backgroundColor);
 
     animation: border-bounce;
     animation-duration: 0.15s;
@@ -659,13 +678,13 @@ h1 {
 .inputCheckbox:hover {
     border: 1px solid var(--boldNormalText);
     background-color: var(--boldNormalText);
-    box-shadow: inset 0px 0px 0px 3px var(--background-color);
+    box-shadow: inset 0px 0px 0px 3px var(--backgroundColor);
 }
 
 .inputCheckbox:checked {
     border: 1px solid var(--boldNormalText);
     background-color: var(--firstHighlight);
-    box-shadow: inset 0px 0px 0px 0px var(--background-color);
+    box-shadow: inset 0px 0px 0px 0px var(--backgroundColor);
 }
 
 #paceValue {
@@ -698,7 +717,7 @@ h1 {
     align-items: center;
 
     text-align: center;
-    color: var(--dimText);
+    color: var(--logText);
 
     border: 2px dashed var(--normalTextAndOutlines);
     border-radius: 12px;
@@ -710,7 +729,7 @@ h1 {
 }
 
 .dropzone:hover {
-    color: var(--buttonText);
+    color: var(--buttonTextHover);
     background-color: var(--firstHighlight);
 }
 
@@ -935,18 +954,18 @@ h1 {
     text-align: left;
     padding: 8px 17px 7px 12px;
     border-radius: 7px;
-    background-color: rgba(255, 255, 255, 0.05);
-    box-shadow: inset 1px -1px 1px rgba(255, 255, 255, 0.3), inset -3px 3px 5px rgba(0, 0, 0, 0.5);
+    background-color: var(--resultLinkColor);
+    box-shadow: inset 0px -1px 1px rgba(255, 255, 255, 0.3), inset 0px 3px 5px rgba(0, 0, 0, 0.5);
     filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0));
     transition: 0.6s;
 }
 
 .resultLink:hover .resultTextLink {
     color: rgba(255, 255, 255, 0.8);
-    background-color: rgba(255, 255, 255, 0.3);
-    box-shadow: inset -1px 1px 2px rgba(255, 255, 255, 0.5), inset 1px -1px 0px rgba(0, 0, 0, 0.5);
-    text-shadow: -3px 3px 1px rgba(0, 0, 0, 0.5);
-    filter: drop-shadow(-5px 5px 10px rgba(0, 0, 0, 1));
+    background-color: var(--resultLinkColorHover);
+    box-shadow: inset 0px 1px 2px rgba(255, 255, 255, 0.5), inset 0px -1px 0px rgba(0, 0, 0, 0.5);
+    text-shadow: 0px 3px 1px rgba(0, 0, 0, 0.5);
+    filter: drop-shadow(0px 20px 10px rgba(0, 0, 0, 1));
     transition: 0.2s;
 }
 
@@ -967,7 +986,7 @@ h1 {
     text-align: right;
     padding: 10px 15px 13px;
     text-align: left;
-    background-color: var(--background-color);
+    background-color: var(--backgroundColor);
     color: var(--logText);
 }
 
@@ -1002,14 +1021,14 @@ h1 {
 
 .resultIMGsContainer {
     width: 100%;
-    background-color: var(--backgroundBrightener);
+    background-color: var(--backgroundIMGs);
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
     margin: 10px 0px 0px;
-    padding: 10px 10px;
-    box-shadow: inset 0px -1px 1px rgba(255, 255, 255, 0.3), inset 0px 3px 5px rgba(0, 0, 0, 0.5);
+    padding: 20px 10px;
+    box-shadow: inset 0px -1px 2px rgba(255, 255, 255, 0.3), inset 0px 1px 2px rgba(255, 255, 255, 0.15), inset 0px 3px 5px rgba(0, 0, 0, 0.5);
 }
 
 .resultIMGlink {
@@ -1028,18 +1047,19 @@ h1 {
 .resultIMGs {
     width: 100%;
     height: 100%;
-    margin: 0px 10px;
+    margin: 0px 15px;
     border-radius: 25px;
     overflow: hidden;
-    box-shadow: inset -1px 1px 2px rgba(255, 255, 255, 0.5), inset 1px -1px 0px rgba(0, 0, 0, 0.5);
-    filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0));
+    filter: drop-shadow(0px 1px 3px rgba(0, 0, 0, 0.8));
+    border: 0px solid rgba(0, 0, 0, 0);
     transition: 0.6s;
     z-index: 0;
 }
 
 .resultIMGs:hover {
     transform: scale(1.05) rotate(-1deg);
-    filter: drop-shadow(-5px 5px 10px rgba(0, 0, 0, 0.5));
+    filter: drop-shadow(0px 30px 25px rgba(0, 0, 0, 0.8));
+    border: 5px solid var(--firstHighlight);
     transition: 0.2s;
     z-index: 10;
 }
