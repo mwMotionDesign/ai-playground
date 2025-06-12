@@ -89,9 +89,9 @@ app.post("/createAItext", async (request, response) => {
         let aiResponseAnswer = responseAI.data.choices[0];
         aiAnswer = aiResponseAnswer.message.content;
 
-        console.log("");
-        console.log("AI Response Usage:");
-        console.log(responseAI.data.usage);
+        // console.log("");
+        // console.log("AI Response Usage:");
+        // console.log(responseAI.data.usage);
 
         let cost;
 

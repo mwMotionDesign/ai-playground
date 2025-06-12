@@ -1,5 +1,63 @@
 
 
+let firstInitiateRandomMessage = true;
+let randomTimerID = null;
+let randomTimerRunning = false;
+
+function userInactive(time = 0) {
+    if (llmRandom && !randomTimerRunning) {
+        if (firstInitiateRandomMessage) {
+            randomTimer(randomStartTime);
+        }
+        else {
+            console.log("... Starting RandomTimer with " + (time / 1000).toFixed(2) + "s");
+            randomTimer(time);
+            randomTimerRunning = true;
+        }
+    }
+};
+
+function randomTimer(randomNumber) {
+    randomTimerID = setTimeout(() => {
+        pushLLMessageConstructed = "[" + pushLLMmessage + " | " + randomTimeInMinutes + "m]";
+
+        randomNumber = (Math.random() * 60000 * (maximumRandomTimeInMinutes - minimumRandomTimeInMinutes)) + (60000 * minimumRandomTimeInMinutes);
+        randomStartTime = Math.ceil(randomNumber);;
+        randomTimeInMinutes = (randomNumber / 60000).toFixed(2);
+
+        if (firstInitiateRandomMessage) {
+            console.log("ID-" + randomTimerID + " ... Random Timer initialised");
+            firstInitiateRandomMessage = false;
+        }
+        else {
+            console.log("ID-" + randomTimerID + " ... Initiating Conversation - Message: " + pushLLMessageConstructed);
+            console.log("ID-" + randomTimerID + " ... Generating TEXT");
+            console.log("");
+            generateResponse("text", pushLLMessageConstructed);
+        }
+
+        console.log("ID-" + randomTimerID + " ... Wait Timr for next Call set to: " + randomTimeInMinutes + "m (" + (randomNumber / 1000).toFixed(2) + "s)");
+        console.log("ID-" + randomTimerID + " --- DONE");
+
+        userInactive(randomNumber);
+    }, randomNumber);
+    console.log("");
+    console.log("ID-" + randomTimerID + " --- START RANDOM FUNCTION --- planned for in " + (randomNumber / 1000).toFixed(2) + "s");
+}
+
+function stopRandomTimer() {
+    if (randomTimerID != null) {
+        firstInitiateRandomMessage = true;
+        randomStartTime = randomStartTimeValue;
+        randomTimerRunning = false;
+        clearTimeout(randomTimerID);
+
+        console.log("ID-" + randomTimerID + " ... Random Timer Cleared / RandomStartTimer set to: " + randomStartTime + " / LLM Random: " + llmRandom);
+
+        randomTimerID = null;
+    }
+}
+
 const resultPage = document.getElementById("resultContainer");
 
 function addDescription() {
@@ -262,6 +320,8 @@ function startLoading() {
 }
 
 function endLoading() {
+    stopRandomTimer();
+    userInactive(randomStartTime);
     controlHide.style.display = "none";
     isLoading = false;
     loadingIMG.style.display = "none";
