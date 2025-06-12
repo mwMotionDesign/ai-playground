@@ -16,7 +16,7 @@ promptIMGpost = "";
 // Global Variables - Change
 
 const nOfTokens = 600;
-const nOfTokensIMG = 100;
+const nOfTokensIMG = 300;
 const nOfTokensPersonality = 10;
 
 const voiceSliceCharackters = 550;
