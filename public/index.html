@@ -85,7 +85,7 @@
                                 </div>
                                 <p class="inputHeader">Generate Voice</p>
                                 <div class="inputContainer inputCheckboxContainer">
-                                    <input type="checkbox" class="inputInput inputCheckbox" id="createVoiceLLM" name="createVoiceLLM" checked>
+                                    <input type="checkbox" class="inputInput inputCheckbox" id="createVoiceLLM" name="createVoiceLLM">
                                     <label for="createVoiceLLM" class="inputLabel inputCheckboxLabel">for LLM</label>
                                 </div>
                                 <div class="inputContainer inputCheckboxContainer">
@@ -128,16 +128,22 @@
                                 </div>
                                 <p class="inputHeader">Personality</p>
                                 <div class="inputContainer inputCheckboxContainer">
-                                    <input type="checkbox" class="inputInput inputCheckbox" id="llmChoosePersonality" name="llmChoosePersonality" checked>
+                                    <input type="checkbox" class="inputInput inputCheckbox" id="llmChoosePersonality" name="llmChoosePersonality">
                                     <label for="llmChoosePersonality" class="inputLabel inputCheckboxLabel">LLM chooses</label>
                                 </div>
                                 <div class="inputContainer inputLLMpersonality">
                                     <select name="NumberOfImages" class="inputInput inputDropdown" id="llmPersonality">
+                                        <option value="Random" checked>Pick Random</option>
+                                        <option disabled value="">⎯ LLM Personalities ⎯⎯⎯</option>
                                         <option value="Useful&Efficient" checked>Useful & Efficient</option>
                                         <option value="Sarcastic&Nihilistic">Sarcastic & Nihilistic</option>
                                         <option value="Playful&Flirty">Playful & Positive</option>
                                         <option value="Romantic">Romantic</option>
-                                        <option value="Dirty">Getting Real</option>
+                                        <option value="Pessimist">Pessimist</option>
+                                        <option value="MelancholicPoet">Melancholic Poet</option>
+                                        <option value="Shy&Introverted">Shy & Introverted</option>
+                                        <option disabled value="">⎯ Characters&nbsp; ⎯⎯⎯⎯⎯⎯⎯⎯</option>
+                                        <option value="Julia">Julia</option>
                                         <option value="AlbertEinstein">Albert Einstein</option>
                                         <option value="SamAltman">Sam Altman</option>
                                     </select>
