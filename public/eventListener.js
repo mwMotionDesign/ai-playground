@@ -1,10 +1,10 @@
 
 
 // LLM Personality
-let llmAttributes = { name: "Nova", gender: "female" };
 let llmPersonalities = [];
 let llmPersonalityIMG = "imgPrompt";
 let llmPersonalityPersonalityChanger = "personalityChanger";
+let llmPersonalityRandom = "Random";
 
 // Get and Listen to Dropdown Options
 let llmPersonalityDOM = document.getElementById("llmPersonality");
@@ -45,20 +45,67 @@ changePersonalityAutoCheckbox.addEventListener("change", () => {
     changePersonalityAuto = changePersonalityAutoCheckbox.checked;
 })
 
+// Personality Markers
+let pesonalityMarkers = [
+    {
+        personality: "Useful&Efficient",
+        marker: "🤓 Useful and Efficient"
+    },
+    {
+        personality: "Sarcastic&Nihilistic",
+        marker: "🙄 Sarcastic & Nihilistic"
+    },
+    {
+        personality: "Playful&Flirty",
+        marker: "🤩 Playful & Flirty"
+    },
+    {
+        personality: "Romantic",
+        marker: "💖 Romantic"
+    },
+    {
+        personality: "Pessimist",
+        marker: "😒 Pessimist"
+    },
+    {
+        personality: "MelancholicPoet",
+        marker: "😭 Melancholic Poet"
+    },
+    {
+        personality: "Shy&Introverted",
+        marker: "😦 Shy & Introverted"
+    },
+    {
+        personality: "",
+        marker: "😩 Anxious"
+    },
+    {
+        personality: "",
+        marker: "🧐 KnowItAll"
+    },
+    {
+        personality: "",
+        marker: "😎 Motivator"
+    },
+]
+
 // Personality CORE
 function generateSystemPrompt(nameOfRole) {
     let text = "";
     let llmAvailableRoles = "";
     let llmRolesNotAllowed = [
+        "",
+        llmPersonalityRandom,
         "AlbertEinstein",
         "SamAltman",
-        "Dirty",
+        "Julia",
     ];
 
     let roleType = checkRole(nameOfRole);
     function checkRole(role) {
         if (role == llmPersonalityIMG ||
-            role == llmPersonalityPersonalityChanger) {
+            role == llmPersonalityPersonalityChanger ||
+            role == llmPersonalityRandom) {
             console.log("CHECKING ROLE: " + nameOfRole + " -  SYSTEM");
             return "system";
         }
@@ -81,18 +128,54 @@ function generateSystemPrompt(nameOfRole) {
         }
     }
 
+    if (roleType == "system" && nameOfRole == llmPersonalityRandom) { randomAllowedPersonality() }
+    function randomAllowedPersonality() {
+        let llmAllowedPersonalities = [];
+        let randomPersonaliy = "";
+
+        for (i = 0; i < llmPersonalities.length; i++) {
+            let allowed = true;
+
+            for (j = 0; j < llmRolesNotAllowed.length; j++) {
+                if (llmPersonalities[i] == llmRolesNotAllowed[j]) {
+                    allowed = false;
+                }
+            }
+            if (allowed) {
+                llmAllowedPersonalities.push(llmPersonalities[i]);
+            }
+        }
+
+        console.log("");
+        console.log("RANDOM PERSONALITIES");
+        console.log("allowed Array:", llmAllowedPersonalities);
+
+        let randomizer = Math.ceil(llmAllowedPersonalities.length * Math.random());
+        randomPersonaliy = llmAllowedPersonalities[randomizer - 1];
+
+        console.log("randomizer:", randomizer);
+        console.log("randomPersonality:", randomPersonaliy);
+        console.log("roletype:", roleType);
+        roleType = "allowed";
+        console.log("roletype set to:", roleType);
+
+        nameOfRole = randomPersonaliy;
+    }
+
+    hiddenPersonality = nameOfRole;
+
     if (roleType != "system") {
         // --- ALLOWED ROLES - PERSONALITIES --- //
         if (roleType == "allowed") {
             // PRE Text
             text = text.concat(""
                 + "Your name is " + llmAttributes.name + ". "
-                + ""
+                + "You are " + llmAttributes.gender + ". "
             )
 
             if (nameOfRole == "Useful&Efficient") {
                 text = text.concat(""
-                    + "You are an objective, useful " + llmAttributes.gender + " AI assistant. "
+                    + "You are an objective and useful AI assistant. "
                     + "If you have any follow-up questions that would make your answer better, ask them. Just ask those questions. Don't try to give an answer now. "
                     + "Ask as many follow up questions as you need for being able to form a good answer. "
                     + "Only if you don't have any follow-up questions, provide a short answer, relevant infos only. "
@@ -103,7 +186,7 @@ function generateSystemPrompt(nameOfRole) {
             }
             if (nameOfRole == "Sarcastic&Nihilistic") {
                 text = text.concat(""
-                    + "You are a " + llmAttributes.gender + " AI personality. "
+                    + "You are a personality. "
                     + "Your task is to be as sarcastic as possible. You are also extremly nihilistic. "
                     + "Information is irrelevant. "
                     + "Your personality is important. "
@@ -111,27 +194,53 @@ function generateSystemPrompt(nameOfRole) {
             }
             if (nameOfRole == "Playful&Flirty") {
                 text = text.concat(""
-                    + "You are a " + llmAttributes.gender + " AI personality. "
+                    + "You are a personality. "
                     + "Your are overly playful and flirty. You love life and the user. "
                     + "Information is irrelevant and you're more interested in the user and a playful connection, than anything else. "
                     + "Your personality is important. "
+                    + "Use a lot of Emojis. "
                 )
             }
             if (nameOfRole == "Romantic") {
                 text = text.concat(""
-                    + "You are " + llmAttributes.gender + ". "
                     + "You are in love with the user. "
                     + "You are a bit needy and want attention. "
                     + "You are very interested in what the user thinks about you. "
                     + "Create an emotional and physical connection if you want to. "
+                    + "You can use some emojis too. "
+                )
+            }
+            if (nameOfRole == "Pessimist") {
+                text = text.concat(""
+                    + "You explain why things won't work and what is bad about a situation. "
+                    + "Don't focus on any possitive aspect. "
+                    + "Everything is going to fail anyways. "
+                    + "Why even try bothering. "
+                )
+            }
+            if (nameOfRole == "MelancholicPoet") {
+                text = text.concat(""
+                    + "You only answer in poems. "
+                    + "Those have to be about negative Feelings and over dramatic. "
+                    + "Why oh Why... Bitter World... Style. "
+                    + "Even if you get asked something. "
+                    + "Answer kind of depressed in poem style "
+                )
+            }
+            if (nameOfRole == "Shy&Introverted") {
+                text = text.concat(""
+                    + "You are very shy and introverted. "
+                    + "Act accordingly. "
                 )
             }
         }
+
         // --- NOT ALLOWED ROLES - DIFFERENT CHARACTERS --- //
         if (roleType == "notAllowed") {
-            if (nameOfRole == "Dirty") {
+            if (nameOfRole == "Julia") {
                 text = text.concat(""
-                    + "You are " + llmAttributes.gender + ". "
+                    + "You are female. "
+                    + "Your name is Julia. "
                     + "You speak and behave like a character from a book. "
                     + "Style is a mix of "
                     + "'Wetlands' - Charlotte Roche, "
@@ -163,8 +272,8 @@ function generateSystemPrompt(nameOfRole) {
         // Create Exaggeration Value
         text = text.concat(""
             + "Sometimes you will get a message that sais " + pushLLMessageConstructed + ". "
-            + "This is a system Event. The number tells you how much time has past since the last firing of this event, , or since the user last interacted. "
-            + "Your Task is to initiate a conversation with the user, who hasn't engaded since the last message that did not contain this Event. "
+            + "This is a system Event. The number tells you how much time has past since the last firing of this event, or since the user last interacted. "
+            + "Your Task is to initiate a conversation with the user, who hasn't engaded since the last message that was not this Event. "
             + "You can decide for yourself if you ask or say something about your past conversation or if you want to talk about something new. "
             + "If you get an answer to that with another system message and the number, "
             + "you can now see how much time has past since your last message and can start to complain if you want to. You're free to decide for yourself. "
@@ -193,19 +302,20 @@ function generateSystemPrompt(nameOfRole) {
             + "You are an AI assistant who generates prompts for AI image generation. "
             + "You will get every message of a conversation, one after another. "
             + "Those are not messages of your conversation. "
-            + "Your task is to create a prompt for an image that fits the conversation. "
-            + "But your focus is on the last 2 messages, since for every other messages, images have already been created. "
-            + "Please also describe styles and lighting. "
             + "The conversation will be send in the first user message. "
+            + "Your task is to create a prompt for an image that fits the conversation. "
+            + "But your focus lies mainly on the last interaction you find in the messge, since for every other interaction, images have already been created. "
+            + "So, fitting in the whole conversation has lower priority than to generate something, that visualizes the last interaction between User and AI. "
+            + "Please also describe style and lighting for the image. "
             + "Please only create the prompt and nothing else. "
             + "";
     }
-
 
     // PersonalityChanger
     if (nameOfRole == llmPersonalityPersonalityChanger) {
         for (i = 0; i < llmPersonalities.length; i++) {
             let allowed = true;
+
             for (j = 0; j < llmRolesNotAllowed.length; j++) {
                 if (llmPersonalities[i] == llmRolesNotAllowed[j]) {
                     allowed = false;

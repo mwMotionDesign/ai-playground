@@ -15,6 +15,11 @@ promptIMGpost = "";
 
 // Global Variables - Change
 
+let llmAttributes = {
+    name: "Nova",
+    gender: "female"
+};
+
 const nOfTokens = 600;
 const nOfTokensIMG = 300;
 const nOfTokensPersonality = 10;
@@ -35,6 +40,7 @@ const imgModel2 = "IMAGEN";
 
 let randomStartTimeValue = 1000;
 let randomStartTime = randomStartTimeValue;
+let hiddenPersonality = "";
 let firstAction = true;
 let isLoading = false;
 let isRecording = false;

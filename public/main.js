@@ -73,11 +73,10 @@ async function buildText(text = "", isForwarded = false) {
 
     if (!isForwarded) {
         if (text != "") {
-
-            message = ({ role: "Person 1", message: text });
+            message = ({ role: "User", message: text });
         }
         else if (inputField.value != "") {
-            message = ({ role: "Person 1", message: inputField.value });
+            message = ({ role: "AI", message: inputField.value });
         }
         conversationHistory.push(message);
         console.log("Conversation History: ", conversationHistory);
@@ -86,6 +85,16 @@ async function buildText(text = "", isForwarded = false) {
     if (text == "" && inputField.value != "") {
         outputText("header", "Input");
         outputText("link", inputField.value);
+    }
+    console.log("RANDOM CHECK - llmPersonalityDom.value: " + llmPersonalityDOM.value);
+    console.log("RANDOM CHECK - llmPersonalityRandom: " + llmPersonalityRandom);
+    console.log("RANDOM CHECK - hiddenPersonality: " + hiddenPersonality);
+    if (llmPersonalityDOM.value == llmPersonalityRandom && !changePersonalityAuto) {
+        llmPersonalityDOM.value = llmPersonalityRandom;
+        systemPrompt = generateSystemPrompt(llmPersonalityRandom);
+        console.log("RANDOM CHECK - hiddenPersonality: " + hiddenPersonality);
+        console.log("RANDOM CHECK - systemPrompt: " + systemPrompt);
+        console.log("");
     }
     if (changePersonalityAuto && !isForwarded) {
         addReturnText("", "... forwarding to Personality Generation");
@@ -98,14 +107,30 @@ async function buildText(text = "", isForwarded = false) {
         console.log("LLM set its personality to: " + llmPersonalityDOM.value);
     }
 
+    console.log("RANDOM CHECK - generateText: ", systemPrompt, "\n", text, "\n", nOfTokens);
     textResult = await generateText(systemPrompt, text, nOfTokens, true);
 
     if (!isForwarded) {
         message = ({ role: "Person 2", message: textResult.responseText });
         conversationHistory.push(message);
 
+        console.log("MANIPULATION CHECK - llmPersonalityDOM.value: " + llmPersonalityDOM.value);
+        console.log("MANIPULATION CHECK - llmPersonalityRandom: " + llmPersonalityRandom);
+        console.log("MANIPULATION CHECK - changePersonalityAuto: " + changePersonalityAuto);
+        let manipulatedOutput = ""
+        if (llmPersonalityDOM.value == llmPersonalityRandom || changePersonalityAuto) {
+            for (i = 0; i < pesonalityMarkers.length; i++) {
+                if (pesonalityMarkers[i].personality == hiddenPersonality) {
+                    manipulatedOutput = "<span class='tBold'>".concat(pesonalityMarkers[i].marker, "</span><br>", textResult.responseTextFormatted);
+                }
+            }
+        }
+        else {
+            manipulatedOutput = textResult.responseTextFormatted;
+        }
+
         outputText("header", "LLM");
-        outputText("link", textResult.responseTextFormatted);
+        outputText("link", manipulatedOutput);
     }
 
     if (voiceLLM && !isForwarded) {
@@ -221,7 +246,7 @@ async function fetchText(systemPromptToSend, prompt, tokens, buildHistory) {
         tokens: tokens,
         model: model,
         buildHistory: buildHistory,
-        personality: llmPersonalityDOM.value
+        personality: hiddenPersonality
     };
 
     let modelName

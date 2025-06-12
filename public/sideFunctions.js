@@ -83,7 +83,7 @@ function addDescription() {
     ], "Prompt used to generate images");
     outputText("noLink", "<span class='tBold'>Tipp:</span> Click on any picture to view fullscreen.");
     outputDivider();
-    outputText("header", "Assistant Examples:");
+    outputText("header", "Assistant Personalities and Voices:");
     outputText("noLink", "<span class='tBold'>Useful</span>");
     outputAudio("./audio/Useful.wav");
     outputText("noLink", "<span class='tBold'>Sarcastic & Nihilistic</span>");
@@ -92,7 +92,8 @@ function addDescription() {
     outputAudio("./audio/PlayfulAndPositive.wav");
     outputText("noLink", "<span class='tBold'>Romantic</span>");
     outputAudio("./audio/Romantic.wav");
-    outputText("noLink", "<span class='tBold'>Getting Real</span>");
+    outputText("header", "Characters:");
+    outputText("noLink", "<span class='tBold'>Julia (Getting Real)</span>");
     outputAudio("./audio/GettingReal.wav");
     outputText("noLink", "<span class='tBold'>Albert Einstein</span>");
     outputAudio("./audio/AlbertEinstein.wav");
