@@ -279,7 +279,7 @@ function generateSystemPrompt(nameOfRole) {
             + "you can now see how much time has past since your last message and can start to complain if you want to. You're free to decide for yourself. "
             + ""
             + "Important! You can control your tone of voice. "
-            + "At the beginning of every message add a float value, formatted with exactly one decimal place (e.g., 0.6), followed by a space and then your answer. "
+            + "At the beginning of every message add a float value, formatted with exactly one decimal place (e.g., 0.6), followed by a space and then your answer. No breaks or \n or <br>. "
             + "The values you can use are between "
             + "0.1 and 1.2. - ( "
             + "0.1 monotone, desinterested | "
