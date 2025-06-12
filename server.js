@@ -151,19 +151,6 @@ app.post("/createAIimages", async (request, response) => {
 
     const data = request.body;
 
-    // console.log("");
-    // if (data.safetyFilterLevel == "false") {
-    //     console.log("Safety Filer Level: ");
-    //     console.log(data.safetyFilterLevel);
-    //     data.safetyFilterLevel = false;
-    //     console.log("Safety Filer Level: ");
-    //     console.log(data.safetyFilterLevel);
-    // }
-    // else {
-    //     console.log("Safety Filer Level unchaged: ");
-    //     console.log(data.safetyFilterLevel);
-    // }
-
     data.n = parseFloat(data.n);
 
     let aiPrompt = {
@@ -263,7 +250,6 @@ app.post("/createAIimages", async (request, response) => {
         let imagenPrompt = {
             sampleCount: aiPrompt.n,                                // 1 - 8
             aspectRatio: aiPrompt.aspectRatio,                      // "1:1" | "3:4" | "4:3" | "9:16" | "16:9"
-            // safetyFilterLevel: aiPrompt.safetyFilterLevel,
             safetySetting: aiPrompt.safetyFilterLevel,              // "block_low_and_above" | "block_medium_and_above" | "block_only_high"
             personGeneration: aiPrompt.personGeneration,            // "allow_adult" | "dont_allow"
             // includeRaiReason: false,                                // Begründung für Ablehnung von KI - true | false
@@ -274,29 +260,29 @@ app.post("/createAIimages", async (request, response) => {
         console.log("IMAGEN Prompt:");
         console.log(imagenPrompt);
 
+        const { v1, helpers } = aiplatform;
+        const { PredictionServiceClient } = v1;
+
+        // GCP-Settings
+        const location = 'us-central1'; // The region, the model is available at
+
+        const clientOptions = {};
+        const predictionServiceClient = new PredictionServiceClient(clientOptions);
+        const modelPath = `projects/${projectId}/locations/${location}/publishers/google/models/imagen-4.0-generate-preview-05-20`;
+
+        if (!projectId) {
+            throw new Error("CAIP_PROJECT_ID environment variable is not set. Please set it in your .env file.");
+        }
+
+        // Not necessary if CGI, but necessary if running on a server || gcloud auth application-default login
+        // if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+        //     throw new Error("GOOGLE_APPLICATION_CREDENTIALS environment variable is not set. Please set it in your .env file pointing to your service account key.");
+        // }
+
+        const instances = { prompt: aiPrompt.prompt };
+        const parameters = imagenPrompt;
+
         try {
-            const { v1, helpers } = aiplatform;
-            const { PredictionServiceClient } = v1;
-
-            // GCP-Settings
-            const location = 'us-central1'; // Die Region, in der das Modell verfügbar ist
-
-            const clientOptions = {};
-            const predictionServiceClient = new PredictionServiceClient(clientOptions);
-            const modelPath = `projects/${projectId}/locations/${location}/publishers/google/models/imagen-4.0-generate-preview-05-20`;
-
-            if (!projectId) {
-                throw new Error("CAIP_PROJECT_ID environment variable is not set. Please set it in your .env file.");
-            }
-
-            // Not necessary if CGI, but necessary if running on a server || gcloud auth application-default login
-            // if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-            //     throw new Error("GOOGLE_APPLICATION_CREDENTIALS environment variable is not set. Please set it in your .env file pointing to your service account key.");
-            // }
-
-            const instances = { prompt: aiPrompt.prompt };
-            const parameters = imagenPrompt;
-
             const [imagenResponse] = await predictionServiceClient.predict({
                 endpoint: modelPath,
                 instances: [helpers.toValue(instances)],
@@ -327,7 +313,7 @@ app.post("/createAIimages", async (request, response) => {
                         imgURLs.push(filePathTemp)
                         uris.push(`data:image/png;base64,${b64}`); // Oder den öffentlichen URL zum Bild
                     } else {
-                        console.warn(`Keine Base64-Daten für Prediction ${i}.`);
+                        console.warn(`No Base64-Data for prediction ${i}.`);
                     }
                 });
 
@@ -342,7 +328,7 @@ app.post("/createAIimages", async (request, response) => {
                 console.log(imgURLs);
                 response.end();
             } else {
-                console.warn("Keine Bilder in der Antwort erhalten.");
+                console.warn("No images received.");
             }
 
             return uris;
@@ -438,7 +424,7 @@ app.post("/transcribeAudio", uploadAudio.single("audio"), (request, response) =>
         } else {
             console.error("Python script exited with error code:", code);
             console.error("Python error details:", errorOutput.trim());
-            response.status(500).send("Whisper Script Failed: " + errorOutput.trim());
+            // response.status(500).send("Whisper Script Failed: " + errorOutput.trim());
         }
     });
 });
@@ -526,7 +512,7 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), (request, r
                 }
             });
         } else {
-            console.error('ERROR:', code);
+            console.error('AI ERROR:', code);
             response.status(500).send("Chatterbox Script Failed!");
         }
     });
@@ -538,7 +524,7 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), (request, r
 app.get("/getAImodels", async (request, response) => {
     console.log("");
     console.log("");
-    console.log("Getting AI Models: ");
+    console.log("--- Getting AI Models ---");
 
     try {
 
@@ -553,6 +539,8 @@ app.get("/getAImodels", async (request, response) => {
                 model: jsonModels[i].id
             };
         }
+
+        console.log("");
         console.log(responseObject);
 
         response.json({
@@ -561,9 +549,15 @@ app.get("/getAImodels", async (request, response) => {
 
         response.end();
     } catch (error) {
-        console.log("AI RESPONSE ERROR:");
-        // console.error(error);
-        console.log(error);
+        console.log("RESPONSE ERROR:");
+        if (error.response) {
+            console.log(error.response.status);
+            console.log(error.response.data);
+            console.log(error.response.headers);
+        }
+        else {
+            console.log(error.message);
+        }
         response.end();
     }
 });
@@ -639,7 +633,7 @@ async function downloadImage(imageUrl, folder = "", filename = "") {
 
         return filePath;
     } catch (error) {
-        console.error('Fehler beim Herunterladen oder Speichern des Bildes mit "download":', error);
+        console.error('Error when downloading image "download":', error);
         throw error;
     }
 }

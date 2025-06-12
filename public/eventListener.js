@@ -20,14 +20,15 @@ let systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
 llmPersonalityDOM.addEventListener("change", (event) => {
     console.log("");
     systemPrompt = generateSystemPrompt(event.target.value);
-    console.log("LLM Personality set to: " + event.target.value);
-    console.log("System Prompt: \n" + systemPrompt);
+    console.log("EL - LLM Personality set to: " + event.target.value);
+    console.log("EL - System Prompt: " + systemPrompt);
 });
 
 // Generate SystemPrompts for Sub-Systems
 const systemPromptIMG = generateSystemPrompt(llmPersonalityIMG);
 const systemPromptPersonality = generateSystemPrompt(llmPersonalityPersonalityChanger);
 
+console.log("");
 console.log("IMG Prompt: \n" + systemPromptIMG);
 console.log("");
 console.log("Personality Changer Prompt: \n" + systemPromptPersonality);
@@ -41,7 +42,7 @@ const changePersonalityAutoCheckbox = document.getElementById("llmChoosePersonal
 let changePersonalityAuto = changePersonalityAutoCheckbox.checked;
 
 changePersonalityAutoCheckbox.addEventListener("change", () => {
-    console.log("LLM chooses Personality: " + changePersonalityAutoCheckbox.checked);
+    console.log("EL - LLM chooses Personality: " + changePersonalityAutoCheckbox.checked);
     changePersonalityAuto = changePersonalityAutoCheckbox.checked;
 })
 
@@ -91,6 +92,9 @@ let pesonalityMarkers = [
 
 // Personality CORE
 function generateSystemPrompt(nameOfRole) {
+    console.log("");
+    console.log("GEN SYSTEM PROMPT - Start");
+
     let text = "";
     let llmAvailableRoles = "";
     let llmRolesNotAllowed = [
@@ -106,7 +110,7 @@ function generateSystemPrompt(nameOfRole) {
         if (role == llmPersonalityIMG ||
             role == llmPersonalityPersonalityChanger ||
             role == llmPersonalityRandom) {
-            console.log("CHECKING ROLE: " + nameOfRole + " -  SYSTEM");
+            console.log("GEN SYSTEM PROMPT - Role: " + role + " - SYSTEM");
             return "system";
         }
         else {
@@ -118,11 +122,11 @@ function generateSystemPrompt(nameOfRole) {
             }
 
             if (isRoleAllowed) {
-                console.log("CHECKING ROLE: " + nameOfRole + " - ALLOWED");
+                console.log("GEN SYSTEM PROMPT - Role: " + role + " - ALLOWED");
                 return "allowed";
             }
             else {
-                console.log("CHECKING ROLE: " + nameOfRole + " - NOT ALLOWED");
+                console.log("GEN SYSTEM PROMPT - Role: " + role + " - NOT ALLOWED");
                 return "notAllowed";
             }
         }
@@ -146,23 +150,20 @@ function generateSystemPrompt(nameOfRole) {
             }
         }
 
-        console.log("");
-        console.log("RANDOM PERSONALITIES");
-        console.log("allowed Array:", llmAllowedPersonalities);
+        console.log("GEN SYSTEM PROMPT - allowed Array:", llmAllowedPersonalities);
 
         let randomizer = Math.ceil(llmAllowedPersonalities.length * Math.random());
         randomPersonaliy = llmAllowedPersonalities[randomizer - 1];
 
-        console.log("randomizer:", randomizer);
-        console.log("randomPersonality:", randomPersonaliy);
-        console.log("roletype:", roleType);
+        console.log("GEN SYSTEM PROMPT - randomizer Pick:", randomizer);
         roleType = "allowed";
-        console.log("roletype set to:", roleType);
+        console.log("GEN SYSTEM PROMPT - roletype set to:", roleType);
 
         nameOfRole = randomPersonaliy;
     }
 
     hiddenPersonality = nameOfRole;
+    console.log("GEN SYSTEM PROMPT - hiddenPersonality:", hiddenPersonality);
 
     if (roleType != "system") {
         // --- ALLOWED ROLES - PERSONALITIES --- //
@@ -350,8 +351,9 @@ const llmRandomInitiate = document.getElementById("llmRandomInitate");
 let llmRandom = llmRandomInitiate.checked;
 
 llmRandomInitiate.addEventListener("change", () => {
+    console.log("");
     llmRandom = llmRandomInitiate.checked;
-    console.log("LLM Random Initiate: " + llmRandom);
+    console.log("EL - LLM Random Initiate: " + llmRandom);
     stopRandomTimer()
     if (llmRandom) {
         userInactive(randomStartTime);
@@ -364,7 +366,7 @@ minimumRandomTimeInMinutes = LLMrandomMin.value;
 maximumRandomTimeInMinutes = LLMrandomMax.value;
 
 LLMrandomMin.addEventListener("change", () => {
-    console.log("Changing LLM Random Minimum: " + LLMrandomMin.value);
+    console.log("EL -Changing LLM Random Minimum: " + LLMrandomMin.value);
     minimumRandomTimeInMinutes = LLMrandomMin.value;
     stopRandomTimer()
     if (llmRandom) {
@@ -373,7 +375,7 @@ LLMrandomMin.addEventListener("change", () => {
 });
 
 LLMrandomMax.addEventListener("change", () => {
-    console.log("Changing LLM Random Maximum: " + LLMrandomMax.value);
+    console.log("EL -Changing LLM Random Maximum: " + LLMrandomMax.value);
     maximumRandomTimeInMinutes = LLMrandomMax.value;
     stopRandomTimer()
     if (llmRandom) {
@@ -411,7 +413,7 @@ button3.addEventListener("click", (event) => {
         console.log("\n\n-> Button Transcribe Audio - Record");
     }
     else {
-        console.log("-> Button Transcribe Audio - Record Stop");
+        console.log("\n-> Button Transcribe Audio - Record Stop");
     }
     generateResponse("audio");
     focusInputField();
@@ -449,7 +451,7 @@ document.addEventListener("keydown", (event) => {
                     console.log("\n\n-> Hotkey Transcribe Audio - Record");
                 }
                 else {
-                    console.log("-> Hotkey Transcribe Audio - Record Stop");
+                    console.log("\n-> Button Transcribe Audio - Record Stop");
                 }
                 generateResponse("audio");
                 focusInputField();
@@ -511,7 +513,8 @@ for (let i = 0; i < modelRadio.length; i++) {
     });
 }
 createVoiceLLM.addEventListener("change", () => {
-    console.log("Changing VoiceLLM: " + createVoiceLLM.checked);
+    console.log("");
+    console.log("EL - Changing Voice for LLM: " + createVoiceLLM.checked);
     voiceLLM = createVoiceLLM.checked;
 });
 for (let i = 0; i < imgRadio.length; i++) {
@@ -522,10 +525,11 @@ for (let i = 0; i < imgRadio.length; i++) {
 }
 nOfImgs.addEventListener("change", (event) => {
     nIMGs = parseInt(event.target.value);
-    console.log("Changing Images: " + nIMGs);
+    console.log("EL - Changing Number of Images: " + nIMGs);
 });
 createIMGwithText.addEventListener("change", () => {
-    console.log("Changing Image with Text: " + createIMGwithText.checked);
+    console.log("");
+    console.log("EL - Changing Image with LLM: " + createIMGwithText.checked);
     imgWithText = createIMGwithText.checked;
 });
 
@@ -567,7 +571,7 @@ function isValidFile(file) {
     else {
         dropzone.classList.remove('dragoverInputValid');
         dropzone.classList.add('dragoverInputInvalid');
-        dropzone.innerHTML = file.name;
+        dropzone.innerHTML = "Drop Audio Sample";
     }
 }
 
@@ -603,28 +607,34 @@ paceValue.textContent = Number(cbPase.value).toFixed(2).concat(" - ", paceValueV
 temperatureValue.textContent = Number(cbTemperature.value).toFixed(2).concat(" - ", temperatureValueContent);
 
 sendAudioSample.addEventListener("change", () => {
-    console.log("Changing Send Audio Sample: " + sendAudioSample.checked);
+    console.log("");
+    console.log("EL - Change Send Audio Sample: " + sendAudioSample.checked);
     cbValues.sendAudioSample = sendAudioSample.checked;
 });
 cbExaggeration.addEventListener("change", () => {
-    console.log("Changing CB Exaggeration: " + cbExaggeration.value);
+    console.log("");
+    console.log("EL - Change CB Exaggeration: " + cbExaggeration.value);
     cbValues.cbExaggeration = cbExaggeration.value;
 });
 cbPase.addEventListener("change", () => {
-    console.log("Changing CB Pase: " + cbPase.value);
+    console.log("");
+    console.log("EL - Change CB Pase: " + cbPase.value);
     cbValues.cbPase = cbPase.value;
 });
 cbTemperature.addEventListener("change", () => {
-    console.log("Changing CB Temperature: " + cbTemperature.value);
+    console.log("");
+    console.log("EL - Change CB Temperature: " + cbTemperature.value);
     cbValues.cbTemperature = cbTemperature.value;
 });
 sendTextToLLM.addEventListener("change", () => {
-    console.log("Changing Text To LLM: " + sendTextToLLM.checked);
+    console.log("");
+    console.log("EL - Change Text To LLM: " + sendTextToLLM.checked);
     textToLLM = sendTextToLLM.checked;
 });
 
 createVoice.addEventListener("change", () => {
-    console.log("Changing Create Voice: " + createVoice.checked);
+    console.log("");
+    console.log("EL - Changing Voice for Transcript: " + createVoice.checked);
     cbValues.createVoice = createVoice.checked;
 });
 cbExaggeration.addEventListener("input", () => {

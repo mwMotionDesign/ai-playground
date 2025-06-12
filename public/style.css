@@ -1,38 +1,48 @@
 :root {
-    --debugColor: rgba(255, 255, 255, 0.2);
+    --debugColor: rgba(255, 255, 255, 0.1);
     --debugColor: rgba(255, 255, 255, 0.0);
 
 
     --background-color: rgb(10, 10, 10);
-    --backgroundBrightener: rgb(255, 255, 255, 0.05);
-    --backgroundResults: rgb(255, 255, 255, 0.05);
     --backgroundDarkener: rgba(0, 0, 0, 0.7);
-
-    --reweRot: rgb(204, 7, 30);
+    --backgroundBrightener: rgb(255, 255, 255, 0.05);
+    --backgroundResults: rgba(255, 255, 255, 0.05);
 
     --red: rgb(204, 7, 30);
     --green: rgb(88, 214, 83);
 
-    --highlightTextColor: rgb(255, 255, 255);
-    --brighter-color: rgb(0, 194, 94);
-    --bright-color: rgba(255, 255, 255, 0.7);
-    --middle-color: rgba(255, 255, 255, 0.3);
+    --normalTextAndOutlines: rgba(255, 255, 255, 0.7);
+    --boldNormalText: rgb(255, 255, 255);
+    --dimText: rgba(255, 255, 255, 0.3);
     --logText: rgba(255, 255, 255, 0.6);
 
-    --textField-color: rgb(255, 255, 255);
-    --textfield-placeholder-color: rgba(0, 0, 0, 0.4);
-    --textField-font-color: rgb(0, 0, 0);
+    --inputField: rgba(255, 255, 255);
+    --inputFieldPlaceholderText: rgba(0, 0, 0, 0.4);
+    --inputFieldText: rgb(0, 0, 0);
 
-    --highlightColor: rgb(255, 166, 0);
-    --highlightColorSelected: rgb(255, 255, 255);
-    --buttonBGColor: var(--highlightColor);
-    --buttonFontColor: rgb(0, 0, 0);
+    --firstHighlight: rgb(87, 136, 177);
+    --secondHighlight: rgb(192, 62, 90);
+    --buttonBakckground: var(--firstHighlight);
+    --buttonText: rgb(255, 255, 255);
+    --buttonsHover: rgb(255, 255, 255);
 
-    --dividerColor: rgba(255, 255, 255, 0.05);
+    --dividerColor: rgba(255, 255, 255, 0.03);
 
 
     --heightBottom: 30px;
     --buttonHeight: 60px;
+}
+
+.cRed {
+    color: var(--red);
+}
+
+.cGreen {
+    color: var(--green);
+}
+
+.cWhite {
+    color: var(--secondHighlight)
 }
 
 /* FONTS */
@@ -150,7 +160,7 @@ h4,
 h5,
 h6 {
     font-size: 16px;
-    color: var(--bright-color);
+    color: var(--normalTextAndOutlines);
     background-color: var(--debugColor);
 }
 
@@ -164,7 +174,7 @@ h6 {
 
 html {
     height: 100%;
-    background-color: var(--highlightColor);
+    background-color: var(--firstHighlight);
     overflow-x: hidden;
 }
 
@@ -182,7 +192,7 @@ h2 {
 }
 
 .tBold {
-    color: var(--brighter-color);
+    color: var(--secondHighlight);
 }
 
 .inputLabel {
@@ -194,20 +204,20 @@ h2 {
     /* line-height: 1.5; */
     /* vertical-align: text-bottom; */
     margin: 0px 0px 0px 0px;
-    color: var(--brighter-color);
-    color: var(--middle-color);
+    color: var(--secondHighlight);
+    color: var(--dimText);
     vertical-align: super;
 }
 
 .tInBold {
-    color: var(--highlightTextColor);
+    color: var(--boldNormalText);
 }
 
 .tooltip {
     /* width: 200px;
     height: 50px; */
     background-color: rgba(0, 0, 0, 0.7);
-    color: var(--bright-color);
+    color: var(--normalTextAndOutlines);
     font-size: 16px;
     border: none;
     border-radius: 5px;
@@ -326,20 +336,20 @@ h1 {
     padding: 4px 4px;
     border: none;
     border-radius: 3px;
-    background-color: var(--textField-color);
-    color: var(--textField-font-color);
+    background-color: var(--inputField);
+    color: var(--inputFieldText);
     resize: vertical;
 }
 
 #inputFieldSearch:focus {
-    outline-color: var(--highlightColor);
+    outline-color: var(--firstHighlight);
     outline-style: solid;
     outline-width: 3px;
     outline-offset: 0px;
 }
 
 #inputFieldSearch::placeholder {
-    color: var(--textfield-placeholder-color);
+    color: var(--inputFieldPlaceholderText);
     opacity: 1;
 }
 
@@ -401,14 +411,14 @@ h1 {
     justify-content: center;
     align-items: stretch;
     /* margin: 0px 5px; */
-    background-color: var(--buttonBGColor);
+    background-color: var(--buttonBakckground);
     transition: 0.05s;
 }
 
 .optionButtons:hover {
     cursor: pointer;
     transform: scale(1.02, 1.04);
-    background-color: var(--highlightColorSelected);
+    background-color: var(--buttonsHover);
     /* filter: blur(1px); */
 }
 
@@ -419,7 +429,7 @@ h1 {
     top: 50%;
     transform: translate(-50%, -50%);
     /* background-color: rgba(0, 0, 0, 0.3); */
-    color: var(--buttonFontColor);
+    color: var(--buttonText);
 }
 
 .optionButtons p {
@@ -428,7 +438,7 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--buttonFontColor);
+    color: var(--buttonText);
 }
 
 /* CHOICES */
@@ -471,7 +481,7 @@ h1 {
     justify-content: flex-start;
     align-items: flex-start;
     font-size: 16px;
-    color: var(--bright-color);
+    color: var(--normalTextAndOutlines);
     border: 2px solid;
     border-radius: 4px;
 }
@@ -479,23 +489,16 @@ h1 {
 .inputFieldsetLabel {
     padding: 0px 5px;
     margin: 0px 0px 0px -10px;
-    /* color: var(--brighter-color);
-    color: var(--highlightColor);
-    color: var(--highlightTextColor); */
 }
 
 .inputHeader {
     margin: 8px 0px 4px 0px;
-    color: var(--highlightColor);
-    color: var(--highlightTextColor);
-    color: var(--brighter-color);
+    color: var(--secondHighlight);
 }
 
 .valueHeader {
     margin: 4px 0px 0px 0px;
-    color: var(--highlightColor);
-    color: var(--brighter-color);
-    color: var(--highlightTextColor);
+    color: var(--boldNormalText);
 }
 
 .inputContainer {
@@ -526,8 +529,8 @@ h1 {
     border-radius: 50%;
     transition: 0.3s;
 
-    border: 1px solid var(--bright-color);
-    background-color: var(--bright-color);
+    border: 1px solid var(--normalTextAndOutlines);
+    background-color: var(--normalTextAndOutlines);
     box-shadow: inset 0px 0px 0px 5px var(--background-color);
 }
 
@@ -535,8 +538,8 @@ h1 {
     padding: 2px 4px;
     margin: 7px 0px 7px 0px;
     background-color: var(--background-color);
-    color: var(--brighter-color);
-    border: 1px solid var(--bright-color);
+    color: var(--secondHighlight);
+    border: 1px solid var(--normalTextAndOutlines);
     outline: none;
     text-align: left;
 }
@@ -558,8 +561,8 @@ h1 {
     border-radius: 10%;
     transition: 0.1s;
 
-    border: 1px solid var(--bright-color);
-    background-color: var(--bright-color);
+    border: 1px solid var(--normalTextAndOutlines);
+    background-color: var(--normalTextAndOutlines);
     box-shadow: inset 0px 0px 0px 5px var(--background-color);
 }
 
@@ -581,8 +584,8 @@ h1 {
     text-align: center;
 
     background-color: var(--background-color);
-    color: var(--brighter-color);
-    border: 1px solid var(--bright-color);
+    color: var(--secondHighlight);
+    border: 1px solid var(--normalTextAndOutlines);
     outline: none;
 }
 
@@ -600,7 +603,7 @@ h1 {
     border-radius: 0px;
     outline: none;
 
-    accent-color: var(--highlightColor);
+    accent-color: var(--firstHighlight);
     outline: none;
     cursor: pointer;
 }
@@ -615,14 +618,14 @@ h1 {
 }
 
 .inputRadioButton:hover {
-    border: 1px solid var(--highlightTextColor);
-    background-color: var(--highlightTextColor);
+    border: 1px solid var(--boldNormalText);
+    background-color: var(--boldNormalText);
     box-shadow: inset 0px 0px 0px 3px var(--background-color);
 }
 
 .inputRadioButton:checked {
-    border: 1px solid var(--highlightTextColor);
-    background-color: var(--highlightColor);
+    border: 1px solid var(--boldNormalText);
+    background-color: var(--firstHighlight);
     box-shadow: inset 0px 0px 0px 0px var(--background-color);
 
     animation: border-bounce;
@@ -654,14 +657,14 @@ h1 {
 }
 
 .inputCheckbox:hover {
-    border: 1px solid var(--highlightTextColor);
-    background-color: var(--highlightTextColor);
+    border: 1px solid var(--boldNormalText);
+    background-color: var(--boldNormalText);
     box-shadow: inset 0px 0px 0px 3px var(--background-color);
 }
 
 .inputCheckbox:checked {
-    border: 1px solid var(--highlightTextColor);
-    background-color: var(--highlightColor);
+    border: 1px solid var(--boldNormalText);
+    background-color: var(--firstHighlight);
     box-shadow: inset 0px 0px 0px 0px var(--background-color);
 }
 
@@ -695,9 +698,9 @@ h1 {
     align-items: center;
 
     text-align: center;
-    color: var(--logText);
+    color: var(--dimText);
 
-    border: 2px dashed var(--bright-color);
+    border: 2px dashed var(--normalTextAndOutlines);
     border-radius: 12px;
 
     background-color: var(--backgroundBrightener);
@@ -707,23 +710,23 @@ h1 {
 }
 
 .dropzone:hover {
-    color: var(--buttonFontColor);
-    background-color: var(--highlightColor);
+    color: var(--buttonText);
+    background-color: var(--firstHighlight);
 }
 
 .dropzone.dragover {
-    color: var(--buttonFontColor);
+    color: var(--buttonText);
     background-color: var(--green);
 }
 
 .dropzone.dragoverInputValid {
-    color: var(--buttonFontColor);
+    color: var(--buttonText);
     background-color: var(--green);
     cursor: pointer;
 }
 
 .dropzone.dragoverInputInvalid {
-    color: var(--buttonFontColor);
+    color: var(--buttonText);
     background-color: var(--red);
     cursor: pointer;
 }
@@ -757,18 +760,6 @@ h1 {
         'wght' 800,
         'GRAD' 50,
         'opsz' 12
-}
-
-.cRed {
-    color: var(--red);
-}
-
-.cGreen {
-    color: var(--green);
-}
-
-.cWhite {
-    color: var(--brighter-color)
 }
 
 .returnText {
@@ -811,7 +802,7 @@ h1 {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%) scaleX(1);
-    color: var(--highlightTextColor);
+    color: var(--boldNormalText);
 }
 
 @-moz-keyframes spin {
@@ -852,8 +843,8 @@ h1 {
     right: 2.5vw;
     border: none;
     border-radius: 3px;
-    color: var(--buttonFontColor);
-    background-color: var(--buttonBGColor);
+    color: var(--buttonText);
+    background-color: var(--buttonBakckground);
     transition: 0.2s;
     z-index: 100;
 }
@@ -865,7 +856,7 @@ h1 {
 }
 
 #iconDelete {
-    color: var(--buttonFontColor);
+    color: var(--buttonText);
     font-size: 30px;
     padding: 5px;
 }
@@ -891,29 +882,56 @@ h1 {
     cursor: pointer;
 }
 
+
 /* RESULT FORMAT */
 
+.resultDivider {
+    width: calc(100% - 120px);
+    height: 3px;
+    border-radius: 10px;
+    margin: 15px 0px 0px 50px;
+    background-color: var(--dividerColor);
+}
+
+.resultAudioDiv {
+    position: relative;
+    width: 100%;
+    height: 25px;
+}
+
+.resultAudio {
+    position: absolute;
+    left: 50px;
+    top: -4px;
+    width: calc(100% - 200px);
+    max-width: 500px;
+    height: 20px;
+    min-width: 350px;
+    filter: brightness(0.2);
+    filter: brightness(0.2) drop-shadow(0px -1px 0px rgba(255, 255, 255, 0.3)) drop-shadow(0px 2px 0px rgb(0, 0, 0));
+}
+
 .resultTextHeader {
-    color: var(--middle-color);
+    color: var(--dimText);
     font-size: 20px;
     line-height: 1.2;
-    margin: 15px 5px 2px 32px;
+    padding: 15px 20px 2px 20px;
     text-align: left;
 }
 
 .resultTextNoLink {
-    color: var(--bright-color);
+    color: var(--normalTextAndOutlines);
     font-size: 18px;
     line-height: 1.4;
-    margin: 6px 32px 2px 25px;
+    padding: 6px 20px 2px 30px;
     text-align: left;
 }
 
 .resultTextLink {
-    color: var(--bright-color);
+    color: var(--normalTextAndOutlines);
     font-size: 18px;
     line-height: 1.4;
-    margin: 12px 20px 2px;
+    margin: -7px 20px 2px 40px;
     text-align: left;
     padding: 8px 17px 7px 12px;
     border-radius: 7px;
@@ -954,7 +972,7 @@ h1 {
 }
 
 .resultIMGpromptSummary {
-    color: var(--middle-color);
+    color: var(--dimText);
     font-size: 15px;
     text-align: right;
     cursor: pointer;
@@ -962,7 +980,7 @@ h1 {
     padding-right: 15px;
     list-style: none;
     user-select: none;
-    color: var(--brighter-color)
+    color: var(--secondHighlight)
 }
 
 .resultIMGpromptSummary::marker {
@@ -982,14 +1000,6 @@ h1 {
     transform: rotate(calc(150deg));
 }
 
-.resultDivider {
-    width: calc(100% - 120px);
-    height: 3px;
-    border-radius: 10px;
-    margin: 20px 0px 0px 50px;
-    background-color: var(--dividerColor);
-}
-
 .resultIMGsContainer {
     width: 100%;
     background-color: var(--backgroundBrightener);
@@ -998,7 +1008,7 @@ h1 {
     justify-content: flex-start;
     align-items: center;
     margin: 10px 0px 0px;
-    padding: 10px 30px;
+    padding: 10px 10px;
     box-shadow: inset 0px -1px 1px rgba(255, 255, 255, 0.3), inset 0px 3px 5px rgba(0, 0, 0, 0.5);
 }
 
@@ -1069,23 +1079,6 @@ h1 {
     transform: translate(5%, 5%);
 }
 
-.resultAudioDiv {
-    position: relative;
-    width: 100%;
-    height: 25px;
-}
-
-.resultAudio {
-    position: absolute;
-    left: 40px;
-    top: -3px;
-    width: calc(100% - 200px);
-    max-width: 600px;
-    height: 20px;
-    min-width: 350px;
-    filter: brightness(0.2);
-    filter: brightness(0.2) drop-shadow(0px -1px 0px rgba(255, 255, 255, 0.3)) drop-shadow(0px 2px 0px rgb(0, 0, 0));
-}
 
 /* FOOTER */
 
@@ -1106,28 +1099,28 @@ h1 {
 }
 
 .footerLink {
-    color: var(--highlightColor);
-    color: var(--bright-color);
+    color: var(--firstHighlight);
+    color: var(--normalTextAndOutlines);
     text-decoration: none;
 }
 
 .footerLink:hover {
-    color: var(--bright-color);
-    color: var(--highlightColor);
+    color: var(--normalTextAndOutlines);
+    color: var(--firstHighlight);
 }
 
 /* .footerLink:focus {
-    color: var(--highlightColor);
+    color: var(--firstHighlight);
 }
 
 .footerLink:visited {
-    color: var(--highlightColor);
+    color: var(--firstHighlight);
 }
 
 .footerLink:active {
-    color: var(--highlightColor);
+    color: var(--firstHighlight);
 } */
 
 .footerText {
-    color: var(--middle-color);
+    color: var(--dimText);
 }

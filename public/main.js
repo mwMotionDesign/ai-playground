@@ -7,6 +7,9 @@ let keyRequest = true;
 let costSum = 0;
 
 async function generateResponse(type, text = "") {
+    console.log("");
+    console.log("GENERATE RESPONSE - Start");
+
     keyRequest = true;
     responseCost = 0;
     stopRandomTimer();
@@ -17,38 +20,43 @@ async function generateResponse(type, text = "") {
     }
 
 
-    // TEXT & IMAGES
-    if ((type == "text" || type == "images") && inputField.value != "") {
+    // TEXT
+    if (type == "text") {
+        console.log("GENERATE RESPONSE - Type Text");
         startLoading();
-        if (type == "text") {
-            await buildText();
+        if (text != "") {
+            await buildText(text);
         }
-
-        if (type == "images") {
-            await buildImages();
+        else if (inputField.value != "") {
+            await buildText();
         }
         ending();
     }
-    else if (type == "text" && text != "") {
+
+    // IMAGES
+    if (type == "images" && inputField.value != "") {
+        console.log("GENERATE RESPONSE - Type Images");
         startLoading();
-        await buildText(text);
+        await buildImages();
         ending();
     }
 
     // TRANSCRIPT
     if (type == "audio") {
-        if (!isRecording) {
-            await buildTranscript();
-            ending();
-        }
-        else if (isRecording) {
+        console.log("GENERATE RESPONSE - Type Audio");
+        if (isRecording) {
             startLoading();
             buildTranscript();
+        }
+        else if (!isRecording) {
+            await buildTranscript();
+            ending();
         }
     }
 
     // VOICE
     if (type == "voice") {
+        console.log("GENERATE RESPONSE - Type Voice");
         startLoading();
         await buildVocie();
         ending();
@@ -56,6 +64,8 @@ async function generateResponse(type, text = "") {
 
 
     function ending() {
+        console.log("");
+        console.log("GENERATE RESPONSE - ENDING");
         isRecording = false;
         costSum = costSum + responseCost;
         addReturnText("", "Cost sum: " + (responseCost).toFixed(2) + " / " + (costSum).toFixed(2) + " Cents");
@@ -65,58 +75,55 @@ async function generateResponse(type, text = "") {
 }
 
 async function buildText(text = "", isForwarded = false) {
+    console.log("");
+    console.log("BUILD TEXT - Start");
+
     let message = {};
     let textResult = "";
 
     addInitialLog("Text", keyRequest);
     keyRequest = false;
 
-    if (!isForwarded) {
+    // Push to Conversation History
+    if (!isForwarded && text != pushLLMessageConstructed) {
         if (text != "") {
             message = ({ role: "User", message: text });
         }
         else if (inputField.value != "") {
-            message = ({ role: "AI", message: inputField.value });
+            message = ({ role: "User", message: inputField.value });
         }
         conversationHistory.push(message);
-        console.log("Conversation History: ", conversationHistory);
+        console.log("BUILD TEXT - Conversation History: ", conversationHistory);
     }
 
+    // Create Input-Output
     if (text == "" && inputField.value != "") {
         outputText("header", "Input");
         outputText("link", inputField.value);
     }
-    console.log("RANDOM CHECK - llmPersonalityDom.value: " + llmPersonalityDOM.value);
-    console.log("RANDOM CHECK - llmPersonalityRandom: " + llmPersonalityRandom);
-    console.log("RANDOM CHECK - hiddenPersonality: " + hiddenPersonality);
-    if (llmPersonalityDOM.value == llmPersonalityRandom && !changePersonalityAuto) {
-        llmPersonalityDOM.value = llmPersonalityRandom;
-        systemPrompt = generateSystemPrompt(llmPersonalityRandom);
-        console.log("RANDOM CHECK - hiddenPersonality: " + hiddenPersonality);
-        console.log("RANDOM CHECK - systemPrompt: " + systemPrompt);
-        console.log("");
-    }
-    if (changePersonalityAuto && !isForwarded) {
-        addReturnText("", "... forwarding to Personality Generation");
-        const newPersonalityResult = await generateText(systemPromptPersonality, JSON.stringify(conversationHistory), nOfTokensPersonality, false);
-        addReturnText("", "... forwarding to Text");
 
-        llmPersonalityDOM.value = newPersonalityResult.responseText;
+    // Random Personality
+    // if (llmPersonalityDOM.value == llmPersonalityRandom && !changePersonalityAuto) {
+    //     llmPersonalityDOM.value = llmPersonalityRandom;
+    // }
+
+    // LLM Chooses Personality
+    if (changePersonalityAuto || llmPersonalityDOM.value == llmPersonalityRandom && !isForwarded) {
+        if (changePersonalityAuto) {
+            const newPersonalityResult = await generateText(systemPromptPersonality, JSON.stringify(conversationHistory), nOfTokensPersonality, false);
+            llmPersonalityDOM.value = newPersonalityResult.responseText;
+        }
+
         systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
-        console.log("");
-        console.log("LLM set its personality to: " + llmPersonalityDOM.value);
     }
 
-    console.log("RANDOM CHECK - generateText: ", systemPrompt, "\n", text, "\n", nOfTokens);
     textResult = await generateText(systemPrompt, text, nOfTokens, true);
 
+    // Add Answer to Conversation History - Add Personality to Asnwer - Output Text
     if (!isForwarded) {
-        message = ({ role: "Person 2", message: textResult.responseText });
+        message = ({ role: "AI", message: textResult.responseText });
         conversationHistory.push(message);
 
-        console.log("MANIPULATION CHECK - llmPersonalityDOM.value: " + llmPersonalityDOM.value);
-        console.log("MANIPULATION CHECK - llmPersonalityRandom: " + llmPersonalityRandom);
-        console.log("MANIPULATION CHECK - changePersonalityAuto: " + changePersonalityAuto);
         let manipulatedOutput = ""
         if (llmPersonalityDOM.value == llmPersonalityRandom || changePersonalityAuto) {
             for (i = 0; i < pesonalityMarkers.length; i++) {
@@ -140,7 +147,7 @@ async function buildText(text = "", isForwarded = false) {
     if (imgWithText && !isForwarded) {
         addReturnText("", "... forwarding to Prompt Generation");
         console.log("");
-        console.log("Conversation History: ", conversationHistory);
+        console.log("BUILD TEXT - Conversation History: ", conversationHistory);
         const imgPromptResult = await generateText(systemPromptIMG, JSON.stringify(conversationHistory), nOfTokensIMG, false);
         addReturnText("", "... forwarding to Image");
         await buildImages(imgPromptResult.responseText);
@@ -159,8 +166,6 @@ async function buildImages(text = "") {
 
     imgResult = await generateImages(imgPrompt, imgModel);
 
-    console.log("");
-    console.log(imgResult.responseIMGs);
     outputIMGs(imgResult.responseIMGs, imgResult.text);
 }
 
@@ -210,6 +215,9 @@ async function buildVocie(text = "", newFile = true, exag = -1, itteration = 0) 
 let responseCost = 0;
 
 async function generateText(systemPromptToSend = "", text = "", nOfTokens = 10, buildHistory = false) {
+    console.log("");
+    console.log("GENERATE TEXT - Start");
+
     let inputText = inputField.value;
     if (text != "") { inputText = text; }
 
@@ -218,6 +226,7 @@ async function generateText(systemPromptToSend = "", text = "", nOfTokens = 10, 
 
     try {
         responseText = await fetchText(systemPromptToSend, text, nOfTokens, buildHistory);
+        console.log("");
     } catch (error) {
         addReturnText("<div class='material-symbols-outlined returnIcons cRed'>close</div>", " ERROR");
         console.log("AI RESPONSE ERROR:");
@@ -226,20 +235,27 @@ async function generateText(systemPromptToSend = "", text = "", nOfTokens = 10, 
 
     let llmExag = cbExaggeration;
     if (systemPromptToSend != systemPromptIMG && systemPromptToSend != systemPromptPersonality) {
-        console.log("Response Generate Text Length: " + responseText.length);
+        console.log("GENERATE TEXT - Response Generate Text Length: ", responseText.length);
         llmExag = responseText.slice(0, 3);
-        console.log("Exaggeration Extract: " + llmExag);
+        console.log("GENERATE TEXT - Exaggeration Extract: ", llmExag);
         responseText = responseText.slice(4, responseText.length);
-        console.log("Cut Text Length: " + responseText.length);
+        console.log("GENERATE TEXT - Cut Text Length: ", responseText.length);
     }
 
     let responseTextFormatted = formatAIanswer(responseText);
     responseText = formatToText(responseText);
 
+    console.log("GENERATE TEXT - responseText:" + responseText);
+    console.log("GENERATE TEXT - responseTextFormatted:" + responseTextFormatted);
+
     return { inputText, responseText, responseTextFormatted, llmExag };
 }
 
+
 async function fetchText(systemPromptToSend, prompt, tokens, buildHistory) {
+    console.log("");
+    console.log("FETCH TEXT - Start");
+
     const data = {
         systemPrompt: systemPromptToSend,
         prompt: prompt,
@@ -260,21 +276,16 @@ async function fetchText(systemPromptToSend, prompt, tokens, buildHistory) {
 
     addReturnText("", "...  " + modelName + ": Generating Text");
 
+    const options = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    };
+
+    // console.log("RECORDING - Fetch Text Data: ", data);
+    // console.log("RECORDING - "Fetch Text Options: ", options);
+
     try {
-        const options = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
-        };
-
-        console.log("");
-        console.log("Fetch Text Data:");
-        console.log(data);
-        console.log("Fetch Text Options:");
-        console.log(options);
-
         const responseAI = await fetch("/createAItext", options);
         const jsonAI = await responseAI.json();
 
@@ -282,7 +293,7 @@ async function fetchText(systemPromptToSend, prompt, tokens, buildHistory) {
 
         responseCost = responseCost + parseFloat(jsonAI.cost);
 
-        console.log("Return Fetch Text: ", jsonAI.data);
+        // console.log("Return Fetch Text: ", jsonAI.data);
 
         return jsonAI.data;
     } catch (error) {
@@ -293,6 +304,9 @@ async function fetchText(systemPromptToSend, prompt, tokens, buildHistory) {
 }
 
 async function generateImages(text, imgModel) {
+    console.log("");
+    console.log("IMAGES - Generating Images");
+
     if (text != "") {
         let size = "1024x1024"
         let responseIMGs = [];
@@ -327,23 +341,20 @@ async function generateImages(text, imgModel) {
                 nIMGsTemp = 1;
             }
 
+            const options = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(imgData)
+            };
+
             for (i = 0; i < nIMGsTemp; i++) {
                 try {
-                    const options = {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify(imgData)
-                    };
-
                     const responseAI = await fetch("/createAIimages", options);
                     const jsonAI = await responseAI.json();
 
-                    console.log("");
-                    console.log("IMG Response:");
-                    console.log(jsonAI.data.length + " Images\n");
-                    console.log(jsonAI.data);
+                    console.log("IMAGES - Response:");
+                    console.log("IMAGES - Amount: " + jsonAI.data.length + " Images");
+                    console.log("IMAGES - Imagepaths:" + jsonAI.data);
 
                     addReturnText("<div class='material-symbols-outlined returnIcons cGreen'>done</div>", " " + (jsonAI.cost).toFixed(2) + " Cents");
 
@@ -369,7 +380,11 @@ let mediaRecorder;
 let currentStream;
 
 async function generateRecording() {
+    console.log("");
+
     if (!isRecording) {
+        console.log("RECORDING - Start");
+
         let chunks = [];
 
         currentStream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -396,16 +411,20 @@ async function generateRecording() {
 
     }
     else if (isRecording) {
+        console.log("RECORDING - Stop");
+
         mediaRecorder.stop();
         currentStream.getTracks().forEach(track => track.stop());
 
         button3.querySelector("p").innerHTML = buttonText.toString();
-        button3.style.backgroundColor = "var(--buttonBGColor)";
+        button3.style.backgroundColor = "var(--buttonBakckground)";
     }
 }
 
 async function generateTranscript(audio) {
     addReturnText("", "...  Whisper: Transcribing Audio");
+    console.log("");
+    console.log("TRANSCRIPT - Starting Transcription");
 
     const formData = new FormData();
     formData.append("audio", audio, "input.wav");
@@ -419,9 +438,8 @@ async function generateTranscript(audio) {
         const result = await res.json();
         result.text = formatToText(result.text);
 
-        console.log("");
-        console.log("Transkript Whisper:", result.text);
-        console.log("Converted Original Audio:", result.audioPath);
+        console.log("TRANSCRIPT - from Whisper:", result.text);
+        console.log("TRANSCRIPT - Audio Path:", result.audioPath);
 
         addReturnText("<div class='material-symbols-outlined returnIcons cGreen'>done</div>", " 0.00 Cents");
         return { text: result.text, audioPath: result.audioPath };
@@ -436,19 +454,19 @@ let nOfFiles = 0;
 
 async function generateSpeechFromText(text = "", newFile = true, exag = -1, itteration = 0) {
     addReturnText("", "...  Chatterbot: Generating Voice");
+    console.log("");
+    console.log("VOICE - Starting Voice Generation");
 
     itteration++;
 
     try {
         // Form Data
         const formData = new FormData();
-        console.log("");
 
         if (cbValues.sendAudioSample) {
             formData.append("voiceSample", audioSampleFile.files[0]);
             if (audioSampleFile.files[0]) {
-                console.log("Generate Speech voiceSample:");
-                console.log(audioSampleFile.files[0].name);
+                console.log("VOICE - Audiosample Path:", audioSampleFile.files[0].name);
             }
         }
 
@@ -460,8 +478,8 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
 
             textTemp = text.slice((voiceSliceCharackters));
             text = text.slice(0, (voiceSliceCharackters + voiceSliceCharacktersOverlap));
-            console.log("Generate Speech Text: " + text);
-            console.log("Generate Speech Text Later: " + textTemp);
+            console.log("VOICE - Text: " + text);
+            console.log("VOICE - Text Later: " + textTemp);
 
         }
         formData.append("text", text);
@@ -469,21 +487,21 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
 
         if (exag > 0) {
             formData.append("exaggeration", exag);
-            console.log("Exaggeration: " + exag);
+            console.log("VOICE - Exaggeration: " + exag);
         }
         else {
             formData.append("exaggeration", cbValues.cbExaggeration);
-            console.log("Exagxaggeration: " + cbValues.cbExaggeration);
+            console.log("VOICE - Exagxaggeration: " + cbValues.cbExaggeration);
         }
 
         // formData.append("pase", cbValues.cbPase);                    //Manual set Pase
         let tempPase = Math.round(text.length / 12) / 100;
         if (tempPase < 0.05) { tempPase = 0.05 };
         formData.append("pase", tempPase);
-        console.log("Pase: " + tempPase);
+        console.log("VOICE - Pase: " + tempPase);
 
         formData.append("temperature", cbValues.cbTemperature);
-        console.log("Temperature: " + cbValues.cbTemperature);
+        console.log("VOICE - Temperature: " + cbValues.cbTemperature);
 
         // Fetch
         const res = await fetch("/generateSpeech", {
@@ -492,7 +510,7 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
         });
 
         const result = await res.json();
-        console.log("Generate Speech Result Audiopath:", result.audioPath);
+        console.log("VOICE - Result Audiopath:", result.audioPath);
 
         if (nOfFiles <= 1 && itteration == 1) {
             outputAudio(result.audioPath, { autoplay: true });
