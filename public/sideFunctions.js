@@ -5,12 +5,14 @@ let randomTimerID = null;
 let randomTimerRunning = false;
 
 function userInactive(time = 0) {
+    console.log("");
+    console.log("RANDOM TIMER - Start");
     if (llmRandom && !randomTimerRunning) {
         if (firstInitiateRandomMessage) {
             randomTimer(randomStartTime);
         }
         else {
-            console.log("... Starting RandomTimer with " + (time / 1000).toFixed(2) + "s");
+            console.log("RANDOM TIMER - Starting Timer with " + (time / 1000).toFixed(2) + "s");
             randomTimer(time);
             randomTimerRunning = true;
         }
@@ -26,23 +28,22 @@ function randomTimer(randomNumber) {
         randomTimeInMinutes = (randomNumber / 60000).toFixed(2);
 
         if (firstInitiateRandomMessage) {
-            console.log("ID-" + randomTimerID + " ... Random Timer initialised");
+            console.log("RANDOM TIMER - ID-" + randomTimerID + " ... Random Timer initialised");
             firstInitiateRandomMessage = false;
         }
         else {
-            console.log("ID-" + randomTimerID + " ... Initiating Conversation - Message: " + pushLLMessageConstructed);
-            console.log("ID-" + randomTimerID + " ... Generating TEXT");
-            console.log("");
+            console.log("RANDOM TIMER - ID-" + randomTimerID + " ... Initiating Conversation - Message: " + pushLLMessageConstructed);
+            console.log("RANDOM TIMER - ID-" + randomTimerID + " ... Generating TEXT");
             generateResponse("text", pushLLMessageConstructed);
         }
 
-        console.log("ID-" + randomTimerID + " ... Wait Timr for next Call set to: " + randomTimeInMinutes + "m (" + (randomNumber / 1000).toFixed(2) + "s)");
-        console.log("ID-" + randomTimerID + " --- DONE");
+        console.log("RANDOM TIMER - ID-" + randomTimerID + " ... Wait Timr for next Call set to: " + randomTimeInMinutes + "m (" + (randomNumber / 1000).toFixed(2) + "s)");
+        console.log("RANDOM TIMER - ID-" + randomTimerID + " --- DONE");
 
         userInactive(randomNumber);
     }, randomNumber);
     console.log("");
-    console.log("ID-" + randomTimerID + " --- START RANDOM FUNCTION --- planned for in " + (randomNumber / 1000).toFixed(2) + "s");
+    console.log("RANDOM TIMER - ID-" + randomTimerID + " --- START RANDOM FUNCTION --- planned for in " + (randomNumber / 1000).toFixed(2) + "s");
 }
 
 function stopRandomTimer() {
@@ -52,7 +53,7 @@ function stopRandomTimer() {
         randomTimerRunning = false;
         clearTimeout(randomTimerID);
 
-        console.log("ID-" + randomTimerID + " ... Random Timer Cleared / RandomStartTimer set to: " + randomStartTime + " / LLM Random: " + llmRandom);
+        console.log("RANDOM TIMER - ID-" + randomTimerID + " ... Random Timer Cleared / RandomStartTimer set to: " + randomStartTime + " / LLM Random: " + llmRandom);
 
         randomTimerID = null;
     }
@@ -71,6 +72,7 @@ function addDescription() {
         + "- <span class='tInBold'>Strg + Backspace:</span> Clear Results<br>"
         + "- <span class='tInBold'>Strg + Plus:</span> Console log GPT Models");
     outputDivider();
+
     outputText("header", "Example Format:");
     outputText("link", "<span class='tInBold'>Bold:</span> Link Text.<br>"
         + "- Click me to send to Input");
@@ -83,7 +85,8 @@ function addDescription() {
     ], "Prompt used to generate images");
     outputText("noLink", "<span class='tBold'>Tipp:</span> Click on any picture to view fullscreen.");
     outputDivider();
-    outputText("header", "Assistant Personalities and Voices:");
+
+    outputText("header", "Assistant Personality Examples and Voices:");
     outputText("noLink", "<span class='tBold'>Useful</span>");
     outputAudio("./audio/Useful.wav");
     outputText("noLink", "<span class='tBold'>Sarcastic & Nihilistic</span>");
@@ -92,7 +95,8 @@ function addDescription() {
     outputAudio("./audio/PlayfulAndPositive.wav");
     outputText("noLink", "<span class='tBold'>Romantic</span>");
     outputAudio("./audio/Romantic.wav");
-    outputText("header", "Characters:");
+
+    outputText("header", "Character Examples:");
     outputText("noLink", "<span class='tBold'>Julia (Getting Real)</span>");
     outputAudio("./audio/GettingReal.wav");
     outputText("noLink", "<span class='tBold'>Albert Einstein</span>");
@@ -265,16 +269,18 @@ function outputAudio(path, { autoplay = false, autoplayQueue = false, addToQueue
 let audioSearchItteration = 0;
 
 function playAduioQueue(currentAudio, placeInQueue) {
+    console.log("");
+    console.log("AUDIO QUEUE - Start");
     for (let i = 0; i < autoplayQueues[placeInQueue].length; i++) {
         if (autoplayQueues[placeInQueue][i] == currentAudio) {
             if (autoplayQueues[placeInQueue][i + 1]) {
-                console.log("Audio Found on Place: " + (i + 1) + " - Queue Place: " + placeInQueue);
+                console.log("AUDIO QUEUE - Audio Found on Place: " + (i + 1) + " - Queue Place: " + placeInQueue);
                 autoplayQueues[placeInQueue][i + 1].currentTime = 0;
                 autoplayQueues[placeInQueue][i + 1].play();
                 audioSearchItteration = 0;
                 break;
             } else {
-                console.log("Place: " + (i) + " - Queue Place: " + placeInQueue + "\nEnd reached - Waiting for next Audio");
+                console.log("AUDIO QUEUE - Place: " + (i) + " - Queue Place: " + placeInQueue + "\nEnd reached - Waiting for next Audio");
                 audioSearchItteration++
                 if (audioSearchItteration < 20) {
                     setTimeout(() => { playAduioQueue(currentAudio, placeInQueue); }, 1000);
@@ -283,9 +289,6 @@ function playAduioQueue(currentAudio, placeInQueue) {
                     audioSearchItteration = 0;
                 }
             }
-            // autoplayQueues[placeInQueue][i].currentTime = 0;
-            // autoplayQueues[placeInQueue][i].play();
-            // break;
         }
     }
 }
@@ -418,12 +421,14 @@ function isMobile() {
 }
 
 async function getAImodels() {
+    console.log("");
+    console.log("GET AI MODELS - Start");
     try {
         const responseAI = await fetch("/getAImodels");
         const jsonAI = await responseAI.json();
         const aiObject = jsonAI.responseObject;
 
-        console.log("\n\nAI Models:");
+        console.log("GET AI MODELS - AI Models:");
         let tempString = "";
 
         for (let i = 0; i < aiObject.length; i++) {
