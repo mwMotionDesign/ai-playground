@@ -322,7 +322,7 @@ h2 {
     background-color: var(--debugColor);
     overflow-x: hidden;
     padding: 10px 20px;
-    resize: horizontal;
+    /* resize: horizontal; */
 }
 
 .flexContent {
