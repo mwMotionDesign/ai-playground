@@ -385,11 +385,16 @@ app.post("/transcribeAudio", uploadAudio.single("audio"), async (request, respon
     console.log("Filename: " + filename);
     console.log("Filepath: " + request.file.path);
 
-    const tempFilePath = path.join(tempFilesDIR, filename);
-    await normalizeLoudness(request.file.path, tempFilePath);
 
-    await fsp.unlink(request.file.path);
-    await fsp.rename(tempFilePath, request.file.path);
+    if (!request.file || !request.file.path) {
+        console.warn("🚫 Keine Datei im Request vorhanden");
+    }
+    else {
+        const tempFilePath = path.join(tempFilesDIR, filename);
+        await normalizeLoudness(request.file.path, tempFilePath);
+        await fsp.unlink(request.file.path);
+        await fsp.rename(tempFilePath, request.file.path);
+    }
 
     const pythonProcess = spawn('python', ['./scripts/whisperScript.py', request.file.path]);
 
@@ -432,8 +437,13 @@ app.post("/transcribeAudio", uploadAudio.single("audio"), async (request, respon
             console.log("Python output:", output.trim());
 
             // DELETING FILES
-            await fsp.unlink(request.file.path);
-            await fsp.unlink(transcriptPath);
+            if (!request.file || !request.file.path) {
+                console.warn("🚫 Keine Datei im Request vorhanden");
+            }
+            else {
+                await fsp.unlink(request.file.path);
+                await fsp.unlink(transcriptPath);
+            }
 
             response.send({
                 text: output.trim(),
@@ -497,11 +507,15 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
     console.log("Pase: " + pase);
     console.log("Temperature: " + temperature);
 
-    const tempFilePath = path.join(tempFilesDIR, "tempVoiceSample.wav");
-    await normalizeLoudness(audioPath, tempFilePath);
-
-    await fsp.unlink(audioPath);
-    await fsp.rename(tempFilePath, audioPath);
+    if (!audioPath) {
+        console.warn("🚫 Keine Datei im Request vorhanden");
+    }
+    else {
+        const tempFilePath = path.join(tempFilesDIR, "tempVoiceSample.wav");
+        await normalizeLoudness(audioPath, tempFilePath);
+        await fsp.unlink(audioPath);
+        await fsp.rename(tempFilePath, audioPath);
+    }
 
     const pythonProcess = spawn('python', ['./scripts/chatterbotScript.py', data, audioPath, exaggeration, pase, temperature]);
 
@@ -525,11 +539,15 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
             const newPath = path.join(__dirname, 'Audiofiles', filename.split(".")[0].concat('-Voice.wav'));
             const relativePath = '/Audiofiles/' + filename.split(".")[0] + '-Voice.wav';
 
-            const tempFilePath = path.join(tempFilesDIR, filename);
-            await normalizeLoudness(oldPath, tempFilePath);
-
-            await fsp.unlink(oldPath);
-            await fsp.rename(tempFilePath, oldPath);
+            if (!oldPath) {
+                console.warn("🚫 Keine Datei im Request vorhanden");
+            }
+            else {
+                const tempFilePath = path.join(tempFilesDIR, filename);
+                await normalizeLoudness(oldPath, tempFilePath);
+                await fsp.unlink(oldPath);
+                await fsp.rename(tempFilePath, oldPath);
+            }
 
             response.send({ audioPath: relativePath });
 
@@ -682,7 +700,7 @@ function calculateCost(tokens, Input, Output) {
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
-function normalizeLoudness(inputAudioPath, outputAudioPath) {
+async function normalizeLoudness(inputAudioPath, outputAudioPath) {
     return new Promise((resolve, reject) => {
         ffmpeg(inputAudioPath)
             .audioFilter('loudnorm')
@@ -692,7 +710,7 @@ function normalizeLoudness(inputAudioPath, outputAudioPath) {
                 resolve();
             })
             .on('error', (err) => {
-                console.error(`❌ Error normalizing ${inputAudioPath}:`, err.message);
+                console.warn(`❌ Normalizing Error ${inputAudioPath}:`, err.message);
                 reject(err);
             })
             .run();
@@ -721,4 +739,28 @@ async function normalizeFolderLoudness(inputAudioFolder, outputAudioFolder) {
     } catch (err) {
         console.error('❌ Fehler beim Batch-Normalisieren:', err.message);
     }
+}
+
+clearFolder(audiofilesDIR, false, ".wav");
+clearFolder(memoryDIR, true);
+
+async function clearFolder(folderPath, deleteAll = false, filetype = "FILETYPE IN HERE") {
+    const entries = await fsp.readdir(folderPath, { withFileTypes: true });
+
+    for (const entry of entries) {
+        const fullPath = path.join(folderPath, entry.name);
+
+        if (entry.isDirectory()) {
+            //   await fsp.rm(fullPath, { recursive: true, force: true }); // Unterordner löschen
+        } else if (filetype != "FILETYPE IN HERE") {
+            if (entry.isFile() && entry.name.endsWith(filetype)) {
+                await fsp.unlink(fullPath);
+            }
+        }
+        else if (deleteAll) {
+            await fsp.unlink(fullPath); // Datei löschen
+        }
+    }
+
+    console.log(`🧼 Ordner geleert: ${folderPath}`);
 }
