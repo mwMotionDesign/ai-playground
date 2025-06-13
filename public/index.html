@@ -25,6 +25,9 @@
 <body>
     <script type="text/javascript" src="./scripts/wz_tooltip.js"></script>
     <div id="siteContent">
+        <div id="returnDiv">
+            <p class="returnText">--- LOG ---</p>
+        </div>
         <div id="inputContent">
             <div class="containerVert" id="flexSearch">
                 <h1>Input:</h1>
@@ -32,11 +35,6 @@
                 <textarea type="text" id="inputFieldSearch" class="textarea" placeholder="Enter Text"></textarea>
                 <div class="divider"></div>
                 <div class="containerHor" id="buttonsContainer">
-                    <div id="audioSampleDropzone" class="dropzone">
-                        Drop<br>Audio Sample
-                        <input type="file" id="inputAudioSample" accept="audio/*" hidden>
-                    </div>
-                    <div class="divider"></div>
                     <div class="containerVert relative">
                         <div class="containerHor">
                             <div id="buttonContainer">
@@ -73,46 +71,60 @@
                     </div>
                 </div>
                 <div class="divider"></div>
+                <div class="divider"></div>
+                <div id="audioSampleDropzone" class="dropzone">
+                    Drop<br>Audio Sample
+                    <input type="file" id="inputAudioSample" accept="audio/*" hidden>
+                </div>
+                <div class="divider"></div>
                 <div class="containerHor">
                     <div class="inputFlexChoice" id="chatterbotFlexChoice">
                         <form class="inputForm" id="chatterbotChoiceForm">
                             <fieldset class="inputFieldset" id="chatterbotFieldset">
                                 <legend class="inputFieldsetLabel" id="chatterbotLabel">Audio Models</legend>
-                                <p class="inputHeader">Transcription</p>
-                                <div class="inputContainer inputCheckboxContainer">
-                                    <input type="checkbox" class="inputInput inputCheckbox" id="sendTextToLLM" name="sendTextToLLM">
-                                    <label for="sendTextToLLM" class="inputLabel inputCheckboxLabel">send to LLM</label>
-                                </div>
-                                <p class="inputHeader">Generate Voice</p>
-                                <div class="inputContainer inputCheckboxContainer">
-                                    <input type="checkbox" class="inputInput inputCheckbox" id="createVoiceLLM" name="createVoiceLLM">
-                                    <label for="createVoiceLLM" class="inputLabel inputCheckboxLabel">for LLM</label>
-                                </div>
-                                <div class="inputContainer inputCheckboxContainer">
-                                    <input type="checkbox" class="inputInput inputCheckbox" id="createVoice" name="createVoice">
-                                    <label for="createVoice" class="inputLabel inputCheckboxLabel">for Transcript</label>
-                                </div>
-                                <div class="inputContainer inputCheckboxContainer">
-                                    <input type="checkbox" class="inputInput inputCheckbox" id="sendAudioSample" name="sendAudioSample" checked>
-                                    <label for="sendAudioSample" class="inputLabel inputCheckboxLabel">Use Audio Sample</label>
-                                </div>
-                                <p class="inputHeader">Voice Parameters</p>
-                                <p class="inputHeader valueHeader" id="exaggerationValue">Exaggeration</p>
-                                <div class="inputContainer inputTextContainer" id="exaggerationRange">
-                                    <input type="range" class="inputInput inputRange" id="cbExaggeration" name="cbExaggeration" valuemin="0" max="2" step="0.05" value="0.6">
-                                </div>
-                                <p class="inputHeader valueHeader" id="paceValue">Pase</p>
-                                <div class="inputContainer inputTextContainer" id="paseRange">
-                                    <input type="range" class="inputInput inputRange" id="cbPase" name="cbPase" min="0" max="2" step="0.05" value="0.05">
-                                </div>
-                                <p class="inputHeader valueHeader" id="temperatureValue">Temperature</p>
-                                <div class="inputContainer inputTextContainer" id="temperatureRange">
-                                    <input type="range" class="inputInput inputRange" id="cbTemperature" name="cbTemperature" min="0" max="2" step="0.05" value="0.7">
+                                <div class="containerHor">
+                                    <div class="containerVert" id="audioModelsLeft">
+                                        <p class="inputHeader">Transcription</p>
+                                        <div class="inputContainer inputCheckboxContainer">
+                                            <input type="checkbox" class="inputInput inputCheckbox" id="sendTextToLLM" name="sendTextToLLM">
+                                            <label for="sendTextToLLM" class="inputLabel inputCheckboxLabel">send to LLM</label>
+                                        </div>
+                                        <p class="inputHeader">Generate Voice</p>
+                                        <div class="inputContainer inputCheckboxContainer">
+                                            <input type="checkbox" class="inputInput inputCheckbox" id="createVoiceLLM" name="createVoiceLLM">
+                                            <label for="createVoiceLLM" class="inputLabel inputCheckboxLabel">for LLM</label>
+                                        </div>
+                                        <div class="inputContainer inputCheckboxContainer">
+                                            <input type="checkbox" class="inputInput inputCheckbox" id="createVoice" name="createVoice">
+                                            <label for="createVoice" class="inputLabel inputCheckboxLabel">for Transcript</label>
+                                        </div>
+                                        <div class="inputContainer inputCheckboxContainer">
+                                            <input type="checkbox" class="inputInput inputCheckbox" id="sendAudioSample" name="sendAudioSample" checked>
+                                            <label for="sendAudioSample" class="inputLabel inputCheckboxLabel">Use Audio Sample</label>
+                                        </div>
+                                    </div>
+                                    <div class="containerVert" id="audioModelsRight">
+                                        <p class="inputHeader">Voice Parameters</p>
+                                        <p class="inputHeader valueHeader" id="exaggerationValue">Exaggeration</p>
+                                        <div class="inputContainer inputTextContainer" id="exaggerationRange">
+                                            <input type="range" class="inputInput inputRange" id="cbExaggeration" name="cbExaggeration" valuemin="0" max="2" step="0.05" value="0.5">
+                                        </div>
+                                        <p class="inputHeader valueHeader" id="paceValue">Pase</p>
+                                        <div class="inputContainer inputTextContainer" id="paseRange">
+                                            <input type="range" class="inputInput inputRange" id="cbPase" name="cbPase" min="0" max="2" step="0.05" value="0.2">
+                                        </div>
+                                        <p class="inputHeader valueHeader" id="temperatureValue">Temperature</p>
+                                        <div class="inputContainer inputTextContainer" id="temperatureRange">
+                                            <input type="range" class="inputInput inputRange" id="cbTemperature" name="cbTemperature" min="0" max="2" step="0.05" value="0.5">
+                                        </div>
+                                    </div>
                                 </div>
                             </fieldset>
                         </form>
                     </div>
-                    <div class="divider"></div>
+                </div>
+                <div class="divider"></div>
+                <div class="containerHor">
                     <div class="inputFlexChoice" id="llmFlexChoice">
                         <form class="inputForm" id="llmChoiceForm">
                             <fieldset class="inputFieldset" id="llmFieldset">
@@ -203,9 +215,6 @@
                 <button id="clearResultButton">
                     <span class="material-symbols-outlined" id="iconDelete">delete</span>
                 </button>
-                <div id="returnDiv">
-                    <p class="returnText">--- LOG ---</p>
-                </div>
             </div>
             <div id="flexLogo">
                 <div id="logoContainer">
