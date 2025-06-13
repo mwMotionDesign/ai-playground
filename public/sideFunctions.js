@@ -87,14 +87,20 @@ function addDescription() {
     outputDivider();
 
     outputText("header", "Assistant Personality Examples and Voices:");
-    outputText("noLink", "<span class='tBold'>Useful</span>");
+    outputText("noLink", "<span class='tBold'>Useful & Efficient</span>");
     outputAudio("./audio/Useful.wav");
-    outputText("noLink", "<span class='tBold'>Sarcastic & Nihilistic</span>");
-    outputAudio("./audio/SarcasticAndNihilistic.wav");
     outputText("noLink", "<span class='tBold'>Playful & Positive</span>");
     outputAudio("./audio/PlayfulAndPositive.wav");
     outputText("noLink", "<span class='tBold'>Romantic</span>");
     outputAudio("./audio/Romantic.wav");
+    outputText("noLink", "<span class='tBold'>Shy & Introverted</span>");
+    outputAudio("./audio/ShyAndIntroverted.wav");
+    outputText("noLink", "<span class='tBold'>Melancholic Poet</span>");
+    outputAudio("./audio/MelancholicPoet.wav");
+    outputText("noLink", "<span class='tBold'>Sarcastic & Nihilistic</span>");
+    outputAudio("./audio/SarcasticAndNihilistic.wav");
+    outputText("noLink", "<span class='tBold'>Pessimist</span>");
+    outputAudio("./audio/Pessimist.wav");
 
     outputText("header", "Character Examples:");
     outputText("noLink", "<span class='tBold'>Julia (Getting Real)</span>");
