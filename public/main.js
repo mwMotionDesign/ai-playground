@@ -378,6 +378,7 @@ async function generateImages(text, imgModel) {
     }
     else {
         addReturnText("<div class='material-symbols-outlined returnIcons cRed'>close</div>", "Please enter Image prompt!");
+        return;
     }
 }
 
