@@ -125,16 +125,21 @@ async function buildText(text = "", isForwarded = false) {
         conversationHistory.push(message);
 
         let manipulatedOutput = ""
-        if (llmPersonalityDOM.value == llmPersonalityRandom || changePersonalityAuto) {
-            for (i = 0; i < pesonalityMarkers.length; i++) {
-                if (pesonalityMarkers[i].personality == hiddenPersonality) {
-                    manipulatedOutput = "<span class='tBold'>".concat(pesonalityMarkers[i].marker, "</span><br>", textResult.responseTextFormatted);
-                }
+        for (i = 0; i < pesonalityMarkers.length; i++) {
+            if (pesonalityMarkers[i].personality == hiddenPersonality) {
+                manipulatedOutput = "<span class='tBold'>".concat(pesonalityMarkers[i].marker, "</span><br>", textResult.responseTextFormatted);
             }
         }
-        else {
-            manipulatedOutput = textResult.responseTextFormatted;
-        }
+        // if (llmPersonalityDOM.value == llmPersonalityRandom || changePersonalityAuto) {
+        // for (i = 0; i < pesonalityMarkers.length; i++) {
+        //     if (pesonalityMarkers[i].personality == hiddenPersonality) {
+        //         manipulatedOutput = "<span class='tBold'>".concat(pesonalityMarkers[i].marker, "</span><br>", textResult.responseTextFormatted);
+        //     }
+        // }
+        // }
+        // else {
+        //     manipulatedOutput = textResult.responseTextFormatted;
+        // }
 
         outputText("header", "Large Language Model");
         outputText("link", manipulatedOutput);

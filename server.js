@@ -4,6 +4,7 @@ import { } from "dotenv/config";
 
 import path from "path";
 import fs from "fs";
+import fsp from 'fs/promises';
 import { writeFile } from "fs";
 import multer from "multer";
 import { fileURLToPath } from "url";
@@ -12,6 +13,10 @@ import fetch from 'node-fetch';
 
 import { Configuration, OpenAIApi } from "openai";
 import aiplatform from '@google-cloud/aiplatform';
+
+import ffmpeg from 'fluent-ffmpeg';
+import ffmpegPath from 'ffmpeg-static';
+
 
 // VARIABLES
 const textModel1 = "gpt-4.1-mini-2025-04-14";
@@ -365,7 +370,10 @@ const audioFilesStorage = multer.diskStorage({
 
 const uploadAudio = multer({ storage: audioFilesStorage });
 
-app.post("/transcribeAudio", uploadAudio.single("audio"), (request, response) => {
+const tempFilesDIR = path.join(__dirname, "/_tempFiles");
+if (!fs.existsSync(tempFilesDIR)) { fs.mkdirSync(tempFilesDIR, { recursive: true }); }
+
+app.post("/transcribeAudio", uploadAudio.single("audio"), async (request, response) => {
     console.log("");
     console.log("");
     console.log("--- Generating Transcription ---");
@@ -376,6 +384,12 @@ app.post("/transcribeAudio", uploadAudio.single("audio"), (request, response) =>
     console.log("AudioDIR: " + audiofilesDIR);
     console.log("Filename: " + filename);
     console.log("Filepath: " + request.file.path);
+
+    const tempFilePath = path.join(tempFilesDIR, filename);
+    await normalizeLoudness(request.file.path, tempFilePath);
+
+    await fsp.unlink(request.file.path);
+    await fsp.rename(tempFilePath, request.file.path);
 
     const pythonProcess = spawn('python', ['./scripts/whisperScript.py', request.file.path]);
 
@@ -390,7 +404,7 @@ app.post("/transcribeAudio", uploadAudio.single("audio"), (request, response) =>
     //     console.error(`Python stderr: ${data.toString('utf8')}`);
     // });
 
-    pythonProcess.on('close', (code) => {
+    pythonProcess.on('close', async (code) => {
         if (code === 0) {
             console.log("");
             console.log("Filename: " + filename);
@@ -417,9 +431,13 @@ app.post("/transcribeAudio", uploadAudio.single("audio"), (request, response) =>
             console.log("");
             console.log("Python output:", output.trim());
 
+            // DELETING FILES
+            await fsp.unlink(request.file.path);
+            await fsp.unlink(transcriptPath);
+
             response.send({
                 text: output.trim(),
-                audioPath: path.join("/Audiofiles", filename)
+                audioPath: path.join("/Audiofiles/Transcripts", filename)
             });
         } else {
             console.error("Python script exited with error code:", code);
@@ -444,7 +462,7 @@ const voiceSampleStorage = multer.diskStorage({
 });
 const uploadVoiceSample = multer({ storage: voiceSampleStorage });
 
-app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), (request, response) => {
+app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (request, response) => {
     console.log("");
     console.log("");
     console.log("--- Generating Voice ---");
@@ -479,6 +497,12 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), (request, r
     console.log("Pase: " + pase);
     console.log("Temperature: " + temperature);
 
+    const tempFilePath = path.join(tempFilesDIR, "tempVoiceSample.wav");
+    await normalizeLoudness(audioPath, tempFilePath);
+
+    await fsp.unlink(audioPath);
+    await fsp.rename(tempFilePath, audioPath);
+
     const pythonProcess = spawn('python', ['./scripts/chatterbotScript.py', data, audioPath, exaggeration, pase, temperature]);
 
     let output = '';
@@ -492,18 +516,24 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), (request, r
     //     console.error(`Python stderr: ${data.toString('utf8')}`);
     // });
 
-    pythonProcess.on('close', (code) => {
+    pythonProcess.on('close', async (code) => {
         if (code === 0) {
             // console.log('Python output:', output);
             // response.send({ text: output.trim() });
 
-            const alterPfad = path.join(__dirname, 'Audiofiles', 'chatterbotOutput.wav');
-            const neuerPfad = path.join(__dirname, 'Audiofiles', filename.split(".")[0].concat('-Voice.wav'));
-            const relativePfad = '/Audiofiles/' + filename.split(".")[0] + '-Voice.wav';
+            const oldPath = path.join(__dirname, 'Audiofiles', 'chatterbotOutput.wav');
+            const newPath = path.join(__dirname, 'Audiofiles', filename.split(".")[0].concat('-Voice.wav'));
+            const relativePath = '/Audiofiles/' + filename.split(".")[0] + '-Voice.wav';
 
-            response.send({ audioPath: relativePfad });
+            const tempFilePath = path.join(tempFilesDIR, filename);
+            await normalizeLoudness(oldPath, tempFilePath);
 
-            fs.rename(alterPfad, neuerPfad, (err) => {
+            await fsp.unlink(oldPath);
+            await fsp.rename(tempFilePath, oldPath);
+
+            response.send({ audioPath: relativePath });
+
+            fs.rename(oldPath, newPath, (err) => {
                 if (err) {
                     console.error('Fehler beim Umbenennen:', err);
                 } else {
@@ -648,4 +678,47 @@ function calculateCost(tokens, Input, Output) {
     const cost = costInput + costOutput;
 
     return { cost, costInput, costOutput };
+}
+
+ffmpeg.setFfmpegPath(ffmpegPath);
+
+function normalizeLoudness(inputAudioPath, outputAudioPath) {
+    return new Promise((resolve, reject) => {
+        ffmpeg(inputAudioPath)
+            .audioFilter('loudnorm')
+            .output(outputAudioPath)
+            .on('end', () => {
+                console.log(`✅ Normalized: ${path.basename(outputAudioPath)}`);
+                resolve();
+            })
+            .on('error', (err) => {
+                console.error(`❌ Error normalizing ${inputAudioPath}:`, err.message);
+                reject(err);
+            })
+            .run();
+    });
+}
+
+// await normalizeFolderLoudness(voiceSampleDIR, voiceSampleLoudnessDIR);
+
+async function normalizeFolderLoudness(inputAudioFolder, outputAudioFolder) {
+    try {
+        await fsp.mkdir(outputAudioFolder, { recursive: true });
+        const files = await fsp.readdir(inputAudioFolder);
+
+        const audioFiles = files.filter(f =>
+            /\.(wav|mp3)$/i.test(f)
+        );
+
+        for (const file of audioFiles) {
+            const inputPath = path.join(inputAudioFolder, file);
+            // const outputName = file.replace(/\.(wav|mp3)$/i, '_FIXEDLOUDNESS.$1');
+            const outputPath = path.join(outputAudioFolder, file);
+            await normalizeLoudness(inputPath, outputPath);
+        }
+
+        console.log(`🎉 Alle ${audioFiles.length} Dateien wurden normalisiert.`);
+    } catch (err) {
+        console.error('❌ Fehler beim Batch-Normalisieren:', err.message);
+    }
 }
