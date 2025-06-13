@@ -24,223 +24,227 @@
 
 <body>
     <script type="text/javascript" src="./scripts/wz_tooltip.js"></script>
-    <div id="siteContent">
-        <div id="returnDiv">
-            <p class="returnText">--- LOG ---</p>
-        </div>
-        <div id="inputContent">
-            <div class="containerVert" id="flexSearch">
-                <h1>Input:</h1>
-                <label for="inputField"></label>
-                <textarea type="text" id="inputFieldSearch" class="textarea" placeholder="Enter Text"></textarea>
-                <div class="divider"></div>
-                <div class="containerHor" id="buttonsContainer">
-                    <div class="containerVert relative">
-                        <div class="containerHor">
-                            <div id="buttonContainer">
-                                <button class="optionButtons" id="button1">
-                                    <div class="material-symbols-outlined buttonIcons">format_list_bulleted</div>
-                                    <p class="buttonText">Generate Text<br>(from Input)</p>
-                                </button>
-                            </div>
-                            <div class="divider dividerButtonVer"></div>
-                            <div id="buttonContainer">
-                                <button class="optionButtons" id="button2">
-                                    <div class="material-symbols-outlined buttonIcons">photo_library</div>
-                                    <p class="buttonText">Generate Image/s<br>(from Input)</p>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="divider dividerButtonHor"></div>
-                        <div class="containerHor">
-                            <div id="buttonContainer">
-                                <button class="optionButtons" id="button3">
-                                    <div class="material-symbols-outlined buttonIcons">mic</div>
-                                    <p class="buttonText">Transcribe Audio<br>(RECORD)</p>
-                                </button>
-                            </div>
-                            <div class="divider dividerButtonVer"></div>
-                            <div id="buttonContainer">
-                                <button class="optionButtons" id="button4">
-                                    <div class="material-symbols-outlined buttonIcons">graphic_eq</div>
-                                    <p class="buttonText">Generate Voice<br>(from Input)</p>
-                                </button>
-                            </div>
-                        </div>
-                        <div id="hideControls"></div>
-                    </div>
+    <div id="siteCenterer">
+        <div id="bodyContainer">
+            <div id="siteContent">
+                <div id="returnDiv">
+                    <p class="returnText">--- LOG ---</p>
                 </div>
-                <div class="divider"></div>
-                <div class="divider"></div>
-                <div id="audioSampleDropzone" class="dropzone">
-                    Drop<br>Audio Sample
-                    <input type="file" id="inputAudioSample" accept="audio/*" hidden>
-                </div>
-                <div class="divider"></div>
-                <div class="containerHor">
-                    <div class="inputFlexChoice" id="chatterbotFlexChoice">
-                        <form class="inputForm" id="chatterbotChoiceForm">
-                            <fieldset class="inputFieldset" id="chatterbotFieldset">
-                                <legend class="inputFieldsetLabel" id="chatterbotLabel">Audio Models</legend>
+                <div id="inputContent">
+                    <div class="containerVert" id="flexSearch">
+                        <h1>Input:</h1>
+                        <label for="inputField"></label>
+                        <textarea type="text" id="inputFieldSearch" class="textarea" placeholder="Enter Text"></textarea>
+                        <div class="divider"></div>
+                        <div class="containerHor" id="buttonsContainer">
+                            <div class="containerVert relative">
                                 <div class="containerHor">
-                                    <div class="containerVert" id="audioModelsLeft">
-                                        <p class="inputHeader">Transcription</p>
-                                        <div class="inputContainer inputCheckboxContainer">
-                                            <input type="checkbox" class="inputInput inputCheckbox" id="sendTextToLLM" name="sendTextToLLM">
-                                            <label for="sendTextToLLM" class="inputLabel inputCheckboxLabel">send to LLM</label>
-                                        </div>
-                                        <p class="inputHeader">Generate Voice</p>
-                                        <div class="inputContainer inputCheckboxContainer">
-                                            <input type="checkbox" class="inputInput inputCheckbox" id="createVoiceLLM" name="createVoiceLLM">
-                                            <label for="createVoiceLLM" class="inputLabel inputCheckboxLabel">for LLM</label>
-                                        </div>
-                                        <div class="inputContainer inputCheckboxContainer">
-                                            <input type="checkbox" class="inputInput inputCheckbox" id="createVoice" name="createVoice">
-                                            <label for="createVoice" class="inputLabel inputCheckboxLabel">for Transcript</label>
-                                        </div>
-                                        <div class="inputContainer inputCheckboxContainer">
-                                            <input type="checkbox" class="inputInput inputCheckbox" id="sendAudioSample" name="sendAudioSample" checked>
-                                            <label for="sendAudioSample" class="inputLabel inputCheckboxLabel">Use Audio Sample</label>
-                                        </div>
+                                    <div id="buttonContainer">
+                                        <button class="optionButtons" id="button1">
+                                            <div class="material-symbols-outlined buttonIcons">format_list_bulleted</div>
+                                            <p class="buttonText">Generate Text<br>(from Input)</p>
+                                        </button>
                                     </div>
-                                    <div class="containerVert" id="audioModelsRight">
-                                        <p class="inputHeader">Voice Parameters</p>
-                                        <p class="inputHeader valueHeader" id="exaggerationValue">Exaggeration</p>
-                                        <div class="inputContainer inputTextContainer" id="exaggerationRange">
-                                            <input type="range" class="inputInput inputRange" id="cbExaggeration" name="cbExaggeration" valuemin="0" max="2" step="0.05" value="0.5">
-                                        </div>
-                                        <p class="inputHeader valueHeader" id="paceValue">Pase</p>
-                                        <div class="inputContainer inputTextContainer" id="paseRange">
-                                            <input type="range" class="inputInput inputRange" id="cbPase" name="cbPase" min="0" max="2" step="0.05" value="0.2">
-                                        </div>
-                                        <p class="inputHeader valueHeader" id="temperatureValue">Temperature</p>
-                                        <div class="inputContainer inputTextContainer" id="temperatureRange">
-                                            <input type="range" class="inputInput inputRange" id="cbTemperature" name="cbTemperature" min="0" max="2" step="0.05" value="0.5">
-                                        </div>
+                                    <div class="divider dividerButtonVer"></div>
+                                    <div id="buttonContainer">
+                                        <button class="optionButtons" id="button2">
+                                            <div class="material-symbols-outlined buttonIcons">photo_library</div>
+                                            <p class="buttonText">Generate Image/s<br>(from Input)</p>
+                                        </button>
                                     </div>
                                 </div>
-                            </fieldset>
-                        </form>
+                                <div class="divider dividerButtonHor"></div>
+                                <div class="containerHor">
+                                    <div id="buttonContainer">
+                                        <button class="optionButtons" id="button3">
+                                            <div class="material-symbols-outlined buttonIcons">mic</div>
+                                            <p class="buttonText">Transcribe Audio<br>(RECORD)</p>
+                                        </button>
+                                    </div>
+                                    <div class="divider dividerButtonVer"></div>
+                                    <div id="buttonContainer">
+                                        <button class="optionButtons" id="button4">
+                                            <div class="material-symbols-outlined buttonIcons">graphic_eq</div>
+                                            <p class="buttonText">Generate Voice<br>(from Input)</p>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="hideControls"></div>
+                            </div>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="divider"></div>
+                        <div id="audioSampleDropzone" class="dropzone">
+                            Drop<br>Audio Sample
+                            <input type="file" id="inputAudioSample" accept="audio/*" hidden>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="containerHor">
+                            <div class="inputFlexChoice" id="chatterbotFlexChoice">
+                                <form class="inputForm" id="chatterbotChoiceForm">
+                                    <fieldset class="inputFieldset" id="chatterbotFieldset">
+                                        <legend class="inputFieldsetLabel" id="chatterbotLabel">Audio Models</legend>
+                                        <div class="containerHor">
+                                            <div class="containerVert" id="audioModelsLeft">
+                                                <p class="inputHeader">Transcription</p>
+                                                <div class="inputContainer inputCheckboxContainer">
+                                                    <input type="checkbox" class="inputInput inputCheckbox" id="sendTextToLLM" name="sendTextToLLM">
+                                                    <label for="sendTextToLLM" class="inputLabel inputCheckboxLabel">send to LLM</label>
+                                                </div>
+                                                <p class="inputHeader">Generate Voice</p>
+                                                <div class="inputContainer inputCheckboxContainer">
+                                                    <input type="checkbox" class="inputInput inputCheckbox" id="createVoiceLLM" name="createVoiceLLM">
+                                                    <label for="createVoiceLLM" class="inputLabel inputCheckboxLabel">for LLM</label>
+                                                </div>
+                                                <div class="inputContainer inputCheckboxContainer">
+                                                    <input type="checkbox" class="inputInput inputCheckbox" id="createVoice" name="createVoice">
+                                                    <label for="createVoice" class="inputLabel inputCheckboxLabel">for Transcript</label>
+                                                </div>
+                                                <div class="inputContainer inputCheckboxContainer">
+                                                    <input type="checkbox" class="inputInput inputCheckbox" id="sendAudioSample" name="sendAudioSample" checked>
+                                                    <label for="sendAudioSample" class="inputLabel inputCheckboxLabel">Use Audio Sample</label>
+                                                </div>
+                                            </div>
+                                            <div class="containerVert" id="audioModelsRight">
+                                                <p class="inputHeader">Voice Parameters</p>
+                                                <p class="inputHeader valueHeader" id="exaggerationValue">Exaggeration</p>
+                                                <div class="inputContainer inputTextContainer" id="exaggerationRange">
+                                                    <input type="range" class="inputInput inputRange" id="cbExaggeration" name="cbExaggeration" valuemin="0" max="2" step="0.05" value="0.5">
+                                                </div>
+                                                <p class="inputHeader valueHeader" id="paceValue">Pase</p>
+                                                <div class="inputContainer inputTextContainer" id="paseRange">
+                                                    <input type="range" class="inputInput inputRange" id="cbPase" name="cbPase" min="0" max="2" step="0.05" value="0.2">
+                                                </div>
+                                                <p class="inputHeader valueHeader" id="temperatureValue">Temperature</p>
+                                                <div class="inputContainer inputTextContainer" id="temperatureRange">
+                                                    <input type="range" class="inputInput inputRange" id="cbTemperature" name="cbTemperature" min="0" max="2" step="0.05" value="0.5">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="containerHor">
+                            <div class="inputFlexChoice" id="llmFlexChoice">
+                                <form class="inputForm" id="llmChoiceForm">
+                                    <fieldset class="inputFieldset" id="llmFieldset">
+                                        <legend class="inputFieldsetLabel" id="llmLabel">Language Models</legend>
+                                        <p class="inputHeader">Model</p>
+                                        <div class="inputContainer inputRadioContainer">
+                                            <input type="radio" class="inputInput inputRadioButton gptRadio" id="radioChatGPT" name="model" value="gpt-4.1-mini-2025-04-14" checked>
+                                            <label for="radioChatGPT" class="inputLabel inputRadioLabel">GPT4.1 mini<br><span class="tSmall">$ 0.4 | 1.6 / mil</span></label>
+                                        </div>
+                                        <div class="inputContainer inputRadioContainer">
+                                            <input type="radio" class="inputInput inputRadioButton gptRadio" id="radioGPT4" name="model" value="gpt-4.1-2025-04-14">
+                                            <label for="radioGPT4" class="inputLabel inputRadioLabel">GPT4.1<br><span class="tSmall">$ 2 | 8 / mil</span></label>
+                                        </div>
+                                        <p class="inputHeader">Personality</p>
+                                        <div class="inputContainer inputCheckboxContainer">
+                                            <input type="checkbox" class="inputInput inputCheckbox" id="llmChoosePersonality" name="llmChoosePersonality">
+                                            <label for="llmChoosePersonality" class="inputLabel inputCheckboxLabel">LLM chooses</label>
+                                        </div>
+                                        <div class="inputContainer inputLLMpersonality">
+                                            <select name="NumberOfImages" class="inputInput inputDropdown" id="llmPersonality">
+                                                <option value="Random" checked>Pick Random</option>
+                                                <option disabled value="">⎯ LLM Personalities ⎯⎯⎯</option>
+                                                <option value="Useful&Efficient" checked>Useful & Efficient</option>
+                                                <option value="Sarcastic&Nihilistic">Sarcastic & Nihilistic</option>
+                                                <option value="Playful&Flirty">Playful & Positive</option>
+                                                <option value="Romantic">Romantic</option>
+                                                <option value="Pessimist">Pessimist</option>
+                                                <option value="MelancholicPoet">Melancholic Poet</option>
+                                                <option value="Shy&Introverted">Shy & Introverted</option>
+                                                <option disabled value="">⎯ Characters&nbsp; ⎯⎯⎯⎯⎯⎯⎯⎯</option>
+                                                <option value="Julia">Julia</option>
+                                                <option value="AlbertEinstein">Albert Einstein</option>
+                                                <option value="SamAltman">Sam Altman</option>
+                                            </select>
+                                            <!-- <label for="NumberOfImages" class="inputLabel inputDropdownlLabel">Personality</label> -->
+                                        </div>
+                                        <p class="inputHeader">Conversation</p>
+                                        <div class="inputContainer inputCheckboxContainer">
+                                            <input type="checkbox" class="inputInput inputCheckbox" id="llmRandomInitate" name="llmRandomInitate">
+                                            <label for="llmRandomInitate" class="inputLabel inputCheckboxLabel">Rnd Initiate</label>
+                                        </div>
+                                        <div class="inputContainer inputNumberContainer">
+                                            <input type="Number" class="inputNumber" id="llmRandomInitiateMin" min="1" max="999" value="10">
+                                            <p class="dividerText">to</p>
+                                            <input type="Number" class="inputNumber" id="llmRandomInitiateMax" min="1" max="999" value="60">
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
+                            <div class="divider"></div>
+                            <div class="inputFlexChoice" id="imgFlexChoice">
+                                <form class="inputForm" id="imgChoiceForm">
+                                    <fieldset class="inputFieldset" id="imgFieldset">
+                                        <legend class="inputFieldsetLabel" id="imgLabel">Image Models</legend>
+                                        <p class="inputHeader">Image Model</p>
+                                        <div class="inputContainer inputRadioContainer">
+                                            <input type="radio" class="inputInput inputRadioButton imgRadio" id="radioIMAGE" name="imgModel" value="IMAGEN" checked>
+                                            <label for="radioIMAGE" class="inputLabel inputRadioLabel">IMAGEN<br><span class="tSmall">$ 0.04</span></label>
+                                        </div>
+                                        <div class="inputContainer inputRadioContainer">
+                                            <input type="radio" class="inputInput inputRadioButton imgRadio" id="radioDALLE" name="imgModel" value="DALL-E">
+                                            <label for="radioDALLE" class="inputLabel inputRadioLabel">DALL-E<br><span class="tSmall">$ 0.08</span></label>
+                                        </div>
+                                        <p class="inputHeader">Settings</p>
+                                        <div class="inputContainer inputImagesContainer">
+                                            <select name="NumberOfImages" class="inputInput inputDropdown" id="nOfIMGs">
+                                                <option value="1" selected>1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                                <option value="6">6</option>
+                                                <option value="7">7</option>
+                                                <option value="8">8</option>
+                                            </select>
+                                            <label for="NumberOfImages" class="inputLabel inputDropdownlLabel">Amount</label>
+                                        </div>
+                                        <div class="inputContainer inputCheckboxContainer">
+                                            <input type="checkbox" class="inputInput inputCheckbox" id="createIMGwithText" name="createIMGwithText">
+                                            <label for="createIMGwithText" class="inputLabel inputCheckboxLabel">with LLM answer</label>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="containerVert" id="flexReturn">
+                        <button id="clearResultButton">
+                            <span class="material-symbols-outlined" id="iconDelete">delete</span>
+                        </button>
+                    </div>
+                    <div id="flexLogo">
+                        <div id="logoContainer">
+                            <img id="logoIMG" src="./images/Logo.png" alt="REWE Logo">
+                        </div>
+                        <div id="loadingContainer">
+                            <!-- <img id="loadingIMG" src="./images/LoadingArrows.png" alt="REWE Loading Arrows"> -->
+                            <div class="material-symbols-outlined" id="iconLoading">cached</div>
+                        </div>
                     </div>
                 </div>
-                <div class="divider"></div>
-                <div class="containerHor">
-                    <div class="inputFlexChoice" id="llmFlexChoice">
-                        <form class="inputForm" id="llmChoiceForm">
-                            <fieldset class="inputFieldset" id="llmFieldset">
-                                <legend class="inputFieldsetLabel" id="llmLabel">Language Models</legend>
-                                <p class="inputHeader">Model</p>
-                                <div class="inputContainer inputRadioContainer">
-                                    <input type="radio" class="inputInput inputRadioButton gptRadio" id="radioChatGPT" name="model" value="gpt-4.1-mini-2025-04-14" checked>
-                                    <label for="radioChatGPT" class="inputLabel inputRadioLabel">GPT4.1 mini<br><span class="tSmall">$ 0.4 | 1.6 / mil</span></label>
-                                </div>
-                                <div class="inputContainer inputRadioContainer">
-                                    <input type="radio" class="inputInput inputRadioButton gptRadio" id="radioGPT4" name="model" value="gpt-4.1-2025-04-14">
-                                    <label for="radioGPT4" class="inputLabel inputRadioLabel">GPT4.1<br><span class="tSmall">$ 2 | 8 / mil</span></label>
-                                </div>
-                                <p class="inputHeader">Personality</p>
-                                <div class="inputContainer inputCheckboxContainer">
-                                    <input type="checkbox" class="inputInput inputCheckbox" id="llmChoosePersonality" name="llmChoosePersonality">
-                                    <label for="llmChoosePersonality" class="inputLabel inputCheckboxLabel">LLM chooses</label>
-                                </div>
-                                <div class="inputContainer inputLLMpersonality">
-                                    <select name="NumberOfImages" class="inputInput inputDropdown" id="llmPersonality">
-                                        <option value="Random" checked>Pick Random</option>
-                                        <option disabled value="">⎯ LLM Personalities ⎯⎯⎯</option>
-                                        <option value="Useful&Efficient" checked>Useful & Efficient</option>
-                                        <option value="Sarcastic&Nihilistic">Sarcastic & Nihilistic</option>
-                                        <option value="Playful&Flirty">Playful & Positive</option>
-                                        <option value="Romantic">Romantic</option>
-                                        <option value="Pessimist">Pessimist</option>
-                                        <option value="MelancholicPoet">Melancholic Poet</option>
-                                        <option value="Shy&Introverted">Shy & Introverted</option>
-                                        <option disabled value="">⎯ Characters&nbsp; ⎯⎯⎯⎯⎯⎯⎯⎯</option>
-                                        <option value="Julia">Julia</option>
-                                        <option value="AlbertEinstein">Albert Einstein</option>
-                                        <option value="SamAltman">Sam Altman</option>
-                                    </select>
-                                    <!-- <label for="NumberOfImages" class="inputLabel inputDropdownlLabel">Personality</label> -->
-                                </div>
-                                <p class="inputHeader">Conversation</p>
-                                <div class="inputContainer inputCheckboxContainer">
-                                    <input type="checkbox" class="inputInput inputCheckbox" id="llmRandomInitate" name="llmRandomInitate">
-                                    <label for="llmRandomInitate" class="inputLabel inputCheckboxLabel">Rnd Initiate</label>
-                                </div>
-                                <div class="inputContainer inputNumberContainer">
-                                    <input type="Number" class="inputNumber" id="llmRandomInitiateMin" min="1" max="999" value="10">
-                                    <p class="dividerText">to</p>
-                                    <input type="Number" class="inputNumber" id="llmRandomInitiateMax" min="1" max="999" value="60">
-                                </div>
-                            </fieldset>
-                        </form>
-                    </div>
-                    <div class="divider"></div>
-                    <div class="inputFlexChoice" id="imgFlexChoice">
-                        <form class="inputForm" id="imgChoiceForm">
-                            <fieldset class="inputFieldset" id="imgFieldset">
-                                <legend class="inputFieldsetLabel" id="imgLabel">Image Models</legend>
-                                <p class="inputHeader">Image Model</p>
-                                <div class="inputContainer inputRadioContainer">
-                                    <input type="radio" class="inputInput inputRadioButton imgRadio" id="radioIMAGE" name="imgModel" value="IMAGEN" checked>
-                                    <label for="radioIMAGE" class="inputLabel inputRadioLabel">IMAGEN<br><span class="tSmall">$ 0.04</span></label>
-                                </div>
-                                <div class="inputContainer inputRadioContainer">
-                                    <input type="radio" class="inputInput inputRadioButton imgRadio" id="radioDALLE" name="imgModel" value="DALL-E">
-                                    <label for="radioDALLE" class="inputLabel inputRadioLabel">DALL-E<br><span class="tSmall">$ 0.08</span></label>
-                                </div>
-                                <p class="inputHeader">Settings</p>
-                                <div class="inputContainer inputImagesContainer">
-                                    <select name="NumberOfImages" class="inputInput inputDropdown" id="nOfIMGs">
-                                        <option value="1" selected>1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                        <option value="6">6</option>
-                                        <option value="7">7</option>
-                                        <option value="8">8</option>
-                                    </select>
-                                    <label for="NumberOfImages" class="inputLabel inputDropdownlLabel">Amount</label>
-                                </div>
-                                <div class="inputContainer inputCheckboxContainer">
-                                    <input type="checkbox" class="inputInput inputCheckbox" id="createIMGwithText" name="createIMGwithText">
-                                    <label for="createIMGwithText" class="inputLabel inputCheckboxLabel">with LLM answer</label>
-                                </div>
-                            </fieldset>
-                        </form>
-                    </div>
+                <div id="resultContainer">
+                    <div id="result"></div>
                 </div>
             </div>
-            <div class="containerVert" id="flexReturn">
-                <button id="clearResultButton">
-                    <span class="material-symbols-outlined" id="iconDelete">delete</span>
-                </button>
-            </div>
-            <div id="flexLogo">
-                <div id="logoContainer">
-                    <img id="logoIMG" src="./images/Logo.png" alt="REWE Logo">
-                </div>
-                <div id="loadingContainer">
-                    <!-- <img id="loadingIMG" src="./images/LoadingArrows.png" alt="REWE Loading Arrows"> -->
-                    <div class="material-symbols-outlined" id="iconLoading">cached</div>
-                </div>
-            </div>
-        </div>
-        <div id="resultContainer">
-            <div id="result"></div>
-        </div>
-    </div>
-    <div id="footerContainer">
-        <div id="footer">
-            <!-- <a href="https://www.michael-weidenfeld.de/impressum" class="footerLink" target="_blank">
+            <div id="footerContainer">
+                <div id="footer">
+                    <!-- <a href="https://www.michael-weidenfeld.de/impressum" class="footerLink" target="_blank">
                 IMPESSUM
             </a> -->
-            <a href="https://mwmotiondesign.webflow.io/kontakt" class="footerLink" target="_blank">
-                ENTWICKLER
-            </a>
-            <p class="footerText">
-                MICHAVERSE - EST 1983
-            </p>
+                    <a href="https://mwmotiondesign.webflow.io/kontakt" class="footerLink" target="_blank">
+                        ENTWICKLER
+                    </a>
+                    <p class="footerText">
+                        MICHAVERSE - EST 1983
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 </body>
