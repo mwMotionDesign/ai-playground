@@ -13,6 +13,7 @@ import fetch from 'node-fetch';
 
 import { Configuration, OpenAIApi } from "openai";
 import aiplatform from '@google-cloud/aiplatform';
+import { TranslationServiceClient } from '@google-cloud/translate';
 
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegPath from 'ffmpeg-static';
@@ -353,7 +354,7 @@ app.post("/createAIimages", async (request, response) => {
     }
 });
 
-//----- TRANSCRIPTION (Whisper) -----//
+//----- TRANSCRIPTION (WHISPER) -----//
 
 const audiofilesDIR = path.join(__dirname, "Audiofiles");
 if (!fs.existsSync(audiofilesDIR)) { fs.mkdirSync(audiofilesDIR); }
@@ -568,6 +569,50 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
             response.status(500).send("Chatterbox Script Failed!");
         }
     });
+});
+
+//----- TRANSLATE (GOOGLE) -----//
+
+app.post("/translateText", async (request, response) => {
+    console.log("");
+    console.log("");
+    console.log("--- Translating Text ---");
+
+    const text = request.body.text;
+    const targetLanguage = request.body.targetLanguage;
+    const location = 'global'; // oder z. B. 'us-central1'
+
+    console.log("");
+    console.log("Target Language:", targetLanguage);
+    console.log("Text to Translate:", text);
+
+    if (!text || !targetLanguage) {
+        return res.status(400).json({ error: "Fehlender Text oder Ziel-Sprache" });
+    }
+
+    // const translateClient = new TranslationServiceClient();
+
+    const config = {
+        parent: `projects/${projectId}/locations/${location}`,
+        contents: [text],
+        mimeType: 'text/plain',
+        targetLanguageCode: targetLanguage,
+    };
+
+    try {
+        const [translation] = await new TranslationServiceClient().translateText(config);
+        const translatedText = translation.translations[0].translatedText;
+
+        console.log("Translation:", translatedText);
+
+        response.json(translatedText);
+    } catch (error) {
+        console.warn("❌ Fehler bei der Übersetzung:", error.message);
+        response.status(500).json({ error: "Failed to translate text." });
+    }
+
+    async function translateText(text, targetLanguage) {
+    }
 });
 
 

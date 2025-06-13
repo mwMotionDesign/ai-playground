@@ -499,12 +499,14 @@ const createVoiceLLM = document.getElementById("createVoiceLLM");
 const imgRadio = document.querySelectorAll(".imgRadio");
 const nOfImgs = document.getElementById("nOfIMGs");
 const createIMGwithText = document.getElementById("createIMGwithText");
+const translateDOM = document.getElementById("translate");
 
 let model = textModel1;
 let voiceLLM = createVoiceLLM.checked;
 let imgModel = imgModel2;
 let nIMGs = nOfImgs.value;
 let imgWithText = createIMGwithText.checked;
+let translate = translateDOM.checked;
 
 for (let i = 0; i < modelRadio.length; i++) {
     modelRadio[i].addEventListener("change", () => {
@@ -531,6 +533,11 @@ createIMGwithText.addEventListener("change", () => {
     console.log("");
     console.log("EL - Changing Image with LLM: " + createIMGwithText.checked);
     imgWithText = createIMGwithText.checked;
+});
+translateDOM.addEventListener("change", () => {
+    console.log("");
+    console.log("EL - Translate: " + translateDOM.checked);
+    translate = translateDOM.checked;
 });
 
 

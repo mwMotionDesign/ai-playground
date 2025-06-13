@@ -74,32 +74,44 @@ async function generateResponse(type, text = "") {
     }
 }
 
+let inputValue = "";
+
 async function buildText(text = "", isForwarded = false) {
     console.log("");
     console.log("BUILD TEXT - Start");
 
     let message = {};
     let textResult = "";
+    let inputValueOld = "";
+    inputValue = inputField.value;
 
     addInitialLog("Text", keyRequest);
     keyRequest = false;
+
+    if (text == "" && inputValue != "") {
+        outputText("header", "Input");
+        outputText("link", inputValue);
+
+        if (translate) {
+            addReturnText("", "... forwarding to Translation");
+            inputValueOld = inputValue;
+            inputValue = await translateToLanguage(inputValue);
+
+            outputText("noLink", "<span class='tBold'>Translation</span>");
+            outputText("link", inputValue);
+        }
+    }
 
     // Push to Conversation History
     if (!isForwarded && text != pushLLMessageConstructed) {
         if (text != "") {
             message = ({ role: "User", message: text });
         }
-        else if (inputField.value != "") {
-            message = ({ role: "User", message: inputField.value });
+        else if (inputValue != "") {
+            message = ({ role: "User", message: inputValue });
         }
         conversationHistory.push(message);
         console.log("BUILD TEXT - Conversation History: ", conversationHistory);
-    }
-
-    // Create Input-Output
-    if (text == "" && inputField.value != "") {
-        outputText("header", "Input");
-        outputText("link", inputField.value);
     }
 
     // Random Personality
@@ -185,6 +197,13 @@ async function buildTranscript() {
 
         transcriptResult = await generateRecording();
 
+        if (translate) {
+            outputText("link", transcriptResult.text);
+            outputText("noLink", "<span class='tBold'>Translation</span>");
+            addReturnText("", "... forwarding to Translation");
+            transcriptResult.text = await translateToLanguage(transcriptResult.text);
+        }
+
         outputText("link", transcriptResult.text);
 
         if (cbValues.createVoice) {
@@ -223,7 +242,7 @@ async function generateText(systemPromptToSend = "", text = "", nOfTokens = 10, 
     console.log("");
     console.log("GENERATE TEXT - Start");
 
-    let inputText = inputField.value;
+    let inputText = inputValue;
     if (text != "") { inputText = text; }
 
     let responseText
@@ -542,5 +561,35 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
         addReturnText("<div class='material-symbols-outlined returnIcons cRed'>close</div>", " ERROR");
         console.log("AI RESPONSE ERROR:");
         console.error(error);
+    }
+}
+
+async function translateToLanguage(text, targetLanguage = "en") {
+    console.log("");
+    console.log("TRANSLATE - Start");
+
+    console.log("TRANSLATE - Trget Language:", targetLanguage);
+    console.log("TRANSLATE - Text to translate:", text);
+
+    if (text != "") {
+        const data = {
+            text: text,
+            targetLanguage: targetLanguage
+        };
+
+        try {
+            const response = await fetch("/translateText", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+            const jsonAI = await response.json();
+
+            console.log("TRANSLATE - Translation:", jsonAI);
+
+            return jsonAI;
+        } catch (error) {
+            console.error("TRANSLATE - AI RESPONSE ERROR:", error);
+        }
     }
 }
