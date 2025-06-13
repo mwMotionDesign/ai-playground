@@ -387,6 +387,7 @@ app.post("/transcribeAudio", uploadAudio.single("audio"), async (request, respon
 
 
     if (!request.file || !request.file.path) {
+        console.warn("");
         console.warn("🚫 Keine Datei im Request vorhanden");
     }
     else {
@@ -438,6 +439,7 @@ app.post("/transcribeAudio", uploadAudio.single("audio"), async (request, respon
 
             // DELETING FILES
             if (!request.file || !request.file.path) {
+                console.warn("");
                 console.warn("🚫 Keine Datei im Request vorhanden");
             }
             else {
@@ -508,6 +510,7 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
     console.log("Temperature: " + temperature);
 
     if (!audioPath) {
+        console.warn("");
         console.warn("🚫 Keine Datei im Request vorhanden");
     }
     else {
@@ -540,6 +543,7 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
             const relativePath = '/Audiofiles/' + filename.split(".")[0] + '-Voice.wav';
 
             if (!oldPath) {
+                console.warn("");
                 console.warn("🚫 Keine Datei im Request vorhanden");
             }
             else {
@@ -706,10 +710,12 @@ async function normalizeLoudness(inputAudioPath, outputAudioPath) {
             .audioFilter('loudnorm')
             .output(outputAudioPath)
             .on('end', () => {
+                console.log("");
                 console.log(`✅ Normalized: ${path.basename(outputAudioPath)}`);
                 resolve();
             })
             .on('error', (err) => {
+                console.log("");
                 console.warn(`❌ Normalizing Error ${inputAudioPath}:`, err.message);
                 reject(err);
             })
