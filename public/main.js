@@ -136,7 +136,7 @@ async function buildText(text = "", isForwarded = false) {
             manipulatedOutput = textResult.responseTextFormatted;
         }
 
-        outputText("header", "LLM");
+        outputText("header", "Large Language Model");
         outputText("link", manipulatedOutput);
     }
 

@@ -3,9 +3,10 @@
     --debugColor: rgba(255, 255, 255, 0.0);
 
 
-    --backgroundColor: rgb(10, 10, 10);
+    --backgroundColor: rgb(15, 15, 15);
     --backgroundDarkener: rgba(0, 0, 0, 0.7);
     --backgroundBrightener: rgb(0, 0, 0);
+    --footerColor: rgb(40, 40, 40);
 
     --firstHighlight: rgb(255, 166, 0);
     --secondHighlight: rgb(0, 194, 94);
@@ -26,15 +27,22 @@
     --inputFieldPlaceholderText: rgba(0, 0, 0, 0.4);
     --inputFieldText: rgb(0, 0, 0);
 
-    --resultLinkColor: rgb(0, 0, 0);
-    --resultLinkColorHover: rgb(30, 0, 0);
-
-    --backgroundResults: rgba(255, 255, 255, 0.04);
+    --backgroundResults: rgba(0, 0, 0, 1);
     /* --backgroundResults: rgba(255, 0, 0, 0.04); */
     --backgroundIMGs: rgb(30, 0, 0);
     /* --backgroundIMGs: rgba(255, 255, 255, 0.02); */
 
+    --resultLinkColor: var(--backgroundIMGs);
+    --resultLinkColorHover: rgb(60, 0, 0);
+
+    --resultMarginLeft: 20px;
+    --resultMarginRight: 20px;
+
     --dividerColor: rgba(255, 255, 255, 0.03);
+
+    --backgroundScrollbar: var(--backgroundColor);
+    --backgroundScrollbarThumb: rgb(255, 255, 255, 0.2);
+    --backgroundScrollbarThumbHover: rgba(255, 255, 255, 0.4);
 
     --red: rgb(204, 7, 30);
     --green: rgb(88, 214, 83);
@@ -42,6 +50,12 @@
 
     --heightBottom: 30px;
     --buttonHeight: 60px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
 
 .cRed {
@@ -282,7 +296,7 @@ h2 {
 /* LEFT */
 
 #inputContent {
-    min-width: 650px;
+    min-width: 450px;
     width: 30%;
     display: flex;
     flex-direction: column;
@@ -471,15 +485,23 @@ h1 {
 }
 
 #llmFlexChoice {
-    flex: 0 0 180px;
+    flex: 1 0 180px;
 }
 
 #imgFlexChoice {
-    flex: 0 0 160px;
+    flex: 1 0 160px;
 }
 
 #chatterbotFlexChoice {
-    flex: 1 0 180px;
+    flex: 1 0 360px;
+}
+
+#audioModelsLeft {
+    flex: 1 0 165px;
+}
+
+#audioModelsRight {
+    flex: 1 0 120px;
 }
 
 .inputForm {
@@ -687,7 +709,7 @@ h1 {
     box-shadow: inset 0px 0px 0px 0px var(--backgroundColor);
 }
 
-#paceValue {
+/* #paceValue {
     display: none;
 }
 
@@ -697,7 +719,7 @@ h1 {
 
 #cbPase {
     display: none;
-}
+} */
 
 .inputDropdown:hover {
     cursor: pointer;
@@ -706,11 +728,11 @@ h1 {
 /* FILE UPLOAD */
 
 .dropzone {
-    flex: 0 0 150px;
+    flex: 1 0 100px;
 }
 
 .dropzone {
-    margin: 0px 0px 0px 0px;
+    width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -753,7 +775,9 @@ h1 {
 /* RETURN */
 
 #returnDiv {
-    width: 100%;
+    flex: 1 0 210px;
+    /* min-width: 200px; */
+    max-width: 210px;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -793,6 +817,7 @@ h1 {
 #loadingContainer {
     width: 100%;
     height: 100px;
+    margin: 0px 0px 15px;
     background-color: var(--debugColor);
 }
 
@@ -847,7 +872,7 @@ h1 {
 /* RIGHT */
 
 #resultContainer {
-    flex: 1 0 700px;
+    flex: 1 0 500px;
     position: relative;
     min-height: 100%;
     background-color: var(--backgroundResults);
@@ -908,7 +933,7 @@ h1 {
     width: calc(100% - 120px);
     height: 3px;
     border-radius: 10px;
-    margin: 15px 0px 0px 50px;
+    margin: 15px calc(var(--resultMarginRight) + 0px) 0px calc(var(--resultMarginLeft) + 30px);
     background-color: var(--dividerColor);
 }
 
@@ -920,8 +945,9 @@ h1 {
 
 .resultAudio {
     position: absolute;
-    left: 50px;
+    left: calc(var(--resultMarginLeft) + 50px);
     top: -4px;
+    /* width: calc(100% - var(--resultMarginLeft) - var(--resultMarginRight) - 50px); */
     width: calc(100% - 200px);
     max-width: 500px;
     height: 20px;
@@ -934,7 +960,7 @@ h1 {
     color: var(--dimText);
     font-size: 20px;
     line-height: 1.2;
-    padding: 15px 20px 2px 20px;
+    margin: 10px var(--resultMarginRight) 2px calc(var(--resultMarginLeft) + 0px);
     text-align: left;
 }
 
@@ -942,7 +968,7 @@ h1 {
     color: var(--normalTextAndOutlines);
     font-size: 18px;
     line-height: 1.4;
-    padding: 6px 20px 2px 30px;
+    margin: 6px var(--resultMarginRight) 2px calc(var(--resultMarginLeft) + 30px);
     text-align: left;
 }
 
@@ -950,7 +976,7 @@ h1 {
     color: var(--normalTextAndOutlines);
     font-size: 18px;
     line-height: 1.4;
-    margin: -7px 20px 2px 40px;
+    margin: -5px var(--resultMarginRight) 2px calc(var(--resultMarginLeft) + 20px);
     text-align: left;
     padding: 8px 17px 7px 12px;
     border-radius: 7px;
@@ -973,7 +999,6 @@ h1 {
     width: calc(100% - 10px);
     text-align: right;
     padding: 2px;
-    /* margin: 10px 0; */
     position: relative;
 }
 
@@ -1027,7 +1052,7 @@ h1 {
     justify-content: flex-start;
     align-items: center;
     margin: 10px 0px 0px;
-    padding: 20px 10px;
+    padding: 20px 20px;
     box-shadow: inset 0px -1px 2px rgba(255, 255, 255, 0.3), inset 0px 1px 2px rgba(255, 255, 255, 0.15), inset 0px 3px 5px rgba(0, 0, 0, 0.5);
 }
 
@@ -1099,6 +1124,27 @@ h1 {
     transform: translate(5%, 5%);
 }
 
+/* Gesamte Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+/* Hintergrund (Track) */
+::-webkit-scrollbar-track {
+    background: var(--backgroundScrollbar);
+}
+
+/* Griff (Thumb) */
+::-webkit-scrollbar-thumb {
+    background: var(--backgroundScrollbarThumb);
+    border-radius: 4px;
+}
+
+/* Hover-Effekt */
+::-webkit-scrollbar-thumb:hover {
+    background: var(--backgroundScrollbarThumbHover);
+}
 
 /* FOOTER */
 
@@ -1109,7 +1155,7 @@ h1 {
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
-    background-color: var(--debugColor);
+    background-color: var(--footerColor);
     padding: 0px 10px;
 }
 
