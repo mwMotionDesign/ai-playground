@@ -387,16 +387,16 @@ app.post("/transcribeAudio", uploadAudio.single("audio"), async (request, respon
     console.log("Filepath: " + request.file.path);
 
 
-    if (!request.file || !request.file.path) {
-        console.warn("");
-        console.warn("🚫 Keine Datei im Request vorhanden");
-    }
-    else {
-        const tempFilePath = path.join(tempFilesDIR, filename);
-        await normalizeLoudness(request.file.path, tempFilePath);
-        await fsp.unlink(request.file.path);
-        await fsp.rename(tempFilePath, request.file.path);
-    }
+    // if (!request.file || !request.file.path) {
+    //     console.warn("");
+    //     console.warn("🚫 Keine Datei im Request vorhanden");
+    // }
+    // else {
+    //     const tempFilePath = path.join(tempFilesDIR, filename);
+    //     await normalizeLoudness(request.file.path, tempFilePath);
+    //     await fsp.unlink(request.file.path);
+    //     await fsp.rename(tempFilePath, request.file.path);
+    // }
 
     const pythonProcess = spawn('python', ['./scripts/whisperScript.py', request.file.path]);
 

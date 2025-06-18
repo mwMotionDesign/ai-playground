@@ -423,22 +423,23 @@ function formatToText(inputText) {
 }
 
 function removePersonalityMarkers(inputText) {
-    // console.log(""");
-    // console.log("REMOVE MARKER - Started");
+    console.log("");
+    console.log("REMOVE MARKER - Started");
     let slicedText = "";
 
     for (i = 0; i < pesonalityMarkers.length; i++) {
-        // console.log("REMOVE MARKER - pM: " + pesonalityMarkers[i].marker);
-        // console.log("REMOVE MARKER - pMLength: " + pesonalityMarkers[i].marker.length);
+        console.log("REMOVE MARKER - pM: " + pesonalityMarkers[i].marker);
+        console.log("REMOVE MARKER - pMLength: " + pesonalityMarkers[i].marker.length);
         slicedText = inputText.slice(0, pesonalityMarkers[i].marker.length);
-        // console.log("REMOVE MARKER - slicedText: " + slicedText);
+        console.log("REMOVE MARKER - slicedText: " + slicedText);
         if (slicedText == pesonalityMarkers[i].marker) {
-            // console.log("REMOVE MARKER - TREFFER: " + slicedText);
+            console.log("REMOVE MARKER - TREFFER: " + slicedText);
             inputText = inputText.slice(pesonalityMarkers[i].marker.length + 1);
-            // console.log("REMOVE MARKER - New Text: " + inputText);
+            console.log("REMOVE MARKER - New Text: " + inputText);
             return inputText;
         }
     }
+    return inputText;
 }
 
 function isMobile() {
