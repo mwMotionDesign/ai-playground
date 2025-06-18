@@ -136,18 +136,23 @@ async function buildText(text = "", isForwarded = false) {
         message = ({ role: "AI", message: textResult.responseText });
         conversationHistory.push(message);
 
-        let manipulatedOutput = ""
+        let manipulatedOutput = "";
         for (i = 0; i < pesonalityMarkers.length; i++) {
             if (pesonalityMarkers[i].personality == hiddenPersonality) {
                 manipulatedOutput = "<span class='tBold'>".concat(pesonalityMarkers[i].marker, "</span><br>", textResult.responseTextFormatted);
             }
         }
+
+        if (manipulatedOutput == "") {
+            manipulatedOutput = textResult.responseTextFormatted;
+        }
+
         // if (llmPersonalityDOM.value == llmPersonalityRandom || changePersonalityAuto) {
-        // for (i = 0; i < pesonalityMarkers.length; i++) {
-        //     if (pesonalityMarkers[i].personality == hiddenPersonality) {
-        //         manipulatedOutput = "<span class='tBold'>".concat(pesonalityMarkers[i].marker, "</span><br>", textResult.responseTextFormatted);
+        //     for (i = 0; i < pesonalityMarkers.length; i++) {
+        //         if (pesonalityMarkers[i].personality == hiddenPersonality) {
+        //             manipulatedOutput = "<span class='tBold'>".concat(pesonalityMarkers[i].marker, "</span><br>", textResult.responseTextFormatted);
+        //         }
         //     }
-        // }
         // }
         // else {
         //     manipulatedOutput = textResult.responseTextFormatted;
