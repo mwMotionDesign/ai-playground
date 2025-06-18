@@ -398,7 +398,8 @@ app.post("/transcribeAudio", uploadAudio.single("audio"), async (request, respon
     //     await fsp.rename(tempFilePath, request.file.path);
     // }
 
-    const pythonProcess = spawn('python', ['./scripts/whisperScript.py', request.file.path]);
+    const whisperPython = path.join(__dirname, 'scripts', 'venv-whisper', 'Scripts', 'python.exe');
+    const pythonProcess = spawn(whisperPython, ['./scripts/whisperScript.py', request.file.path]);
 
     let output = '';
     pythonProcess.stdout.on('data', (data) => {
@@ -521,22 +522,24 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
         await fsp.rename(tempFilePath, audioPath);
     }
 
-    const pythonProcess = spawn('python', ['./scripts/chatterbotScript.py', data, audioPath, exaggeration, pase, temperature]);
+    const chatterboxPython = path.join(__dirname, 'scripts', 'venv-chatterbox', 'Scripts', 'python.exe');
+    const pythonProcess = spawn(chatterboxPython, ['./scripts/chatterbotScript.py', data, audioPath, exaggeration, pase, temperature]);
+    // const pythonProcess = spawn("python", ['./scripts/chatterbotScript.py', data, audioPath, exaggeration, pase, temperature]);
 
     let output = '';
     pythonProcess.stdout.on('data', (data) => {
         output += data;
     });
 
-    // let errorOutput = ''; // Für mögliche Fehlermeldungen vom Python-Skript
-    // pythonProcess.stderr.on('data', (data) => {
-    //     errorOutput += data.toString('utf8');
-    //     console.error(`Python stderr: ${data.toString('utf8')}`);
-    // });
+    let errorOutput = ''; // Für mögliche Fehlermeldungen vom Python-Skript
+    pythonProcess.stderr.on('data', (data) => {
+        errorOutput += data.toString('utf8');
+        //     console.error(`Python stderr: ${data.toString('utf8')}`);
+    });
 
     pythonProcess.on('close', async (code) => {
         if (code === 0) {
-            // console.log('Python output:', output);
+            console.log('Python output:', output);
             // response.send({ text: output.trim() });
 
             const oldPath = path.join(__dirname, 'Audiofiles', 'chatterbotOutput.wav');
