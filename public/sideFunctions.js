@@ -69,8 +69,8 @@ function addDescription() {
         + "- <span class='tInBold'>Shift + Enter:</span> Generate Text from Input<br>"
         + "- <span class='tInBold'>Ctrl + Enter:</span> Transcribe Audio<br>"
         + "- <span class='tInBold'>Shift + Alt + Enter:</span> Generate Images<br>"
-        + "- <span class='tInBold'>Strg + Backspace:</span> Clear Results<br>"
-        + "- <span class='tInBold'>Strg + Plus:</span> Console log GPT Models");
+        + "- <span class='tInBold'>Ctrl + Backspace:</span> Clear Results<br>"
+        + "- <span class='tInBold'>Ctrl + Plus:</span> Console log GPT Models");
     outputDivider();
 
     outputText("header", "Example Format:");
