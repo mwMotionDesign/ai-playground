@@ -537,10 +537,7 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
     console.log("");
     console.log("Create New File?: -" + JSON.parse(request.body.newFile));
 
-    console.log("");
-    console.log("zonosParams: " + zonosParams.language);
     zonosParams = JSON.parse(request.body.zonosOptions);
-    console.log("zonosOptions: " + zonosParams.language);
 
     if (JSON.parse(request.body.newFile)) {
         filename = getTimestampFilename(".wav");
@@ -618,15 +615,15 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
         if (audioPath) {
             const gradioUploadDIR = path.join(gradioTempFolder, getTimestampFilename(""));
             if (!fs.existsSync(gradioUploadDIR)) { fs.mkdirSync(gradioUploadDIR, { recursive: true }); }
-            console.log("Gradio Upload DIR: " + gradioUploadDIR);
+            // console.log("Gradio Upload DIR: " + gradioUploadDIR);
 
             const gradioUploadPath = path.join(gradioUploadDIR, "upload.wav");
-            console.log("Gradio Upload Path: " + gradioUploadPath);
+            // console.log("Gradio Upload Path: " + gradioUploadPath);
             await fsp.copyFile(audioPath, gradioUploadPath);
 
 
             const audioPathFile = await makeFileData(gradioUploadPath);
-            console.log("Audio Path File: " + JSON.stringify(audioPathFile, null, 2));
+            // console.log("Audio Path File: " + JSON.stringify(audioPathFile, null, 2));
 
             zonosParams.speakerAudioPath = audioPathFile;
         }
@@ -645,7 +642,6 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
 
                     const oldPath = response.path;
                     const newPath = path.join(__dirname, 'Audiofiles', "audio.wav");
-                    console.log(response.path);
 
                     await fsp.copyFile(oldPath, newPath)
                     await fsp.unlink(oldPath)
@@ -727,11 +723,11 @@ async function generateZonosVoice(zonosData) {
         // Schau Dir die Server - Antwort an:
         if (error.response) {
             console.log("[Generate Zonos] Error Code: ", error.code);
-            console.log("[Generate Zonos] Error Status: ", error.response.status);
+            // console.log("[Generate Zonos] Error Status: ", error.response.status);
             console.log("[Generate Zonos] Error StatusText: ", error.response.statusText);
-            console.error("[Generate Zonos] Server-Antwort: ", error.response.data);
+            // console.error("[Generate Zonos] Server-Antwort: ", error.response.data);
         } else {
-            console.error("[Generate Zonos] Axios-Error: ", error.message);
+            // console.error("[Generate Zonos] Axios-Error: ", error.message);
         }
         // throw error;
     }
@@ -818,7 +814,7 @@ function startZonos(onReady) {
     });
 
     gradio.stderr.on("data", chunk => {
-        console.error(`[Start Zonos - Gradio stderr] ${chunk.toString().trim()}`);
+        // console.error(`[Start Zonos - Gradio stderr] ${chunk.toString().trim()}`);
     });
 
     gradio.unref();
@@ -830,7 +826,7 @@ function startZonos(onReady) {
     };
 
     const interval = setInterval(async () => {
-        console.log("[Start Zonos] Waiting for Gradio");
+        // console.log("[Start Zonos] Waiting for Gradio");
         try {
             await axios.get("http://127.0.0.1:7860");
             console.log("[Start Zonos] ✅ Gradio loaded");
