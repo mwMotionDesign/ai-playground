@@ -368,6 +368,7 @@ function formatAIanswer(inputText) {
     try {
         text = text.replace(/\n/g, "<br>")
             .replace(/—/g, " - ")
+            .replace(/–/g, " - ")
             // .replace(/[.,!?:;]/g, "")
             // .replace(/\n/g, "")
             // .replace(/../g, ".")
@@ -391,6 +392,7 @@ function formatToText(inputText) {
             // .replace(/<br>/g, "\n")
             .replace(/\<[^>]*\>/g, "")
             .replace(/—/g, " - ")
+            .replace(/–/g, " - ")
             .replace(/&auml;/g, "ä")
             .replace(/&ouml;/g, "ö")
             .replace(/&uuml;/g, "ü")
@@ -409,6 +411,34 @@ function formatToText(inputText) {
             // .replace(/[.,!?:;]/g, "")
             // .replace(/../g, ".")
             // .replace(/1/g, "1.")
+            .trim()
+            ;
+
+        return text;
+    } catch (error) {
+        console.log(text);
+        console.error(error);
+    }
+}
+
+function formatForSpeech(inputText) {
+    let text = inputText;
+
+    try {
+        text = text
+            .replace(/\p{Extended_Pictographic}/gu, "")                         // alle Emojis rauswerfen
+            .replace(/\p{Emoji_Modifier_Base}|\p{Emoji_Component}/gu, "")       // optional: Variation Selectors entfernen (z.B. VS16)
+            .replace(/\<[^>]*\>/g, "")
+            .replace(/—/g, " - ")
+            .replace(/–/g, " - ")
+            .replace(/&auml;/g, "ä")
+            .replace(/&ouml;/g, "ö")
+            .replace(/&uuml;/g, "ü")
+            .replace(/&Auml;/g, "Ä")
+            .replace(/&Ouml;/g, "Ö")
+            .replace(/&Uuml;/g, "Ü")
+            .replace(/&szlig;/g, "ß")
+            .replace(/\s+/g, ' ')
             .trim()
             ;
 

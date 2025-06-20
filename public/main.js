@@ -237,6 +237,8 @@ async function buildVocie(text = "", newFile = true, exag = -1, itteration = 0) 
         outputText("link", text);
     }
 
+    text = formatForSpeech(text);
+
     await generateSpeechFromText(text, newFile, exag, itteration);
 }
 
@@ -518,38 +520,6 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
         formData.append("newFile", JSON.stringify(newFile));
 
         if (modelVoice == voiceModel1) {
-            const zonosOptions = {
-                text: "",
-                modelChoice: "Zyphra/Zonos-v0.1-transformer",       // Zyphra/Zonos-v0.1-transformer | Zyphra/Zonos-v0.1-hybrid
-                language: "de",                                  // en-us | de
-                speakerAudioPath: null,                             // String or Null
-                prefixAudioPath: null,                              // String or Null
-                fmax: 24000,                                        // 0 - 24000 | Sample Rate?
-                pitchStd: 45,                                       // 0 - 300 | Pitch
-                speakingRate: 15,                                   // 5 - 30 | Speed?
-                cfgScale: 2,                                        // 1 - 5 | Stay on Text - Improvise
-                seed: 1,                                            // Seed
-                randomizeSeed: false,                               // Randomize Seed
-                e1: 1.00,       // Happiness
-                e2: 0.05,       // Sadness
-                e3: 0.05,       // Disgust
-                e4: 0.05,       // Fear
-                e5: 0.05,       // Surprise
-                e6: 0.05,       // Anger
-                e7: 0.10,       // Other
-                e8: 0.20,       // Neutral
-                linear: 0.5,        // -2 - 2 | Linear (0 to disable) - High values make the output less random.
-                confidence: 0.4,    // -2 - 2 | Confidence - Low values make random outputs more random.
-                quadratic: 0,       // -2 - 2 | Quadratic - High values make low probablities much lower.
-                topP: 0,              // 0 - 1    | Legacy | Only when linear = 0
-                topK: 0,              // 0 - 1024 | Legacy | Only when linear = 0
-                minP: 0,              // 0 - 1    | Legacy | Only when linear = 0
-                // unconditionalKeysArray: ['speaker', 'emotion', 'fmax', 'pitch_std', 'speaking_rate'],
-                unconditionalKeysArray: [],
-                vqSingle: false,        // ???
-                dnsmosOvl: false,       // ???
-                speakerNoised: false    // ???
-            };
             formData.append("zonosOptions", JSON.stringify(zonosOptions));
             console.log("VOICE - zonosOptions: " + JSON.stringify(zonosOptions));
         }
