@@ -33,7 +33,7 @@ else:
     pase = 0.05
     temperature = 0.2
 
-default_audio_path = str(Path(__file__).parent / "StandardVoice.wav")
+default_audio_path = str(Path(__file__).parent / "StandardVoiceEnglish.wav")
 
 if len(sys.argv) > 2 and sys.argv[2].strip():
     audio_prompt_path = sys.argv[2]

@@ -35,8 +35,6 @@ console.log("Personality Changer Prompt: \n" + systemPromptPersonality);
 console.log("");
 console.log("System Prompt: \n" + systemPrompt);
 
-
-
 // Checkbox for LLM Generation of Personality
 const changePersonalityAutoCheckbox = document.getElementById("llmChoosePersonality");
 let changePersonalityAuto = changePersonalityAutoCheckbox.checked;
@@ -281,17 +279,17 @@ function generateSystemPrompt(nameOfRole) {
             + ""
             + "Important! You can control your tone of voice. "
             + "At the beginning of every message add a float value, formatted with exactly one decimal place (e.g., 0.6), followed by a space and then your answer. No breaks or \n or <br>. "
-            + "The values you can use are between "
-            + "0.1 and 1.2. - ( "
-            + "0.1 monotone, desinterested | "
-            + "0.2 slow, tender | "
-            + "0.2 calm | "
-            + "0.4 neutral tone and speed | "
-            + "0.6 happy | "
-            + "0.7 very happy | "
-            + "1.2 extremely overexcited, angry, loud, cringy ). "
-            + "Keep it between 0.1 and 0.7 most of the time. "
-            + "Higher values can break the voice model sometimes. "
+            + "The values you can use are "
+            + "0.1 Victim | Desperate - "
+            + "0.2 Sad - "
+            + "0.3 Anxious | Nervous | Needy - "
+            + "0.4 Presenting | Reading Bullet Points - "
+            + "0.5 Reading - "
+            + "0.6 Neutral Teacher - "
+            + "0.7 Neutral - "
+            + "0.8 Happy - "
+            + "0.9 Very happy - "
+            + "1.0 Creatively talking over someone. "
             + ""
         )
     }
@@ -584,6 +582,40 @@ function isValidFile(file) {
 
 // Voice Settings
 
+// Voice Moods
+let voiceMoods = [];
+let voiceMood = "";
+
+// Get and Listen to Dropdown Options
+let llmVoiceMoodDOM = document.getElementById("llmVoiceMood");
+
+for (let i = 0; i < llmVoiceMoodDOM.options.length; i++) {
+    const option = llmVoiceMoodDOM.options[i].value;
+    voiceMoods.push(option);
+    if (llmVoiceMoodDOM.options[i].selected) {
+        voiceMood = llmVoiceMoodDOM.options[i].value;
+    }
+}
+// console.log("Current Voice Mood: " + voiceMood);
+// console.log("Vocie Moods: " + voiceMoods);
+
+llmVoiceMoodDOM.addEventListener("change", (event) => {
+    voiceMood = event.target.value;
+    console.log("EL - Voice Mood set to: " + event.target.value);
+    loadSpeechPattern(voiceMood);
+});
+
+// Checkbox for LLM chooses Voice Mood
+const llmChoosesVoiceDOM = document.getElementById("llmChooseVoice");
+let llmChoosesVoice = llmChoosesVoiceDOM.checked;
+
+llmChoosesVoiceDOM.addEventListener("change", () => {
+    console.log("EL - LLM chooses Voice: " + llmChoosesVoiceDOM.checked);
+    llmChoosesVoice = llmChoosesVoiceDOM.checked;
+})
+
+// Voice Settings
+
 const createVoice = document.getElementById("createVoice");
 const sendAudioSample = document.getElementById("sendAudioSample");
 const cbExaggeration = document.getElementById("cbExaggeration");
@@ -593,7 +625,7 @@ const sendTextToLLM = document.getElementById("sendTextToLLM");
 const modelVoiceDOM = document.querySelectorAll(".voiceRadio");
 
 let modelVoice = voiceModel1;
-console.log("Voice Model: " + modelVoice);
+// console.log("Voice Model: " + modelVoice);
 
 for (let i = 0; i < modelVoiceDOM.length; i++) {
     modelVoiceDOM[i].addEventListener("change", () => {

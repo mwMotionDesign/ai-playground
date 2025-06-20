@@ -24,7 +24,7 @@ const nOfTokens = 600;
 const nOfTokensIMG = 300;
 const nOfTokensPersonality = 10;
 
-const voiceSliceCharackters = 550;
+const voiceSliceCharackters = 500;
 const voiceSliceCharacktersOverlap = 50;
 
 let pushLLMmessage = "CREATE CONVERSATION";
@@ -47,7 +47,7 @@ const voiceModel2 = "Chatterbox";
 // 0.7 very happy
 // 1.2 extremely overexcited, angry, loud, cringy
 
-const zonosOptions = {
+let zonosOptions = {
     text: "",
     modelChoice: "Zyphra/Zonos-v0.1-transformer",       // Zyphra/Zonos-v0.1-transformer | Zyphra/Zonos-v0.1-hybrid
     language: "de",                                  // en-us | de
@@ -55,23 +55,25 @@ const zonosOptions = {
     prefixAudioPath: null,                              // String or Null
     // Settings
     fmax: 24000,                                        // 0 - 24000 | Sample Rate?
-    pitchStd: 300,                                      // 0 - 300 | Pitch
-    speakingRate: 14,                                   // 5 - 30 | Speed? Breaks?
-    cfgScale: 2.5,                                      // 1 - 5 | Stay on Text - Improvise
-    linear: 1.0,        // -2 - 2 | Linear (0 to disable) - High values make the output less random.
-    confidence: 1.0,    // -2 - 2 | Confidence - Low values make random outputs more random.
+    pitchStd: 45,                                       // 0 - 300 | Pitch
+    speakingRate: 15,                                   // 5 - 30 | Speed? Breaks?
+    cfgScale: 2.0,                                      // 1 - 5 | Stay on Text - Improvise
+    // Randomness
+    linear: 0.5,        // -2 - 2 | Linear (0 to disable) - High values make the output less random.
+    confidence: 0.4,    // -2 - 2 | Confidence - Low values make random outputs more random.
     quadratic: 0.0,     // -2 - 2 | Quadratic - High values make low probablities much lower.
     // Emotions
-    e1: 0.10,       // Happiness
+    e1: 0.05,       // Happiness
     e2: 0.05,       // Sadness
     e3: 0.05,       // Disgust
     e4: 0.05,       // Fear
     e5: 0.05,       // Surprise
-    e6: 0.15,       // Anger
-    e7: 0.05,       // Other
-    e8: 0.80,       // Neutral
+    e6: 0.05,       // Anger
+    e7: 0.10,       // Other
+    e8: 0.20,       // Neutral
     // unconditionalKeysArray: ['speaker', 'emotion', 'fmax', 'pitch_std', 'speaking_rate'],
-    unconditionalKeysArray: ['fmax', 'pitch_std', 'speaking_rate'],
+    // unconditionalKeysArray: ['fmax', 'pitch_std', 'speaking_rate'],
+    unconditionalKeysArray: [],
     seed: 1,                                            // Seed
     randomizeSeed: false,                               // Randomize Seed
     // Not in use
@@ -83,6 +85,13 @@ const zonosOptions = {
     dnsmosOvl: false,       // ???
     speakerNoised: false    // ???
 };
+
+zonosOptions.modelChoice = "Zyphra/Zonos-v0.1-transformer"; // Zyphra/Zonos-v0.1-transformer | Zyphra/Zonos-v0.1-hybrid
+// Settings
+zonosOptions.pitchStd = 10;       // 0 - 300 | Pitch
+zonosOptions.speakingRate = 13;    // 5 - 30 | Speed? Breaks?
+
+const zonosOptionsStandard = zonosOptions;
 
 
 // Variable - Don't change
