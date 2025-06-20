@@ -35,6 +35,9 @@ const textModel2 = "gpt-4.1-2025-04-14";
 const imgModel1 = "DALL-E";
 const imgModel2 = "IMAGEN";
 
+const voiceModel1 = "Zonos";
+const voiceModel2 = "Chatterbox";
+
 
 // Variable - Don't change
 

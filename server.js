@@ -10,6 +10,7 @@ import multer from "multer";
 import { fileURLToPath } from "url";
 import { spawn } from "child_process";
 import fetch from 'node-fetch';
+import axios from "axios";
 
 import { Configuration, OpenAIApi } from "openai";
 import aiplatform from '@google-cloud/aiplatform';
@@ -17,6 +18,10 @@ import { TranslationServiceClient } from '@google-cloud/translate';
 
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegPath from 'ffmpeg-static';
+
+
+
+console.log("\n\n\n---------- Server Start! ----------\n\n\n");
 
 
 // VARIABLES
@@ -461,7 +466,7 @@ app.post("/transcribeAudio", uploadAudio.single("audio"), async (request, respon
     });
 });
 
-//----- VOICE (CHATTERBOT) -----//
+//----- VOICE (ZONOS / CHATTERBOT) -----//
 
 const voiceSampleDIR = path.join(audiofilesDIR, "VoiceSample");
 if (!fs.existsSync(voiceSampleDIR)) { fs.mkdirSync(voiceSampleDIR); }
@@ -476,6 +481,50 @@ const voiceSampleStorage = multer.diskStorage({
 });
 const uploadVoiceSample = multer({ storage: voiceSampleStorage });
 
+
+let zonosParams = {
+    text: "Initializing",
+    modelChoice: "Zyphra/Zonos-v0.1-transformer",       // Zyphra/Zonos-v0.1-transformer | Zyphra/Zonos-v0.1-hybrid
+    language: "en-us",                                  // en-us | de
+    speakerAudioPath: null,                             // String or Null
+    prefixAudioPath: null,                              // String or Null
+    fmax: 24000,                                        // 0 - 24000 | Sample Rate?
+    pitchStd: 45,                                       // 0 - 300 | Pitch
+    speakingRate: 15,                                   // 5 - 30 | Speed?
+    cfgScale: 2,                                        // 1 - 5 | Stay on Text - Improvise
+    seed: 1,                                            // Seed
+    randomizeSeed: false,                               // Randomize Seed
+    e1: 1.00,       // Happiness
+    e2: 0.05,       // Sadness
+    e3: 0.05,       // Disgust
+    e4: 0.05,       // Fear
+    e5: 0.05,       // Surprise
+    e6: 0.05,       // Anger
+    e7: 0.10,       // Other
+    e8: 0.20,       // Neutral
+    linear: 0.5,        // -2 - 2 | Linear (0 to disable) - High values make the output less random.
+    confidence: 0.4,    // -2 - 2 | Confidence - Low values make random outputs more random.
+    quadratic: 0,       // -2 - 2 | Quadratic - High values make low probablities much lower.
+    topP: 0,              // 0 - 1    | Legacy | Only when linear = 0
+    topK: 0,              // 0 - 1024 | Legacy | Only when linear = 0
+    minP: 0,              // 0 - 1    | Legacy | Only when linear = 0
+    // unconditionalKeysArray: ['speaker', 'emotion', 'fmax', 'pitch_std', 'speaking_rate'],
+    unconditionalKeysArray: [],
+    vqSingle: false,        // ???
+    dnsmosOvl: false,       // ???
+    speakerNoised: false    // ???
+};
+
+let zonosData = [];
+
+let isZonosReady = false;
+
+startZonos(() => {
+    zonosData = [zonosParams.modelChoice, zonosParams.text, zonosParams.language, zonosParams.speakerAudioPath, zonosParams.prefixAudioPath, zonosParams.e1, zonosParams.e2, zonosParams.e3, zonosParams.e4, zonosParams.e5, zonosParams.e6, zonosParams.e7, zonosParams.e8, zonosParams.vqSingle, zonosParams.fmax, zonosParams.pitchStd, zonosParams.speakingRate, zonosParams.dnsmosOvl, zonosParams.speakerNoised, zonosParams.cfgScale, zonosParams.topP, zonosParams.topK, zonosParams.minP, zonosParams.linear, zonosParams.confidence, zonosParams.quadratic, zonosParams.seed, zonosParams.randomizeSeed, zonosParams.unconditionalKeysArray];
+    console.log("[Start Zonos] ✅ On Ready fired");
+    isZonosReady = true;
+});
+
 app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (request, response) => {
     console.log("");
     console.log("");
@@ -488,28 +537,25 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
     console.log("");
     console.log("Create New File?: -" + JSON.parse(request.body.newFile));
 
+    console.log("");
+    console.log("zonosParams: " + zonosParams.language);
+    zonosParams = JSON.parse(request.body.zonosOptions);
+    console.log("zonosOptions: " + zonosParams.language);
+
     if (JSON.parse(request.body.newFile)) {
         filename = getTimestampFilename(".wav");
     }
 
     console.log("Filename: " + filename);
 
-    const audioPath = request.file?.path ?? "";
+    const voiceModel = request.body.voiceModel;
+    let audioPath = request.file?.path ?? "";
     const data = request.body.text;
-    const exaggeration = parseFloat(request.body.exaggeration);
-    const pase = parseFloat(request.body.pase);
-    const temperature = parseFloat(request.body.temperature);
 
     console.log("");
+    console.log("Voice Model:", voiceModel);
     console.log("Voice Sample Path:", audioPath);
-
-    console.log("");
     console.log("Text: " + data);
-
-    console.log("");
-    console.log("Exaggeration: " + exaggeration);
-    console.log("Pase: " + pase);
-    console.log("Temperature: " + temperature);
 
     if (!audioPath) {
         console.warn("");
@@ -522,57 +568,178 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
         await fsp.rename(tempFilePath, audioPath);
     }
 
-    const chatterboxPython = path.join(__dirname, 'scripts', 'venv-chatterbox', 'Scripts', 'python.exe');
-    const pythonProcess = spawn(chatterboxPython, ['./scripts/chatterbotScript.py', data, audioPath, exaggeration, pase, temperature]);
-    // const pythonProcess = spawn("python", ['./scripts/chatterbotScript.py', data, audioPath, exaggeration, pase, temperature]);
+    if (voiceModel == "Chatterbox") {
+        const exaggeration = parseFloat(request.body.exaggeration);
+        const pase = parseFloat(request.body.pase);
+        const temperature = parseFloat(request.body.temperature);
 
-    let output = '';
-    pythonProcess.stdout.on('data', (data) => {
-        output += data;
-    });
+        console.log("");
+        console.log("Exaggeration: " + exaggeration);
+        console.log("Pase: " + pase);
+        console.log("Temperature: " + temperature);
 
-    let errorOutput = ''; // Für mögliche Fehlermeldungen vom Python-Skript
-    pythonProcess.stderr.on('data', (data) => {
-        errorOutput += data.toString('utf8');
-        //     console.error(`Python stderr: ${data.toString('utf8')}`);
-    });
+        const chatterboxPython = path.join(__dirname, 'scripts', 'venv-chatterbox', 'Scripts', 'python.exe');
+        const pythonProcess = spawn(chatterboxPython, ['./scripts/chatterbotScript.py', data, audioPath, exaggeration, pase, temperature]);
+        // const pythonProcess = spawn("python", ['./scripts/chatterbotScript.py', data, audioPath, exaggeration, pase, temperature]);
 
-    pythonProcess.on('close', async (code) => {
-        if (code === 0) {
-            console.log('Python output:', output);
-            // response.send({ text: output.trim() });
+        let output = '';
+        pythonProcess.stdout.on('data', (data) => {
+            output += data;
+        });
 
-            const oldPath = path.join(__dirname, 'Audiofiles', 'chatterbotOutput.wav');
-            const newPath = path.join(__dirname, 'Audiofiles', filename.split(".")[0].concat('-Voice.wav'));
-            const relativePath = '/Audiofiles/' + filename.split(".")[0] + '-Voice.wav';
+        let errorOutput = ''; // Für mögliche Fehlermeldungen vom Python-Skript
+        pythonProcess.stderr.on('data', (data) => {
+            errorOutput += data.toString('utf8');
+            //     console.error(`Python stderr: ${data.toString('utf8')}`);
+        });
 
-            if (!oldPath) {
-                console.warn("");
-                console.warn("🚫 Keine Datei im Request vorhanden");
+        pythonProcess.on('close', async (code) => {
+            if (code === 0) {
+                console.log('Python output:', output);
+
+                const oldPath = path.join(__dirname, 'Audiofiles', 'chatterbotOutput.wav');
+
+                saveAndSend(oldPath);
+            } else {
+                console.error('AI ERROR:', code);
+                response.status(500).send("Chatterbox Script Failed!");
             }
-            else {
-                const tempFilePath = path.join(tempFilesDIR, filename);
-                await normalizeLoudness(oldPath, tempFilePath);
-                await fsp.unlink(oldPath);
-                await fsp.rename(tempFilePath, oldPath);
-            }
+        });
+    }
+    else if (voiceModel == "Zonos") {
+        console.log("");
+        console.log("Audio Path: " + audioPath);
 
-            response.send({ audioPath: relativePath });
+        const gradioTempFolder = path.join("C:", "Users", "USER", "AppData", "Local", "Temp", "gradio")
 
-            fs.rename(oldPath, newPath, (err) => {
-                if (err) {
-                    console.error('Fehler beim Umbenennen:', err);
-                } else {
-                    console.log("");
-                    console.log('Datei erfolgreich umbenannt.');
-                }
-            });
-        } else {
-            console.error('AI ERROR:', code);
-            response.status(500).send("Chatterbox Script Failed!");
+        if (!audioPath) {
+            audioPath = path.join(__dirname, "scripts", "StandardVoice.wav");
         }
-    });
+        if (audioPath) {
+            const gradioUploadDIR = path.join(gradioTempFolder, getTimestampFilename(""));
+            if (!fs.existsSync(gradioUploadDIR)) { fs.mkdirSync(gradioUploadDIR, { recursive: true }); }
+            console.log("Gradio Upload DIR: " + gradioUploadDIR);
+
+            const gradioUploadPath = path.join(gradioUploadDIR, "upload.wav");
+            console.log("Gradio Upload Path: " + gradioUploadPath);
+            await fsp.copyFile(audioPath, gradioUploadPath);
+
+
+            const audioPathFile = await makeFileData(gradioUploadPath);
+            console.log("Audio Path File: " + JSON.stringify(audioPathFile, null, 2));
+
+            zonosParams.speakerAudioPath = audioPathFile;
+        }
+
+        zonosParams.text = data;
+
+        zonosData = [zonosParams.modelChoice, zonosParams.text, zonosParams.language, zonosParams.speakerAudioPath, zonosParams.prefixAudioPath, zonosParams.e1, zonosParams.e2, zonosParams.e3, zonosParams.e4, zonosParams.e5, zonosParams.e6, zonosParams.e7, zonosParams.e8, zonosParams.vqSingle, zonosParams.fmax, zonosParams.pitchStd, zonosParams.speakingRate, zonosParams.dnsmosOvl, zonosParams.speakerNoised, zonosParams.cfgScale, zonosParams.topP, zonosParams.topK, zonosParams.minP, zonosParams.linear, zonosParams.confidence, zonosParams.quadratic, zonosParams.seed, zonosParams.randomizeSeed, zonosParams.unconditionalKeysArray];
+
+        const interval = setInterval(async () => {
+            console.log("Waiting for Zonos to be loaded");
+            try {
+                if (isZonosReady) {
+                    console.log("✅ Zonos Ready");
+                    clearInterval(interval);
+                    const response = await generateZonosVoice(zonosData);
+
+                    const oldPath = response.path;
+                    const newPath = path.join(__dirname, 'Audiofiles', "audio.wav");
+                    console.log(response.path);
+
+                    await fsp.copyFile(oldPath, newPath)
+                    await fsp.unlink(oldPath)
+
+                    clearFolder(gradioTempFolder, true);
+
+                    saveAndSend(newPath);
+                }
+            } catch {
+                // Wait for next try
+            }
+        }, 1000);
+    }
+    async function makeFileData(audioPath) {
+        const stats = await fsp.stat(audioPath);
+        return {
+            name: path.basename(audioPath),
+            orig_name: path.basename(audioPath),
+            size: stats.size,
+            mime_type: "audio/wav",
+            is_stream: false,
+            path: audioPath,
+            meta: { _type: "gradio.FileData" }
+        };
+    }
+
+    async function saveAndSend(oldPath) {
+        const newPath = path.join(__dirname, 'Audiofiles', filename.split(".")[0].concat('-Voice.wav'));
+        const relativePath = '/Audiofiles/' + filename.split(".")[0] + '-Voice.wav';
+
+        if (!oldPath) {
+            console.warn("");
+            console.warn("🚫 Keine Datei im Request vorhanden");
+        }
+        else {
+            const tempFilePath = path.join(tempFilesDIR, filename);
+            await normalizeLoudness(oldPath, tempFilePath);
+            await fsp.unlink(oldPath);
+            await fsp.rename(tempFilePath, oldPath);
+        }
+
+        response.send({ audioPath: relativePath });
+
+        fs.rename(oldPath, newPath, (err) => {
+            if (err) {
+                console.error('Fehler beim Umbenennen:', err);
+            } else {
+                console.log("");
+                console.log('Datei erfolgreich umbenannt.');
+            }
+        });
+    }
 });
+
+async function generateZonosVoice(zonosData) {
+    const body = {
+        session_hash: "",    // Can be empty
+        event_id: "",        // Empty
+        data: zonosData
+    };
+
+    console.log("[Generate Zonos] Started ");
+    console.log("[Generate Zonos] Body: " + JSON.stringify(body, null, 2));
+
+    let result = "";
+
+    try {
+        const response = await axios.post(
+            "http://127.0.0.1:7860/gradio_api/run/generate_audio",
+            body,
+            { headers: { "Content-Type": "application/json" } }
+        );
+        // Das Audio kommt in response.data.data[0]
+        result = response.data.data[0];
+        console.log("[Generate Zonos] response: " + JSON.stringify(response));
+        console.log("[Generate Zonos] Result: " + JSON.stringify(result));
+        return result;
+    } catch (error) {
+        // Schau Dir die Server - Antwort an:
+        if (error.response) {
+            console.log("[Generate Zonos] Error Code: ", error.code);
+            console.log("[Generate Zonos] Error Status: ", error.response.status);
+            console.log("[Generate Zonos] Error StatusText: ", error.response.statusText);
+            console.error("[Generate Zonos] Server-Antwort: ", error.response.data);
+        } else {
+            console.error("[Generate Zonos] Axios-Error: ", error.message);
+        }
+        // throw error;
+    }
+
+    // Gradio packt die Ergebnisse in resp.data.data, z.B. data[0] ist das Audio-URL oder Base64
+    console.log("[Generate Zonos] Result.Path: " + JSON.stringify(result.path));
+    return result;
+}
 
 //----- TRANSLATE (GOOGLE) -----//
 
@@ -620,6 +787,75 @@ app.post("/translateText", async (request, response) => {
 
 
 // FUNCTIONS
+
+function startZonos(onReady) {
+    console.log("");
+    console.log("--- Start Zonos () ---");
+    const zonosScriptPath = path.join(__dirname, "repos", "Zonos-for-windows", "runZonos.ps1");
+
+    // console.log(" ... existiert?", fs.existsSync(zonosScriptPath));
+    // console.log(" ... isFile? ", fs.lstatSync(zonosScriptPath).isFile());
+    // console.log(" ... zonosScriptPath Pfad:", zonosScriptPath);
+
+    const gradio = spawn("powershell.exe", [
+        "-NoProfile",
+        "-ExecutionPolicy", "Bypass",
+        // "-Command", `& '${zonosScriptPath.replace(/'/g, "''")}'`
+        "-File", zonosScriptPath
+    ], {
+        // detached: false,
+        shell: false,
+        cwd: path.dirname(zonosScriptPath),
+        stdio: ["ignore", "pipe", "pipe"]
+    });
+
+    // console.log("");
+    // console.log(" ... gradio.spawnargs: ", gradio.spawnargs);
+
+    gradio.stdout.on("data", chunk => {
+        const line = chunk.toString().trim();
+        // console.log(`[Start Zonos - Gradio stdout] ${line}`);
+    });
+
+    gradio.stderr.on("data", chunk => {
+        console.error(`[Start Zonos - Gradio stderr] ${chunk.toString().trim()}`);
+    });
+
+    gradio.unref();
+
+    const body = {
+        session_hash: "",    // Can be empty
+        event_id: "",        // Empty
+        data: zonosData
+    };
+
+    const interval = setInterval(async () => {
+        console.log("[Start Zonos] Waiting for Gradio");
+        try {
+            await axios.get("http://127.0.0.1:7860");
+            console.log("[Start Zonos] ✅ Gradio loaded");
+            clearInterval(interval);  // hier stoppen!
+            onReady();
+            // warmup();
+        } catch {
+            // Wait for next try
+        }
+    }, 1000);
+
+    async function warmup() {
+        console.log("[Gradio stderr] Sending Warmup");
+        const res = await axios.post(
+            "http://127.0.0.1:7860/gradio_api/run/generate_audio",
+            body,
+            { headers: { "Content-Type": "application/json" } }
+        );
+        if (res.status === 200) {
+            console.log("[Start Zonos] ✅ Zonos is running");
+            clearInterval(interval);
+            onReady();
+        }
+    }
+}
 
 app.get("/getAImodels", async (request, response) => {
     console.log("");
@@ -804,9 +1040,10 @@ async function clearFolder(folderPath, deleteAll = false, filetype = "FILETYPE I
     for (const entry of entries) {
         const fullPath = path.join(folderPath, entry.name);
 
-        if (entry.isDirectory()) {
-            //   await fsp.rm(fullPath, { recursive: true, force: true }); // Unterordner löschen
-        } else if (filetype != "FILETYPE IN HERE") {
+        if (deleteAll && entry.isDirectory()) {
+            await fsp.rm(fullPath, { recursive: true, force: true }); // Unterordner löschen
+        }
+        else if (filetype != "FILETYPE IN HERE") {
             if (entry.isFile() && entry.name.endsWith(filetype)) {
                 await fsp.unlink(fullPath);
             }

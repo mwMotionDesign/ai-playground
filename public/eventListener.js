@@ -590,6 +590,17 @@ const cbExaggeration = document.getElementById("cbExaggeration");
 const cbPase = document.getElementById("cbPase");
 const cbTemperature = document.getElementById("cbTemperature");
 const sendTextToLLM = document.getElementById("sendTextToLLM");
+const modelVoiceDOM = document.querySelectorAll(".voiceRadio");
+
+let modelVoice = voiceModel1;
+console.log("Voice Model: " + modelVoice);
+
+for (let i = 0; i < modelVoiceDOM.length; i++) {
+    modelVoiceDOM[i].addEventListener("change", () => {
+        console.log("Changing Voice Model: " + modelVoiceDOM[i].value);
+        modelVoice = modelVoiceDOM[i].value;
+    });
+}
 
 let cbValues = {
     createVoice: createVoice.checked,
