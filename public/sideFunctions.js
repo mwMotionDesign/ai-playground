@@ -299,9 +299,6 @@ function playAduioQueue(currentAudio, placeInQueue) {
     }
 }
 
-// “The Clockmaker’s Bird” In a quiet town nestled between fog-wrapped hills, an old clockmaker lived in solitude. His shop smelled of oil and old wood, ticking filled the air like whispers of time itself. People rarely visited anymore. The town had grown fond of digital silence. One rainy morning, the clockmaker found a broken music box on his doorstep. It was shaped like a birdcage, delicate brass twisted into vines and feathers. Inside sat a silent mechanical bird - its eyes dulled, its wings frozen in rust. He took it in with the reverence of a priest holding a forgotten relic. For days, he worked with trembling hands and magnifying glasses, polishing gears, rewinding springs, breathing old songs into the quiet metal. At last, one evening, the bird moved. It fluttered once, then sang - just once - a clear, aching note. The sound echoed like something remembered from a dream. The next day, the clockmaker was gone. His shop stood open, the birdcage on the counter, ticking faintly, softly glowing from within. Some say he left to find the place the song had come from. Others believe the bird was never a machine at all - but a key. A door. And the old man, tired of fixing time, had finally slipped between its cracks.
-
-
 function outputDivider() {
     let newText = document.createElement("div");
     newText.classList.add("resultDivider");
