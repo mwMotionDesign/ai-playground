@@ -164,7 +164,7 @@ async function buildText(text = "", isForwarded = false) {
 
     if (voiceLLM && !isForwarded) {
         addReturnText("", "... forwarding to Voice");
-        await buildVocie(textResult.responseText, true, textResult.llmExag);
+        await buildVocie(textResult.responseText, true, textResult.mood);
     }
     if (imgWithText && !isForwarded) {
         addReturnText("", "... forwarding to Prompt Generation");
@@ -233,6 +233,14 @@ async function buildVocie(text = "", newFile = true, exag = -1, itteration = 0) 
 
     if (text == "") {
         text = inputField.value;
+        if (text == "") {
+            if (modelVoice == voiceModel1) {
+                text = "Das Eingabefeld ist leer, du dummer Idiot!"
+            }
+            if (modelVoice == voiceModel2) {
+                text = "The input field is empty, you dumb little bitch!"
+            }
+        }
         outputText("header", "Voice");
         outputText("link", text);
     }
@@ -271,6 +279,42 @@ async function generateText(systemPromptToSend = "", text = "", nOfTokens = 10, 
         console.log("GENERATE TEXT - Exaggeration Extract: ", llmExag);
         responseText = responseText.slice(4, responseText.length);
         console.log("GENERATE TEXT - Cut Text Length: ", responseText.length);
+
+        if (llmChoosesVoice) {
+            if (llmExag == 0.1) {
+                loadSpeechPattern("VictimDesperate");
+            }
+            else if (llmExag == 0.2) {
+                loadSpeechPattern("Sad");
+            }
+            else if (llmExag == 0.3) {
+                loadSpeechPattern("AnxiousNervousNeedy");
+            }
+            else if (llmExag == 0.4) {
+                loadSpeechPattern("PresentingBulltePoints");
+            }
+            else if (llmExag == 0.5) {
+                loadSpeechPattern("Reading");
+            }
+            else if (llmExag == 0.6) {
+                loadSpeechPattern("NeutralTeacher");
+            }
+            else if (llmExag == 0.7) {
+                loadSpeechPattern("Neutral");
+            }
+            else if (llmExag == 0.8) {
+                loadSpeechPattern("Happy");
+            }
+            else if (llmExag == 0.8) {
+                loadSpeechPattern("VeryHappy");
+            }
+            else if (llmExag == 1.0) {
+                loadSpeechPattern("CreativeTalkOver");
+            }
+            else {
+                loadSpeechPattern("Neutral");
+            }
+        }
     }
 
     let responseTextFormatted = formatAIanswer(responseText);
@@ -279,7 +323,7 @@ async function generateText(systemPromptToSend = "", text = "", nOfTokens = 10, 
     console.log("GENERATE TEXT - responseText:" + responseText);
     console.log("GENERATE TEXT - responseTextFormatted:" + responseTextFormatted);
 
-    return { inputText, responseText, responseTextFormatted, llmExag };
+    return { inputText, responseText, responseTextFormatted, mood };
 }
 
 

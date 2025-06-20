@@ -95,14 +95,50 @@
                                                     <input type="radio" class="inputInput inputRadioButton voiceRadio" id="radioVoiceChatter" name="voiceModel" value="Chatterbox">
                                                     <label for="radioVoiceChatter" class="inputLabel inputRadioLabel">Chatterbox<br><span class="tSmall">Eng only</span></label>
                                                 </div>
-                                                <p class="inputHeader">Transcription</p>
+                                                <p class="inputHeader">Voice Mood</p>
                                                 <div class="inputContainer inputCheckboxContainer">
-                                                    <input type="checkbox" class="inputInput inputCheckbox" id="translate" name="translate">
-                                                    <label for="translate" class="inputLabel inputCheckboxLabel">translate</label>
+                                                    <input type="checkbox" class="inputInput inputCheckbox" id="llmChooseVoice" name="llmChooseVoice" checked>
+                                                    <label for="llmChooseVoice" class="inputLabel inputCheckboxLabel">LLM chooses</label>
                                                 </div>
+                                                <div class="inputContainer inputLLMvoiceMood">
+                                                    <select name="voiceMood" class="inputInput inputDropdown" id="llmVoiceMood">
+                                                        <option value="VictimDesperate">Victim | Desperate</option>
+                                                        <option value="Sad">Sad</option>
+                                                        <option value="AnxiousNervousNeedy">Anxious | Nervous | Needy</option>
+                                                        <option value="PresentingBulltePoints">Presenting | BulltePoints</option>
+                                                        <option value="Reading">Reading</option>
+                                                        <option value="NeutralTeacher">Neutral | Teacher</option>
+                                                        <option value="Neutral" selected>Neutral</option>
+                                                        <option value="Happy">Happy</option>
+                                                        <option value="VeryHappy">Very Happy</option>
+                                                        <option value="CreativeTalkOver">Creative | Talking Over</option>
+                                                    </select>
+                                                    <!-- <label for="voiceMood" class="inputLabel inputDropdownlLabel">Voice Moods</label> -->
+                                                </div>
+
+                                                <p class="inputHeader cbSliders">Chatterbox Parameters</p>
+                                                <p class="inputHeader valueHeader cbSliders" id="exaggerationValue">Exaggeration</p>
+                                                <div class="inputContainer inputTextContainer cbSliders" id="exaggerationRange">
+                                                    <input type="range" class="inputInput inputRange cbSliders" id="cbExaggeration" name="cbExaggeration" valuemin="0" max="2" step="0.05" value="0.4">
+                                                </div>
+                                                <p class="inputHeader valueHeader cbSliders" id="paceValue">Pase</p>
+                                                <div class="inputContainer inputTextContainer cbSliders" id="paseRange">
+                                                    <input type="range" class="inputInput inputRange cbSliders" id="cbPase" name="cbPase" min="0" max="2" step="0.05" value="0.25">
+                                                </div>
+                                                <p class="inputHeader valueHeader cbSliders" id="temperatureValue">Temperature</p>
+                                                <div class="inputContainer inputTextContainer cbSliders" id="temperatureRange">
+                                                    <input type="range" class="inputInput inputRange cbSliders" id="cbTemperature" name="cbTemperature" min="0" max="2" step="0.05" value="0.8">
+                                                </div>
+                                            </div>
+                                            <div class="containerVert" id="audioModelsRight">
+                                                <p class="inputHeader">Transcription</p>
                                                 <div class="inputContainer inputCheckboxContainer">
                                                     <input type="checkbox" class="inputInput inputCheckbox" id="sendTextToLLM" name="sendTextToLLM">
                                                     <label for="sendTextToLLM" class="inputLabel inputCheckboxLabel">send to LLM</label>
+                                                </div>
+                                                <div class="inputContainer inputCheckboxContainer">
+                                                    <input type="checkbox" class="inputInput inputCheckbox" id="translate" name="translate">
+                                                    <label for="translate" class="inputLabel inputCheckboxLabel">translate to EN</label>
                                                 </div>
                                                 <p class="inputHeader">Generate Voice</p>
                                                 <div class="inputContainer inputCheckboxContainer">
@@ -116,34 +152,6 @@
                                                 <div class="inputContainer inputCheckboxContainer">
                                                     <input type="checkbox" class="inputInput inputCheckbox" id="sendAudioSample" name="sendAudioSample" checked>
                                                     <label for="sendAudioSample" class="inputLabel inputCheckboxLabel">Use Audio Sample</label>
-                                                </div>
-                                            </div>
-                                            <div class="containerVert" id="audioModelsRight">
-                                                <p class="inputHeader">Zonos Parameters</p>
-                                                <!-- <p class="inputHeader valueHeader" id="exaggerationValue">Exaggeration</p>
-                                                <div class="inputContainer inputTextContainer" id="exaggerationRange">
-                                                    <input type="range" class="inputInput inputRange" id="cbExaggeration" name="cbExaggeration" valuemin="0" max="2" step="0.05" value="0.4">
-                                                </div>
-                                                <p class="inputHeader valueHeader" id="paceValue">Pase</p>
-                                                <div class="inputContainer inputTextContainer" id="paseRange">
-                                                    <input type="range" class="inputInput inputRange" id="cbPase" name="cbPase" min="0" max="2" step="0.05" value="0.25">
-                                                </div>
-                                                <p class="inputHeader valueHeader" id="temperatureValue">Temperature</p>
-                                                <div class="inputContainer inputTextContainer" id="temperatureRange">
-                                                    <input type="range" class="inputInput inputRange" id="cbTemperature" name="cbTemperature" min="0" max="2" step="0.05" value="0.8">
-                                                </div> -->
-                                                <p class="inputHeader">Chatterbox Parameters</p>
-                                                <p class="inputHeader valueHeader" id="exaggerationValue">Exaggeration</p>
-                                                <div class="inputContainer inputTextContainer" id="exaggerationRange">
-                                                    <input type="range" class="inputInput inputRange" id="cbExaggeration" name="cbExaggeration" valuemin="0" max="2" step="0.05" value="0.4">
-                                                </div>
-                                                <p class="inputHeader valueHeader" id="paceValue">Pase</p>
-                                                <div class="inputContainer inputTextContainer" id="paseRange">
-                                                    <input type="range" class="inputInput inputRange" id="cbPase" name="cbPase" min="0" max="2" step="0.05" value="0.25">
-                                                </div>
-                                                <p class="inputHeader valueHeader" id="temperatureValue">Temperature</p>
-                                                <div class="inputContainer inputTextContainer" id="temperatureRange">
-                                                    <input type="range" class="inputInput inputRange" id="cbTemperature" name="cbTemperature" min="0" max="2" step="0.05" value="0.8">
                                                 </div>
                                             </div>
                                         </div>
@@ -173,9 +181,9 @@
                                         </div>
                                         <div class="inputContainer inputLLMpersonality">
                                             <select name="NumberOfImages" class="inputInput inputDropdown" id="llmPersonality">
-                                                <option value="Random" checked>Pick Random</option>
+                                                <option value="Random" selected>Pick Random</option>
                                                 <option disabled value="">⎯ LLM Personalities ⎯⎯⎯</option>
-                                                <option value="Useful&Efficient" checked>Useful & Efficient</option>
+                                                <option value="Useful&Efficient">Useful & Efficient</option>
                                                 <option value="Playful&Flirty">Playful & Positive</option>
                                                 <option value="Romantic">Romantic</option>
                                                 <option value="Shy&Introverted">Shy & Introverted</option>

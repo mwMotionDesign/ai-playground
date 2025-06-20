@@ -460,7 +460,7 @@ app.post("/transcribeAudio", uploadAudio.single("audio"), async (request, respon
             });
         } else {
             console.error("Python script exited with error code:", code);
-            console.error("Python error details:", errorOutput.trim());
+            // console.error("Python error details:", errorOutput.trim());
             // response.status(500).send("Whisper Script Failed: " + errorOutput.trim());
         }
     });
@@ -606,11 +606,38 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
     else if (voiceModel == "Zonos") {
         console.log("");
         console.log("Audio Path: " + audioPath);
+        console.log("");
+        console.log("Zonos Params:");
+        console.log("- modelChoice:  " + zonosParams.modelChoice);
+        console.log("- language:     " + zonosParams.language);
+        console.log("");
+        console.log("- fmax:         " + zonosParams.fmax);
+        console.log("- pitchStd:     " + zonosParams.pitchStd);
+        console.log("- speakingRate: " + zonosParams.speakingRate);
+        console.log("- cfgScale:     " + zonosParams.cfgScale);
+        console.log("");
+        console.log("- linear:       " + zonosParams.linear);
+        console.log("- confidence:   " + zonosParams.confidence);
+        console.log("- quadratic:    " + zonosParams.quadratic);
+        console.log("");
+        console.log("- e1 Happiness: " + zonosParams.e1);
+        console.log("- e2 Sadness:   " + zonosParams.e2);
+        console.log("- e3 Disgust:   " + zonosParams.e3);
+        console.log("- e4 Fear:      " + zonosParams.e4);
+        console.log("- e5 Surprise:  " + zonosParams.e5);
+        console.log("- e6 Anger:     " + zonosParams.e6);
+        console.log("- e7 Other:     " + zonosParams.e7);
+        console.log("- e8 Neutral:   " + zonosParams.e8);
+        console.log("");
+        console.log("- unconditionalKeysArray: " + zonosParams.unconditionalKeysArray);
+        console.log("");
+        console.log("- seed:          " + zonosParams.seed);
+        console.log("- randomizeSeed: " + zonosParams.randomizeSeed);
 
         const gradioTempFolder = path.join("C:", "Users", "USER", "AppData", "Local", "Temp", "gradio")
 
         if (!audioPath) {
-            audioPath = path.join(__dirname, "scripts", "StandardVoice.wav");
+            audioPath = path.join(__dirname, "scripts", "StandardVoiceGerman.wav");
         }
         if (audioPath) {
             const gradioUploadDIR = path.join(gradioTempFolder, getTimestampFilename(""));
@@ -632,6 +659,7 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
 
         zonosData = [zonosParams.modelChoice, zonosParams.text, zonosParams.language, zonosParams.speakerAudioPath, zonosParams.prefixAudioPath, zonosParams.e1, zonosParams.e2, zonosParams.e3, zonosParams.e4, zonosParams.e5, zonosParams.e6, zonosParams.e7, zonosParams.e8, zonosParams.vqSingle, zonosParams.fmax, zonosParams.pitchStd, zonosParams.speakingRate, zonosParams.dnsmosOvl, zonosParams.speakerNoised, zonosParams.cfgScale, zonosParams.topP, zonosParams.topK, zonosParams.minP, zonosParams.linear, zonosParams.confidence, zonosParams.quadratic, zonosParams.seed, zonosParams.randomizeSeed, zonosParams.unconditionalKeysArray];
 
+        console.log("");
         const interval = setInterval(async () => {
             console.log("Waiting for Zonos to be loaded");
             try {
@@ -703,8 +731,8 @@ async function generateZonosVoice(zonosData) {
         data: zonosData
     };
 
-    console.log("[Generate Zonos] Started ");
-    console.log("[Generate Zonos] Body: " + JSON.stringify(body, null, 2));
+    console.log("[Generate Zonos] Started ...");
+    // console.log("[Generate Zonos] Body: " + JSON.stringify(body, null, 2));
 
     let result = "";
 
@@ -723,18 +751,16 @@ async function generateZonosVoice(zonosData) {
         // Schau Dir die Server - Antwort an:
         if (error.response) {
             console.log("[Generate Zonos] Error Code: ", error.code);
-            // console.log("[Generate Zonos] Error Status: ", error.response.status);
+            console.log("[Generate Zonos] Error Status: ", error.response.status);
             console.log("[Generate Zonos] Error StatusText: ", error.response.statusText);
-            // console.error("[Generate Zonos] Server-Antwort: ", error.response.data);
+            console.error("[Generate Zonos] Server-Antwort: ", error.response.data);
         } else {
             // console.error("[Generate Zonos] Axios-Error: ", error.message);
         }
+        console.log("[Generate Zonos] Result.Path: " + JSON.stringify(result.path));
+        return result;
         // throw error;
     }
-
-    // Gradio packt die Ergebnisse in resp.data.data, z.B. data[0] ist das Audio-URL oder Base64
-    console.log("[Generate Zonos] Result.Path: " + JSON.stringify(result.path));
-    return result;
 }
 
 //----- TRANSLATE (GOOGLE) -----//

@@ -607,6 +607,12 @@ h1 {
     width: calc(100% - 10px);
 }
 
+
+#llmVoiceMood {
+    width: calc(100% - 40px);
+}
+
+
 .inputCheckbox {
     min-width: 15px;
     min-height: 15px;
@@ -727,17 +733,10 @@ h1 {
     box-shadow: inset 0px 0px 0px 0px var(--backgroundColor);
 }
 
-/* #paceValue {
+.cbSliders {
     display: none;
 }
 
-#paceRange {
-    display: none;
-}
-
-#cbPase {
-    display: none;
-} */
 
 .inputDropdown:hover {
     cursor: pointer;

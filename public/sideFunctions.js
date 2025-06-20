@@ -359,6 +359,63 @@ function clearResults() {
     addReturnText("", "--- CLEAR ---");
 }
 
+let mood = 0;
+
+function loadSpeechPattern(keyMood) {
+    if (keyMood == "VictimDesperate") {
+        mood = 0.9;
+        zonosOptions = zonosOptionsStandard;
+        zonosOptions.e6 = 1.00;       // Victim / Desperate
+    }
+    else if (keyMood == "Sad") {
+        mood = 0.1;
+        zonosOptions = zonosOptionsStandard;
+        zonosOptions.e2 = 1.00;       // Sadness
+    }
+    else if (keyMood == "AnxiousNervousNeedy") {
+        mood = 0.7;
+        zonosOptions = zonosOptionsStandard;
+        zonosOptions.e4 = 1.00;       // Anxious / Nervours / Needy
+    }
+    else if (keyMood == "PresentingBulltePoints") {
+        mood = 0.3;
+        zonosOptions = zonosOptionsStandard;
+        zonosOptions.e5 = 1.00;       // Presenting / BulletPoints
+    }
+    else if (keyMood == "Reading") {
+        mood = 0.4;
+        zonosOptions = zonosOptionsStandard;
+        zonosOptions.e8 = 1.00;       // Reading
+    }
+    else if (keyMood == "NeutralTeacher") {
+        mood = 0.3;
+        zonosOptions = zonosOptionsStandard;
+        zonosOptions.e3 = 1.00;       // Neutral / Teacher
+    }
+    else if (keyMood == "Neutral") {
+        mood = 0.4;
+        zonosOptions = zonosOptionsStandard;
+        zonosOptions.e1 = 0.30;       // Happiness
+    }
+    else if (keyMood == "Happy") {
+        mood = 0.5;
+        zonosOptions = zonosOptionsStandard;
+        zonosOptions.e1 = 0.60;       // Happiness
+    }
+    else if (keyMood == "VeryHappy") {
+        mood = 0.6;
+        zonosOptions = zonosOptionsStandard;
+        zonosOptions.e1 = 1.00;       // Happiness
+    }
+    else if (keyMood == "CreativeTalkOver") {
+        mood = 1.0;
+        zonosOptions = zonosOptionsStandard;
+        zonosOptions.e7 = 1.00;       // Creative / Talking over
+    }
+
+    llmVoiceMoodDOM.value = keyMood;
+}
+
 
 // Third Functions
 
