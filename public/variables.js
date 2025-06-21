@@ -24,7 +24,7 @@ const nOfTokens = 600;
 const nOfTokensIMG = 300;
 const nOfTokensPersonality = 10;
 
-const voiceSliceCharackters = 500;
+const voiceSliceCharackters = 200;
 const voiceSliceCharacktersOverlap = 50;
 
 let pushLLMmessage = "CREATE CONVERSATION";
@@ -89,7 +89,8 @@ let zonosOptions = {
 zonosOptions.modelChoice = "Zyphra/Zonos-v0.1-transformer"; // Zyphra/Zonos-v0.1-transformer | Zyphra/Zonos-v0.1-hybrid
 // Settings
 zonosOptions.pitchStd = 10;       // 0 - 300 | Pitch
-zonosOptions.speakingRate = 13;    // 5 - 30 | Speed? Breaks?
+zonosOptions.speakingRate = 14;    // 5 - 30 | Speed? Breaks?
+zonosOptions.randomizeSeed = true; // Randomize Seed
 
 const zonosOptionsStandard = zonosOptions;
 
