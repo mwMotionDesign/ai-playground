@@ -50,6 +50,10 @@
 
     --heightBottom: 30px;
     --buttonHeight: 60px;
+
+    --widthLog: 210px;
+    --widthLeft: 399px;
+    --widthRight: 448px;
 }
 
 *,
@@ -266,8 +270,8 @@ h2 {
 
 #bodyContainer {
     position: relative;
-    min-width: 1300px;
-    width: 1900px;
+    min-width: calc(var(--widthLog) + var(--widthLeft) + var(--widthRight));
+    width: 1800px;
     max-width: 100%;
     overflow: hidden;
     resize: horizontal;
@@ -307,14 +311,14 @@ h2 {
     width: 100%;
     height: 100%;
     background-color: var(--backgroundDarkener);
-    z-index: 500;
+    z-index: 10;
 }
 
 /* LEFT */
 
 #inputContent {
-    min-width: 450px;
-    width: 30%;
+    min-width: var(--widthLeft);
+    width: 500px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -328,14 +332,6 @@ h2 {
 .flexContent {
     display: flex;
     background-color: var(--debugColor);
-}
-
-#flexSearch {
-    width: 100%;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin: 5px 0px 0px 0px;
 }
 
 #inputContentDivider {
@@ -360,41 +356,6 @@ h2 {
     margin: 20px 0px 0px 0px;
 }
 
-/* SEARCH */
-
-h1 {
-    text-align: center;
-    margin: 0px 0px 10px;
-}
-
-#inputFieldSearch {
-    width: calc(100% - 10px);
-    min-height: 100px;
-    height: 100px;
-    max-height: calc(100vh - 100px);
-    max-height: calc(100svh - 100px);
-    font-size: 15px;
-    margin: 0px 0px 5px;
-    padding: 4px 4px;
-    border: none;
-    border-radius: 3px;
-    background-color: var(--inputField);
-    color: var(--inputFieldText);
-    resize: vertical;
-}
-
-#inputFieldSearch:focus {
-    outline-color: var(--firstHighlight);
-    outline-style: solid;
-    outline-width: 3px;
-    outline-offset: 0px;
-}
-
-#inputFieldSearch::placeholder {
-    color: var(--inputFieldPlaceholderText);
-    opacity: 1;
-}
-
 /* CONTAINER & STUFF */
 
 .divider {
@@ -410,7 +371,32 @@ h1 {
     width: 10px;
 }
 
-.containerHor {
+.containerHorWrapParent {
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    align-items: stretch;
+    background-color: var(--debugColor);
+}
+
+.containerHorWrap {
+    flex: 1 1 auto;
+    /* width: 100%; */
+    /* min-width: 399px; */
+    max-width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: stretch;
+    background-color: var(--debugColor);
+}
+
+.containerHor,
+.containerHorIn {
     width: 100%;
     max-width: 100%;
     display: flex;
@@ -420,7 +406,8 @@ h1 {
     background-color: var(--debugColor);
 }
 
-.containerVert {
+.containerVert,
+.containerVertIn {
     width: 100%;
     max-width: 100%;
     display: flex;
@@ -431,68 +418,20 @@ h1 {
     background-color: var(--debugColor);
 }
 
-/* BUTTONS */
-
-#buttonContainer {
-    width: 100%;
-    max-width: 100%;
-    height: var(--buttonHeight);
-    /* height: 50px; */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: stretch;
-    background-color: var(--debugColor);
+.containerHorWrapParent,
+.containerHorWrap,
+.containerHor,
+.containerVert {
+    gap: 20px 20px;
+    /* background-color: rgba(0, 0, 255, 0.2); */
 }
 
-.optionButtons {
-    position: relative;
-    flex: 1 0;
-    border: none;
-    border-radius: 3px;
-    display: flex;
-    justify-content: center;
-    align-items: stretch;
-    /* margin: 0px 5px; */
-    background-color: var(--buttonBakckground);
-    transition: 0.05s;
+.buttonGap {
+    gap: 10px 10px;
 }
 
-.optionButtons:hover {
-    cursor: pointer;
-    transform: scale(1.02, 1.04);
-    background-color: var(--buttonsHover);
-    /* filter: blur(1px); */
-}
 
-.buttonIcons {
-    position: absolute;
-    font-size: 35px;
-    left: 25px;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    /* background-color: rgba(0, 0, 0, 0.3); */
-    color: var(--buttonText);
-}
-
-.optionButtons p {
-    font-size: 15px;
-    margin: 0px 0px 0px 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: var(--buttonText);
-}
-
-.optionButtons:hover p {
-    color: var(--buttonTextHover);
-}
-
-.optionButtons:hover .buttonIcons {
-    color: var(--buttonTextHover);
-}
-
-/* CHOICES */
+/* INPUTS */
 
 .inputFlexChoice {
     flex: 0 1 200px;
@@ -745,11 +684,9 @@ h1 {
 /* FILE UPLOAD */
 
 .dropzone {
-    flex: 1 0 100px;
-}
-
-.dropzone {
+    flex: 1 0 120px;
     width: 100%;
+    min-height: 60px;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -792,9 +729,9 @@ h1 {
 /* RETURN */
 
 #returnDiv {
-    flex: 1 0 210px;
+    flex: 1 0 var(--widthLog);
     /* min-width: 200px; */
-    max-width: 210px;
+    max-width: var(--widthLog);
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -889,12 +826,81 @@ h1 {
 /* RIGHT */
 
 #resultContainer {
-    flex: 1 0 500px;
+    flex: 1 0 var(--widthRight);
     position: relative;
     min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
     background-color: var(--backgroundResults);
+    overflow: hidden;
+}
+
+/* SEARCH */
+
+h1 {
+    text-align: center;
+    margin: 0px 0px 10px;
+}
+
+#bottomChatAndButtons {
+    flex: 0 0;
+    padding: 0px 20px;
+    align-items: center;
+    filter: drop-shadow(0px -1px 2px rgba(255, 255, 255, 0.4));
+    background-color: var(--backgroundResults);
+    /* background-color: var(--backgroundColor); */
+    /* background-color: var(--backgroundIMGs); */
+}
+
+.inputFieldSearch {
+    width: calc(100% - 10px);
+
+    min-height: 30px;
+    height: 30px;
+    max-height: min(calc(20vh), 300px);
+    max-height: min(calc(20svh), 300px);
+
+    /* resize: vertical; */
+    resize: none;
     overflow-y: auto;
-    overflow-x: hidden;
+
+    font-size: 15px;
+    margin: 0px 0px 5px;
+    padding: 4px 4px;
+    border: none;
+    border-radius: 3px;
+    background-color: var(--inputField);
+    color: var(--inputFieldText);
+}
+
+#hiddenInputMirror {
+    position: absolute;
+    height: auto;
+    overflow: hidden;
+
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+
+    z-index: -10;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+#inputFieldSearch:focus {
+    outline-color: var(--firstHighlight);
+    outline-style: solid;
+    outline-width: 3px;
+    outline-offset: 0px;
+}
+
+#inputFieldSearch::placeholder {
+    color: var(--inputFieldPlaceholderText);
+    opacity: 1;
 }
 
 #clearResultButton {
@@ -922,19 +928,6 @@ h1 {
     padding: 5px;
 }
 
-#result {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    min-height: 100%;
-    padding: 20px 0px 150px 0px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-}
-
 .resultLink {
     text-decoration: none;
 }
@@ -944,7 +937,86 @@ h1 {
 }
 
 
+/* BUTTONS */
+
+#buttonContainer {
+    /* width: 100%;
+    max-width: 100%; */
+    margin: 0px 0px 20px 0px;
+    /* display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch; */
+    background-color: var(--debugColor);
+}
+
+.buttonContainer {
+    flex: 1 0 200px;
+    height: var(--buttonHeight);
+    background-color: var(--debugColor);
+}
+
+.optionButtons {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    border: none;
+    border-radius: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    /* margin: 0px 5px; */
+    background-color: var(--buttonBakckground);
+    transition: 0.05s;
+}
+
+.optionButtons:hover {
+    cursor: pointer;
+    transform: scale(1.02, 1.04);
+    background-color: var(--buttonsHover);
+    /* filter: blur(1px); */
+}
+
+.buttonIcons {
+    position: absolute;
+    font-size: 35px;
+    left: 25px;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    /* background-color: rgba(0, 0, 0, 0.3); */
+    color: var(--buttonText);
+}
+
+.optionButtons p {
+    font-size: 15px;
+    margin: 0px 0px 0px 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--buttonText);
+}
+
+.optionButtons:hover p {
+    color: var(--buttonTextHover);
+}
+
+.optionButtons:hover .buttonIcons {
+    color: var(--buttonTextHover);
+}
+
+
 /* RESULT FORMAT */
+
+#result {
+    /* position: absolute; */
+    flex: 1 0;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    padding: 20px 0px 150px 0px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
 
 .resultDivider {
     width: calc(100% - 120px);
@@ -1119,7 +1191,7 @@ h1 {
 
 .resultIMGlinkXL {
     display: none;
-    z-index: 200;
+    z-index: 1000;
     cursor: pointer;
 }
 
@@ -1137,6 +1209,7 @@ h1 {
     width: 100vw;
     background-color: var(--backgroundDarkener);
     cursor: pointer;
+    z-index: 1000;
 }
 
 .resultIMGXL {
@@ -1146,6 +1219,7 @@ h1 {
     object-position: 50% 50%;
     transform: translate(5%, 5%);
     cursor: pointer;
+    z-index: 1000;
 }
 
 /* Gesamte Scrollbar */
