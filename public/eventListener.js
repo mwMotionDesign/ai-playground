@@ -384,6 +384,34 @@ LLMrandomMax.addEventListener("change", () => {
     }
 });
 
+// Input Field
+
+const hiddenInput = document.getElementById("hiddenInputMirror");
+
+inputField.addEventListener("input", () => {
+    // hiddenInput
+    const computed = getComputedStyle(inputField);
+    const computedHidden = getComputedStyle(hiddenInput);
+    hiddenInput.style.width = parseFloat(computed.width) + "px";
+    hiddenInput.style.lineHeight = 1.2;
+    const lineHeight = parseFloat(computedHidden.lineHeight);
+
+    hiddenInput.innerHTML = inputField.value
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\n/g, "<br>&#8203;");
+
+    const offsetHeight = hiddenInput.offsetHeight;
+
+    if (inputField.value == "") {
+        inputField.style.height = offsetHeight + "px";
+    }
+    else {
+        inputField.style.height = offsetHeight + lineHeight + "px";
+    }
+});
+
 // Buttons
 
 const controlHide = document.getElementById("hideControls");
@@ -401,12 +429,14 @@ button1.addEventListener("click", (event) => {
     console.log("\n\n-> Button Generate Text");
     generateResponse("text");
     focusInputField();
+    resultPageEntries.scrollTop = resultPageEntries.scrollHeight;
 });
 button2.addEventListener("click", (event) => {
     event.preventDefault;
     console.log("\n\n-> Button Generate Images");
     generateResponse("images");
     focusInputField();
+    resultPageEntries.scrollTop = resultPageEntries.scrollHeight;
 });
 button3.addEventListener("click", (event) => {
     event.preventDefault;
@@ -415,6 +445,7 @@ button3.addEventListener("click", (event) => {
     }
     else {
         console.log("\n-> Button Transcribe Audio - Record Stop");
+        resultPageEntries.scrollTop = resultPageEntries.scrollHeight;
     }
     generateResponse("audio");
     focusInputField();
@@ -424,6 +455,7 @@ button4.addEventListener("click", (event) => {
     console.log("\n\n-> Button Generate Voice");
     generateResponse("voice");
     focusInputField();
+    resultPageEntries.scrollTop = resultPageEntries.scrollHeight;
 });
 buttonClearResults.addEventListener("click", (event) => {
     event.preventDefault;
@@ -441,6 +473,7 @@ document.addEventListener("keydown", (event) => {
                 console.log("\n\n-> Hotkey Generate Images");
                 generateResponse("images");
                 focusInputField();
+                resultPageEntries.scrollTop = resultPageEntries.scrollHeight;
             }
         }
     }
@@ -453,6 +486,7 @@ document.addEventListener("keydown", (event) => {
                 }
                 else {
                     console.log("\n-> Button Transcribe Audio - Record Stop");
+                    resultPageEntries.scrollTop = resultPageEntries.scrollHeight;
                 }
                 generateResponse("audio");
                 focusInputField();
@@ -483,6 +517,7 @@ document.addEventListener("keydown", (event) => {
                 console.log("\n\n-> Hotkey Generate Text");
                 generateResponse("text");
                 focusInputField();
+                resultPageEntries.scrollTop = resultPageEntries.scrollHeight;
             }
         }
     }

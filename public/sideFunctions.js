@@ -60,6 +60,7 @@ function stopRandomTimer() {
 }
 
 const resultPage = document.getElementById("resultContainer");
+const resultPageEntries = document.getElementById("result");
 
 function addDescription() {
     addReturnText("", "Description loaded!");
@@ -109,7 +110,7 @@ function addDescription() {
     outputAudio("./audio/AlbertEinstein.wav");
     outputText("noLink", "<span class='tBold'>Sam Altman</span>");
     outputAudio("./audio/SamAltman.wav");
-    resultPage.scrollTop = "0px";
+    resultPageEntries.scrollTop = "0px";
 }
 
 function outputText(type, text) {
@@ -142,10 +143,6 @@ function outputText(type, text) {
             event.preventDefault;
             UnTip();
         });
-
-        function copyToInput(text) {
-            inputField.value = removePersonalityMarkers(formatToText(text));
-        }
     }
     else if (type == "header") {
         let newText = document.createElement("p");
@@ -178,7 +175,12 @@ function outputText(type, text) {
         result.appendChild(newDetails);
     }
 
-    resultPage.scrollTop = resultPage.scrollHeight;
+    resultPageEntries.scrollTop = resultPageEntries.scrollHeight;
+}
+
+function copyToInput(text) {
+    inputField.value = removePersonalityMarkers(formatToText(text));
+    inputField.dispatchEvent(new Event("input"));
 }
 
 function outputIMGs(imgArray, imgPrompt) {
@@ -231,7 +233,7 @@ function outputIMGs(imgArray, imgPrompt) {
         result.appendChild(newIMGsContainer);
 
         outputText("imgPrompt", imgPrompt);
-        resultPage.scrollTop = resultPage.scrollHeight;
+        resultPageEntries.scrollTop = resultPageEntries.scrollHeight;
     }
 }
 
@@ -269,7 +271,7 @@ function outputAudio(path, { autoplay = false, autoplayQueue = false, addToQueue
 
     newAudioDiv.appendChild(newAudio);
     result.appendChild(newAudioDiv);
-    resultPage.scrollTop = resultPage.scrollHeight;
+    resultPageEntries.scrollTop = resultPageEntries.scrollHeight;
 }
 
 let audioSearchItteration = 0;
