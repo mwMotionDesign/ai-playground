@@ -2,6 +2,10 @@ import torch
 import torchaudio
 import gradio as gr
 from os import getenv
+from pathlib import Path
+import os
+import numpy as np
+import gc
 
 from zonos.model import Zonos, DEFAULT_BACKBONE_CLS as ZonosBackbone
 from zonos.conditioning import make_cond_dict, supported_language_codes
@@ -13,6 +17,7 @@ CURRENT_MODEL = None
 SPEAKER_EMBEDDING = None
 SPEAKER_AUDIO_PATH = None
 
+from pathlib import Path
 
 def load_model_if_needed(model_choice: str):
     global CURRENT_MODEL_TYPE, CURRENT_MODEL
@@ -82,126 +87,121 @@ def update_ui(model_choice):
     )
 
 
-def generate_audio(
-    model_choice,
-    text,
-    language,
-    speaker_audio,
-    prefix_audio,
-    e1,
-    e2,
-    e3,
-    e4,
-    e5,
-    e6,
-    e7,
-    e8,
-    vq_single,
-    fmax,
-    pitch_std,
-    speaking_rate,
-    dnsmos_ovrl,
-    speaker_noised,
-    cfg_scale,
-    top_p,
-    top_k,
-    min_p,
-    linear,
-    confidence,
-    quadratic,
-    seed,
-    randomize_seed,
-    unconditional_keys,
-    progress=gr.Progress(),
-):
+def generate_audio( model_choice, text, language, speaker_audio, prefix_audio, e1, e2, e3, e4, e5, e6, e7, e8, vq_single, fmax, pitch_std, speaking_rate, dnsmos_ovrl, speaker_noised, cfg_scale, top_p, top_k, min_p, linear, confidence, quadratic, seed, randomize_seed, unconditional_keys, progress=gr.Progress()):
     """
     Generates audio based on the provided UI parameters.
     We do NOT use language_id or ctc_loss even if the model has them.
     """
-    selected_model = load_model_if_needed(model_choice)
+    
+    global CURRENT_MODEL_TYPE, CURRENT_MODEL
 
-    speaker_noised_bool = bool(speaker_noised)
-    fmax = float(fmax)
-    pitch_std = float(pitch_std)
-    speaking_rate = float(speaking_rate)
-    dnsmos_ovrl = float(dnsmos_ovrl)
-    cfg_scale = float(cfg_scale)
-    top_p = float(top_p)
-    top_k = int(top_k)
-    min_p = float(min_p)
-    linear = float(linear)
-    confidence = float(confidence)
-    quadratic = float(quadratic)
-    seed = int(seed)
-    max_new_tokens = 86 * 30
+    # Check if external flush was requested
+    print("[Gradio-Interface] Generate Audio called")
+    flush_flag = Path(os.path.dirname(__file__)) / ".." / ".." / "scripts" / "zonos_force_flush.txt"
+    print(f"[Gradio-Interface] Flush File Exists? {flush_flag.exists()}")
 
-    # This is a bit ew, but works for now.
-    global SPEAKER_AUDIO_PATH, SPEAKER_EMBEDDING
+    if flush_flag.exists():
+        print("[Gradio-Interface] Zonos-Flush-Flag recognized – flushing VRAM and Model")
+        CURRENT_MODEL = None
+        CURRENT_MODEL_TYPE = None
+        gc.collect()
+        torch.cuda.empty_cache()
+        flush_flag.unlink()
 
-    if randomize_seed:
-        seed = torch.randint(0, 2**32 - 1, (1,)).item()
-    torch.manual_seed(seed)
+        seed = int(seed)
+        if randomize_seed:
+            seed = torch.randint(0, 2**32 - 1, (1,)).item()
+        torch.manual_seed(seed)
 
-    if speaker_audio is not None and "speaker" not in unconditional_keys:
-        if speaker_audio != SPEAKER_AUDIO_PATH:
-            print("Recomputed speaker embedding")
-            wav, sr = torchaudio.load(speaker_audio)
-            SPEAKER_EMBEDDING = selected_model.make_speaker_embedding(wav, sr)
-            SPEAKER_EMBEDDING = SPEAKER_EMBEDDING.to(device, dtype=torch.bfloat16)
-            SPEAKER_AUDIO_PATH = speaker_audio
+        dummy_audio = np.ones(22050, dtype=np.float32) * 0.001  # 1s silence at 22.050 Hz
 
-    audio_prefix_codes = None
-    if prefix_audio is not None:
-        wav_prefix, sr_prefix = torchaudio.load(prefix_audio)
-        wav_prefix = wav_prefix.mean(0, keepdim=True)
-        wav_prefix = selected_model.autoencoder.preprocess(wav_prefix, sr_prefix)
-        wav_prefix = wav_prefix.to(device, dtype=torch.float32)
-        audio_prefix_codes = selected_model.autoencoder.encode(wav_prefix.unsqueeze(0))
+        return (22050, dummy_audio), seed
+    else:
+        print("[Gradio-Interface] Zonos-Flush-Flag not found")
+        selected_model = load_model_if_needed(model_choice)
 
-    emotion_tensor = torch.tensor(list(map(float, [e1, e2, e3, e4, e5, e6, e7, e8])), device=device)
+        speaker_noised_bool = bool(speaker_noised)
+        fmax = float(fmax)
+        pitch_std = float(pitch_std)
+        speaking_rate = float(speaking_rate)
+        dnsmos_ovrl = float(dnsmos_ovrl)
+        cfg_scale = float(cfg_scale)
+        top_p = float(top_p)
+        top_k = int(top_k)
+        min_p = float(min_p)
+        linear = float(linear)
+        confidence = float(confidence)
+        quadratic = float(quadratic)
+        seed = int(seed)
+        max_new_tokens = 86 * 30
 
-    vq_val = float(vq_single)
-    vq_tensor = torch.tensor([vq_val] * 8, device=device).unsqueeze(0)
+        # This is a bit ew, but works for now.
+        global SPEAKER_AUDIO_PATH, SPEAKER_EMBEDDING
 
-    cond_dict = make_cond_dict(
-        text=text,
-        language=language,
-        speaker=SPEAKER_EMBEDDING,
-        emotion=emotion_tensor,
-        vqscore_8=vq_tensor,
-        fmax=fmax,
-        pitch_std=pitch_std,
-        speaking_rate=speaking_rate,
-        dnsmos_ovrl=dnsmos_ovrl,
-        speaker_noised=speaker_noised_bool,
-        device=device,
-        unconditional_keys=unconditional_keys,
-    )
-    conditioning = selected_model.prepare_conditioning(cond_dict)
+        if randomize_seed:
+            seed = torch.randint(0, 2**32 - 1, (1,)).item()
+        torch.manual_seed(seed)
 
-    estimated_generation_duration = 30 * len(text) / 400
-    estimated_total_steps = int(estimated_generation_duration * 86)
+        if speaker_audio is not None and "speaker" not in unconditional_keys:
+            if speaker_audio != SPEAKER_AUDIO_PATH:
+                print("Recomputed speaker embedding")
+                wav, sr = torchaudio.load(speaker_audio)
+                SPEAKER_EMBEDDING = selected_model.make_speaker_embedding(wav, sr)
+                SPEAKER_EMBEDDING = SPEAKER_EMBEDDING.to(device, dtype=torch.bfloat16)
+                SPEAKER_AUDIO_PATH = speaker_audio
 
-    def update_progress(_frame: torch.Tensor, step: int, _total_steps: int) -> bool:
-        progress((step, estimated_total_steps))
-        return True
+        audio_prefix_codes = None
+        if prefix_audio is not None:
+            wav_prefix, sr_prefix = torchaudio.load(prefix_audio)
+            wav_prefix = wav_prefix.mean(0, keepdim=True)
+            wav_prefix = selected_model.autoencoder.preprocess(wav_prefix, sr_prefix)
+            wav_prefix = wav_prefix.to(device, dtype=torch.float32)
+            audio_prefix_codes = selected_model.autoencoder.encode(wav_prefix.unsqueeze(0))
 
-    codes = selected_model.generate(
-        prefix_conditioning=conditioning,
-        audio_prefix_codes=audio_prefix_codes,
-        max_new_tokens=max_new_tokens,
-        cfg_scale=cfg_scale,
-        batch_size=1,
-        sampling_params=dict(top_p=top_p, top_k=top_k, min_p=min_p, linear=linear, conf=confidence, quad=quadratic),
-        callback=update_progress,
-        disable_torch_compile=True if "transformer" in model_choice else False,
-    )
+        emotion_tensor = torch.tensor(list(map(float, [e1, e2, e3, e4, e5, e6, e7, e8])), device=device)
 
-    wav_out = selected_model.autoencoder.decode(codes).cpu().detach()
-    sr_out = selected_model.autoencoder.sampling_rate
-    if wav_out.dim() == 2 and wav_out.size(0) > 1:
-        wav_out = wav_out[0:1, :]
-    return (sr_out, wav_out.squeeze().numpy()), seed
+        vq_val = float(vq_single)
+        vq_tensor = torch.tensor([vq_val] * 8, device=device).unsqueeze(0)
+
+        cond_dict = make_cond_dict(
+            text=text,
+            language=language,
+            speaker=SPEAKER_EMBEDDING,
+            emotion=emotion_tensor,
+            vqscore_8=vq_tensor,
+            fmax=fmax,
+            pitch_std=pitch_std,
+            speaking_rate=speaking_rate,
+            dnsmos_ovrl=dnsmos_ovrl,
+            speaker_noised=speaker_noised_bool,
+            device=device,
+            unconditional_keys=unconditional_keys,
+        )
+        conditioning = selected_model.prepare_conditioning(cond_dict)
+
+        estimated_generation_duration = 30 * len(text) / 400
+        estimated_total_steps = int(estimated_generation_duration * 86)
+
+        def update_progress(_frame: torch.Tensor, step: int, _total_steps: int) -> bool:
+            progress((step, estimated_total_steps))
+            return True
+
+        codes = selected_model.generate(
+            prefix_conditioning=conditioning,
+            audio_prefix_codes=audio_prefix_codes,
+            max_new_tokens=max_new_tokens,
+            cfg_scale=cfg_scale,
+            batch_size=1,
+            sampling_params=dict(top_p=top_p, top_k=top_k, min_p=min_p, linear=linear, conf=confidence, quad=quadratic),
+            callback=update_progress,
+            disable_torch_compile=True if "transformer" in model_choice else False,
+        )
+
+        wav_out = selected_model.autoencoder.decode(codes).cpu().detach()
+        sr_out = selected_model.autoencoder.sampling_rate
+        if wav_out.dim() == 2 and wav_out.size(0) > 1:
+            wav_out = wav_out[0:1, :]
+        return (sr_out, wav_out.squeeze().numpy()), seed
 
 
 def build_interface():

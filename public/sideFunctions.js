@@ -136,7 +136,7 @@ function outputText(type, text) {
 
         newA.addEventListener("mouseover", (event) => {
             event.preventDefault;
-            Tip("<div class='tooltip'>Copy to Input</div>", BORDERWIDTH, 0, BGCOLOR, "rgba(0,0,0,0)", ABOVE, true, CENTERMOUSE, true, DELAY, 1000, OFFSETX, 85, OFFSETY, 5);
+            Tip("<div class='tooltip'>Copy to Input</div>", BORDERWIDTH, 0, BGCOLOR, "rgba(0,0,0,0)", ABOVE, true, CENTERMOUSE, true, DELAY, 0, OFFSETX, 75, OFFSETY, 10);
         });
 
         newA.addEventListener("mouseout", (event) => {
