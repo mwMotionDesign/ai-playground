@@ -666,7 +666,22 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
                 if (isZonosReady) {
                     console.log("✅ Zonos Ready");
                     clearInterval(interval);
+
+                    const flushFile = path.join(__dirname, "./scripts/zonos_force_flush.txt");
+                    if (fs.existsSync(flushFile)) { fs.unlinkSync(flushFile); }
+
                     const response = await generateZonosVoice(zonosData);
+
+                    if (!response || !response.path) {
+                        console.error("No valid result from Zonos");
+                        throw new Error("Zonos request failed");
+                    }
+
+                    console.log("responsePath: " + response.path);
+
+                    writeFlushZonosFile(flushFile);
+
+                    // const tempNull = await generateZonosVoice(zonosData, true);
 
                     const oldPath = response.path;
                     const newPath = path.join(__dirname, 'Audiofiles', "audio.wav");
@@ -678,11 +693,17 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
 
                     saveAndSend(newPath);
                 }
-            } catch {
-                // Wait for next try
+            } catch (error) {
+                console.log("Error: " + error);
             }
         }, 1000);
     }
+
+    function writeFlushZonosFile(flushFile) {
+        fs.writeFileSync(flushFile, "flush");
+        console.log("📤 Zonos-Flush-Flag gesetzt");
+    }
+
     async function makeFileData(audioPath) {
         const stats = await fsp.stat(audioPath);
         return {
@@ -724,42 +745,64 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
     }
 });
 
-async function generateZonosVoice(zonosData) {
+async function generateZonosVoice(zonosData, flush = false) {
     const body = {
         session_hash: "",    // Can be empty
         event_id: "",        // Empty
         data: zonosData
     };
 
-    console.log("[Generate Zonos] Started ...");
-    // console.log("[Generate Zonos] Body: " + JSON.stringify(body, null, 2));
+    if (flush) {
 
-    let result = "";
+        console.log("[Generate Zonos] Flushing Model and VRAM ...");
 
-    try {
-        const response = await axios.post(
-            "http://127.0.0.1:7860/gradio_api/run/generate_audio",
-            body,
-            { headers: { "Content-Type": "application/json" } }
-        );
-        // Das Audio kommt in response.data.data[0]
-        result = response.data.data[0];
-        console.log("[Generate Zonos] response: " + JSON.stringify(response));
-        console.log("[Generate Zonos] Result: " + JSON.stringify(result));
-        return result;
-    } catch (error) {
-        // Schau Dir die Server - Antwort an:
-        if (error.response) {
-            console.log("[Generate Zonos] Error Code: ", error.code);
-            console.log("[Generate Zonos] Error Status: ", error.response.status);
-            console.log("[Generate Zonos] Error StatusText: ", error.response.statusText);
-            console.error("[Generate Zonos] Server-Antwort: ", error.response.data);
-        } else {
-            // console.error("[Generate Zonos] Axios-Error: ", error.message);
+        try {
+            const response = await axios.post(
+                "http://127.0.0.1:7860/gradio_api/run/generate_audio",
+                body,
+                { headers: { "Content-Type": "application/json" } }
+            );
+            const result = response.data.data[0];
+            // console.log("[Generate Zonos] Result: " + JSON.stringify(result));
+            return null;
+        } catch (error) {
+            if (error.response) {
+                console.log("[Generate Zonos] Error Code: ", error.code);
+                console.log("[Generate Zonos] Error Status: ", error.response.status);
+                console.log("[Generate Zonos] Error StatusText: ", error.response.statusText);
+                console.error("[Generate Zonos] Server-Antwort: ", error.response.data);
+                throw error;
+            }
+            console.error("[Generate Zonos] Error: ", error);
+            return null;
         }
-        console.log("[Generate Zonos] Result.Path: " + JSON.stringify(result.path));
-        return result;
-        // throw error;
+    }
+    else {
+        console.log("[Generate Zonos] Started ...");
+        // console.log("[Generate Zonos] Body: " + JSON.stringify(body, null, 2));
+
+        let result = "";
+
+        try {
+            const response = await axios.post(
+                "http://127.0.0.1:7860/gradio_api/run/generate_audio",
+                body,
+                { headers: { "Content-Type": "application/json" } }
+            );
+            result = response.data.data[0];
+            // console.log("[Generate Zonos] Result: " + JSON.stringify(result));
+            return result;
+        } catch (error) {
+            if (error.response) {
+                console.log("[Generate Zonos] Error Code: ", error.code);
+                console.log("[Generate Zonos] Error Status: ", error.response.status);
+                console.log("[Generate Zonos] Error StatusText: ", error.response.statusText);
+                console.error("[Generate Zonos] Server-Antwort: ", error.response.data);
+                // throw error;
+            }
+            console.error("[Generate Zonos] Error: ", error);
+            return result;
+        }
     }
 }
 

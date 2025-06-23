@@ -243,18 +243,26 @@ h2 {
 }
 
 .tooltip {
-    /* width: 200px;
-    height: 50px; */
-    background-color: rgba(0, 0, 0, 0.7);
-    color: var(--normalTextAndOutlines);
-    font-size: 16px;
+    padding: 8px 15px 7px 12px;
+    color: var(--boldNormalText);
+
+    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(2px);
+
     border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.5);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
     border-radius: 5px;
+
+    font-size: 16px;
+
+    box-sizing: content-box;
+    white-space: nowrap;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    padding: 8px 15px 7px 12px;
 }
 
 /* SITE */
@@ -848,7 +856,7 @@ h1 {
     flex: 0 0;
     padding: 0px 20px;
     align-items: center;
-    filter: drop-shadow(0px -1px 2px rgba(255, 255, 255, 0.4));
+    filter: drop-shadow(0px -1px 1px rgba(255, 255, 255, 0.4));
     background-color: var(--backgroundResults);
     /* background-color: var(--backgroundColor); */
     /* background-color: var(--backgroundIMGs); */
