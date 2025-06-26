@@ -31,175 +31,198 @@
                     <p class="returnText">--- LOG ---</p>
                 </div>
                 <div id="inputContent">
-                    <div class="containerVert">
-                        <div class="containerHorWrapParent">
-                            <div class="containerHorWrap">
-                                <div class="inputFlexChoice" id="chatterbotFlexChoice">
-                                    <form class="inputForm" id="chatterbotChoiceForm">
-                                        <fieldset class="inputFieldset" id="chatterbotFieldset">
-                                            <legend class="inputFieldsetLabel" id="chatterbotLabel">Audio Models</legend>
-                                            <div class="containerHorIn">
-                                                <div class="containerVertIn" id="audioModelsLeft">
-                                                    <p class="inputHeader">Voice Model</p>
-                                                    <div class="inputContainer inputRadioContainer">
-                                                        <input type="radio" class="inputInput inputRadioButton voiceRadio" id="radioVoiceZonos" name="voiceModel" value="Zonos" checked>
-                                                        <label for="radioVoiceZonos" class="inputLabel inputRadioLabel">German<br><span class="tSmall">Zonos - Unreliable</span></label>
-                                                    </div>
-                                                    <div class="inputContainer inputRadioContainer">
-                                                        <input type="radio" class="inputInput inputRadioButton voiceRadio" id="radioVoiceChatter" name="voiceModel" value="Chatterbox">
-                                                        <label for="radioVoiceChatter" class="inputLabel inputRadioLabel">English<br><span class="tSmall">Chatterbox - Reliable</span></label>
-                                                    </div>
-                                                    <p class="inputHeader">Voice Mood</p>
-                                                    <div class="inputContainer inputCheckboxContainer">
-                                                        <input type="checkbox" class="inputInput inputCheckbox" id="llmChooseVoice" name="llmChooseVoice" checked>
-                                                        <label for="llmChooseVoice" class="inputLabel inputCheckboxLabel">LLM chooses</label>
-                                                    </div>
-                                                    <div class="inputContainer inputLLMvoiceMood">
-                                                        <select name="voiceMood" class="inputInput inputDropdown" id="llmVoiceMood">
-                                                            <option value="VictimDesperate">Victim | Desperate</option>
-                                                            <option value="Sad">Sad</option>
-                                                            <option value="AnxiousNervousNeedy">Anxious | Nervous | Needy</option>
-                                                            <option value="PresentingBulltePoints">Presenting | BulltePoints</option>
-                                                            <option value="Reading">Reading</option>
-                                                            <option value="NeutralTeacher">Neutral | Teacher</option>
-                                                            <option value="Neutral" selected>Neutral</option>
-                                                            <option value="Happy">Happy</option>
-                                                            <option value="VeryHappy">Very Happy</option>
-                                                            <option value="CreativeTalkOver">Creative | Talking Over</option>
-                                                        </select>
-                                                        <!-- <label for="voiceMood" class="inputLabel inputDropdownlLabel">Voice Moods</label> -->
-                                                    </div>
-
-                                                    <p class="inputHeader cbSliders">Chatterbox Parameters</p>
-                                                    <p class="inputHeader valueHeader cbSliders" id="exaggerationValue">Exaggeration</p>
-                                                    <div class="inputContainer inputTextContainer cbSliders" id="exaggerationRange">
-                                                        <input type="range" class="inputInput inputRange cbSliders" id="cbExaggeration" name="cbExaggeration" valuemin="0" max="2" step="0.05" value="0.4">
-                                                    </div>
-                                                    <p class="inputHeader valueHeader cbSliders" id="paceValue">Pase</p>
-                                                    <div class="inputContainer inputTextContainer cbSliders" id="paseRange">
-                                                        <input type="range" class="inputInput inputRange cbSliders" id="cbPase" name="cbPase" min="0" max="2" step="0.05" value="0.25">
-                                                    </div>
-                                                    <p class="inputHeader valueHeader cbSliders" id="temperatureValue">Temperature</p>
-                                                    <div class="inputContainer inputTextContainer cbSliders" id="temperatureRange">
-                                                        <input type="range" class="inputInput inputRange cbSliders" id="cbTemperature" name="cbTemperature" min="0" max="2" step="0.05" value="0.8">
-                                                    </div>
+                    <div class="containerHorWrapParent">
+                        <div class="containerHorWrap">
+                            <div class="inputFlexChoice" id="chatterbotFlexChoice">
+                                <form class="inputForm" id="chatterbotChoiceForm">
+                                    <fieldset class="inputFieldset" id="chatterbotFieldset">
+                                        <legend class="inputFieldsetLabel" id="chatterbotLabel">Audio Models</legend>
+                                        <div class="containerHorInWrap">
+                                            <div class="containerVertIn" id="audioModelsLeft">
+                                                <p class="inputHeader">Voice Model</p>
+                                                <div class="inputContainer inputRadioContainer">
+                                                    <input type="radio" class="inputInput inputRadioButton voiceRadio" id="radioVoiceZonos" name="voiceModel" value="Zonos" checked>
+                                                    <label for="radioVoiceZonos" class="inputLabel inputRadioLabel">German<br><span class="tSmall">Zonos - Unreliable</span></label>
                                                 </div>
-                                                <div class="containerVertIn" id="audioModelsRight">
-                                                    <p class="inputHeader">Transcription</p>
-                                                    <div class="inputContainer inputCheckboxContainer">
-                                                        <input type="checkbox" class="inputInput inputCheckbox" id="sendTextToLLM" name="sendTextToLLM">
-                                                        <label for="sendTextToLLM" class="inputLabel inputCheckboxLabel">send to LLM</label>
-                                                    </div>
-                                                    <div class="inputContainer inputCheckboxContainer">
-                                                        <input type="checkbox" class="inputInput inputCheckbox" id="translate" name="translate">
-                                                        <label for="translate" class="inputLabel inputCheckboxLabel">translate to EN</label>
-                                                    </div>
-                                                    <p class="inputHeader">Generate Voice</p>
-                                                    <div class="inputContainer inputCheckboxContainer">
-                                                        <input type="checkbox" class="inputInput inputCheckbox" id="createVoiceLLM" name="createVoiceLLM">
-                                                        <label for="createVoiceLLM" class="inputLabel inputCheckboxLabel">for LLM</label>
-                                                    </div>
-                                                    <div class="inputContainer inputCheckboxContainer">
-                                                        <input type="checkbox" class="inputInput inputCheckbox" id="createVoice" name="createVoice">
-                                                        <label for="createVoice" class="inputLabel inputCheckboxLabel">for Transcript</label>
-                                                    </div>
-                                                    <div class="inputContainer inputCheckboxContainer">
-                                                        <input type="checkbox" class="inputInput inputCheckbox" id="sendAudioSample" name="sendAudioSample" checked>
-                                                        <label for="sendAudioSample" class="inputLabel inputCheckboxLabel">Use Audio Sample</label>
-                                                    </div>
+                                                <div class="inputContainer inputRadioContainer">
+                                                    <input type="radio" class="inputInput inputRadioButton voiceRadio" id="radioVoiceChatter" name="voiceModel" value="Chatterbox">
+                                                    <label for="radioVoiceChatter" class="inputLabel inputRadioLabel">English<br><span class="tSmall">Chatterbox - Reliable</span></label>
+                                                </div>
+                                                <p class="inputHeader">Voice Mood</p>
+                                                <div class="inputContainer inputCheckboxContainer">
+                                                    <input type="checkbox" class="inputInput inputCheckbox" id="llmChooseVoice" name="llmChooseVoice" checked>
+                                                    <label for="llmChooseVoice" class="inputLabel inputCheckboxLabel">LLM chooses</label>
+                                                </div>
+                                                <div class="inputContainer inputLLMvoiceMood">
+                                                    <select name="voiceMood" class="inputInput inputDropdown" id="llmVoiceMood">
+                                                        <option value="VictimDesperate">Victim | Desperate</option>
+                                                        <option value="Sad">Sad</option>
+                                                        <option value="AnxiousNervousNeedy">Anxious | Nervous | Needy</option>
+                                                        <option value="PresentingBulltePoints">Presenting | BulltePoints</option>
+                                                        <option value="Reading">Reading</option>
+                                                        <option value="NeutralTeacher">Neutral | Teacher</option>
+                                                        <option value="Neutral" selected>Neutral</option>
+                                                        <option value="Happy">Happy</option>
+                                                        <option value="VeryHappy">Very Happy</option>
+                                                        <option value="CreativeTalkOver">Creative | Talking Over</option>
+                                                    </select>
+                                                    <!-- <label for="voiceMood" class="inputLabel inputDropdownlLabel">Voice Moods</label> -->
+                                                </div>
+                                                <p class="inputHeader cbSliders">Chatterbox Parameters</p>
+                                                <p class="inputHeader valueHeader cbSliders" id="exaggerationValue">Exaggeration</p>
+                                                <div class="inputContainer inputTextContainer cbSliders" id="exaggerationRange">
+                                                    <input type="range" class="inputInput inputRange cbSliders" id="cbExaggeration" name="cbExaggeration" valuemin="0" max="2" step="0.05" value="0.4">
+                                                </div>
+                                                <p class="inputHeader valueHeader cbSliders" id="paceValue">Pase</p>
+                                                <div class="inputContainer inputTextContainer cbSliders" id="paseRange">
+                                                    <input type="range" class="inputInput inputRange cbSliders" id="cbPase" name="cbPase" min="0" max="2" step="0.05" value="0.25">
+                                                </div>
+                                                <p class="inputHeader valueHeader cbSliders" id="temperatureValue">Temperature</p>
+                                                <div class="inputContainer inputTextContainer cbSliders" id="temperatureRange">
+                                                    <input type="range" class="inputInput inputRange cbSliders" id="cbTemperature" name="cbTemperature" min="0" max="2" step="0.05" value="0.8">
                                                 </div>
                                             </div>
-                                        </fieldset>
-                                    </form>
-                                </div>
-                                <div id="audioSampleDropzone" class="dropzone">
-                                    Drop<br>Audio Sample
-                                    <input type="file" id="inputAudioSample" accept="audio/*" hidden>
-                                </div>
+                                            <div class="containerVertIn" id="audioModelsRight">
+                                                <p class="inputHeader">Transcription</p>
+                                                <div class="inputContainer inputCheckboxContainer">
+                                                    <input type="checkbox" class="inputInput inputCheckbox" id="sendTextToLLM" name="sendTextToLLM">
+                                                    <label for="sendTextToLLM" class="inputLabel inputCheckboxLabel">send to LLM</label>
+                                                </div>
+                                                <div class="inputContainer inputCheckboxContainer">
+                                                    <input type="checkbox" class="inputInput inputCheckbox" id="translate" name="translate">
+                                                    <label for="translate" class="inputLabel inputCheckboxLabel">translate to EN</label>
+                                                </div>
+                                                <p class="inputHeader">Generate Voice</p>
+                                                <div class="inputContainer inputCheckboxContainer">
+                                                    <input type="checkbox" class="inputInput inputCheckbox" id="createVoiceLLM" name="createVoiceLLM">
+                                                    <label for="createVoiceLLM" class="inputLabel inputCheckboxLabel">for LLM</label>
+                                                </div>
+                                                <div class="inputContainer inputCheckboxContainer">
+                                                    <input type="checkbox" class="inputInput inputCheckbox" id="createVoice" name="createVoice">
+                                                    <label for="createVoice" class="inputLabel inputCheckboxLabel">for Transcript</label>
+                                                </div>
+                                                <div class="inputContainer inputCheckboxContainer">
+                                                    <input type="checkbox" class="inputInput inputCheckbox" id="sendAudioSample" name="sendAudioSample" checked>
+                                                    <label for="sendAudioSample" class="inputLabel inputCheckboxLabel">Use Audio Sample</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </form>
                             </div>
-                            <div class="containerHorWrap">
-                                <div class="inputFlexChoice" id="llmFlexChoice">
-                                    <form class="inputForm" id="llmChoiceForm">
-                                        <fieldset class="inputFieldset" id="llmFieldset">
-                                            <legend class="inputFieldsetLabel" id="llmLabel">Language Models</legend>
-                                            <p class="inputHeader">Model</p>
-                                            <div class="inputContainer inputRadioContainer">
-                                                <input type="radio" class="inputInput inputRadioButton gptRadio" id="radioChatGPT" name="model" value="gpt-4.1-mini-2025-04-14" checked>
-                                                <label for="radioChatGPT" class="inputLabel inputRadioLabel">GPT4.1 mini<br><span class="tSmall">$ 0.4 | 1.6 / mil</span></label>
+                            <div class="dropzone" id="audioSampleDropzone">
+                                Drop<br>Audio Sample
+                                <input type="file" id="inputAudioSample" accept="audio/*" hidden>
+                            </div>
+                        </div>
+                        <div class="containerHorWrap">
+                            <div class="inputFlexChoice" id="llmFlexChoice">
+                                <form class="inputForm" id="llmChoiceForm">
+                                    <fieldset class="inputFieldset" id="llmFieldset">
+                                        <legend class="inputFieldsetLabel" id="llmLabel">Language Models</legend>
+                                        <div class="containerHorInWrap">
+                                            <div class="containerVertIn" id="llmModelsLeft">
+                                                <p class="inputHeader">Model</p>
+                                                <div class="inputContainer inputRadioContainer">
+                                                    <input type="radio" class="inputInput inputRadioButton gptRadio" id="radioChatGPT" name="model" value="gpt-4.1-mini-2025-04-14" checked>
+                                                    <label for="radioChatGPT" class="inputLabel inputRadioLabel">GPT4.1 mini<br><span class="tSmall">$ 0.4 | 1.6 / mil</span></label>
+                                                </div>
+                                                <div class="inputContainer inputRadioContainer">
+                                                    <input type="radio" class="inputInput inputRadioButton gptRadio" id="radioGPT4" name="model" value="gpt-4.1-2025-04-14">
+                                                    <label for="radioGPT4" class="inputLabel inputRadioLabel">GPT4.1<br><span class="tSmall">$ 2 | 8 / mil</span></label>
+                                                </div>
+                                                <p class="inputHeader">LLM Personality</p>
+                                                <div class="inputContainer inputCheckboxContainer">
+                                                    <input type="checkbox" class="inputInput inputCheckbox" id="llmChoosePersonality" name="llmChoosePersonality">
+                                                    <label for="llmChoosePersonality" class="inputLabel inputCheckboxLabel">LLM chooses</label>
+                                                </div>
+                                                <div class="inputContainer inputLLMpersonality">
+                                                    <select name="NumberOfImages" class="inputInput inputDropdown" id="llmPersonality">
+                                                        <option value="Random" selected>Pick Random</option>
+                                                        <option disabled value="">⎯ LLM Personalities ⎯⎯⎯</option>
+                                                        <option value="Useful&Efficient">Useful & Efficient</option>
+                                                        <option value="Playful&Flirty">Playful & Positive</option>
+                                                        <option value="Romantic">Romantic</option>
+                                                        <option value="Shy&Introverted">Shy & Introverted</option>
+                                                        <option value="MelancholicPoet">Melancholic Poet</option>
+                                                        <option value="Sarcastic&Nihilistic">Sarcastic & Nihilistic</option>
+                                                        <option value="Pessimist">Pessimist</option>
+                                                        <option disabled value="">⎯ Characters&nbsp; ⎯⎯⎯⎯⎯⎯⎯⎯</option>
+                                                        <option value="FamousPerson">Be "Famous Person"</option>
+                                                        <option value="Julia">Julia (Getting Real)</option>
+                                                    </select>
+                                                    <!-- <label for="NumberOfImages" class="inputLabel inputDropdownlLabel">Personality</label> -->
+                                                </div>
+                                                <div class="inputContainer inputTextContainer">
+                                                    <textarea type="input" class="inputInput inputLLMattribute" id="llmAttributeFamousPerson" onfocus="this.select()">Carl Jung</textarea>
+                                                    <label for="llmAttributeFamousPerson" class="inputLabel inputTextLabel">Famous Person</label>
+                                                </div>
                                             </div>
-                                            <div class="inputContainer inputRadioContainer">
-                                                <input type="radio" class="inputInput inputRadioButton gptRadio" id="radioGPT4" name="model" value="gpt-4.1-2025-04-14">
-                                                <label for="radioGPT4" class="inputLabel inputRadioLabel">GPT4.1<br><span class="tSmall">$ 2 | 8 / mil</span></label>
+                                            <div class="containerVertIn" id="llmModelsRight">
+                                                <p class="inputHeader">LLM Data</p>
+                                                <div class="inputContainer inputTextContainer">
+                                                    <textarea type="input" class="inputInput inputLLMattribute" id="llmAttributeName" onfocus="this.select()">Nova</textarea>
+                                                    <label for="llmAttributeName" class="inputLabel inputTextLabel">Name</label>
+                                                </div>
+                                                <div class="inputContainer inputTextContainer">
+                                                    <textarea type="input" class="inputInput inputLLMattribute" id="llmAttributeGender" onfocus="this.select()">female</textarea>
+                                                    <label for="llmAttributeGender" class="inputLabel inputTextLabel">Gender</label>
+                                                </div>
+                                                <div class="inputContainer inputTextContainer">
+                                                    <textarea type="input" class="inputInput inputLLMattribute" id="llmAttributeAge" onfocus="this.select()">middle-aged</textarea>
+                                                    <label for="llmAttributeAge" class="inputLabel inputTextLabel">Age</label>
+                                                </div>
+                                                <p class="inputHeader">Your name is</p>
+                                                <div class="inputContainer inputTextContainer">
+                                                    <textarea type="input" class="inputInput inputLLMattribute" id="llmAttributeYourName" onfocus="this.select()">Micha</textarea>
+                                                </div>
+                                                <p class="inputHeader">Conversation</p>
+                                                <div class="inputContainer inputCheckboxContainer">
+                                                    <input type="checkbox" class="inputInput inputCheckbox" id="llmRandomInitate" name="llmRandomInitate">
+                                                    <label for="llmRandomInitate" class="inputLabel inputCheckboxLabel">Rnd Initiate</label>
+                                                </div>
+                                                <div class="inputContainer inputNumberContainer">
+                                                    <input type="Number" class="inputNumber" id="llmRandomInitiateMin" min="1" max="999" value="10">
+                                                    <input type="Number" class="inputNumber" id="llmRandomInitiateMax" min="1" max="999" value="60">
+                                                </div>
                                             </div>
-                                            <p class="inputHeader">Personality</p>
-                                            <div class="inputContainer inputCheckboxContainer">
-                                                <input type="checkbox" class="inputInput inputCheckbox" id="llmChoosePersonality" name="llmChoosePersonality">
-                                                <label for="llmChoosePersonality" class="inputLabel inputCheckboxLabel">LLM chooses</label>
-                                            </div>
-                                            <div class="inputContainer inputLLMpersonality">
-                                                <select name="NumberOfImages" class="inputInput inputDropdown" id="llmPersonality">
-                                                    <option value="Random" selected>Pick Random</option>
-                                                    <option disabled value="">⎯ LLM Personalities ⎯⎯⎯</option>
-                                                    <option value="Useful&Efficient">Useful & Efficient</option>
-                                                    <option value="Playful&Flirty">Playful & Positive</option>
-                                                    <option value="Romantic">Romantic</option>
-                                                    <option value="Shy&Introverted">Shy & Introverted</option>
-                                                    <option value="MelancholicPoet">Melancholic Poet</option>
-                                                    <option value="Sarcastic&Nihilistic">Sarcastic & Nihilistic</option>
-                                                    <option value="Pessimist">Pessimist</option>
-                                                    <option disabled value="">⎯ Characters&nbsp; ⎯⎯⎯⎯⎯⎯⎯⎯</option>
-                                                    <option value="Julia">Julia</option>
-                                                    <option value="AlbertEinstein">Albert Einstein</option>
-                                                    <option value="SamAltman">Sam Altman</option>
-                                                </select>
-                                                <!-- <label for="NumberOfImages" class="inputLabel inputDropdownlLabel">Personality</label> -->
-                                            </div>
-                                            <p class="inputHeader">Conversation</p>
-                                            <div class="inputContainer inputCheckboxContainer">
-                                                <input type="checkbox" class="inputInput inputCheckbox" id="llmRandomInitate" name="llmRandomInitate">
-                                                <label for="llmRandomInitate" class="inputLabel inputCheckboxLabel">Rnd Initiate</label>
-                                            </div>
-                                            <div class="inputContainer inputNumberContainer">
-                                                <input type="Number" class="inputNumber" id="llmRandomInitiateMin" min="1" max="999" value="10">
-                                                <input type="Number" class="inputNumber" id="llmRandomInitiateMax" min="1" max="999" value="60">
-                                            </div>
-                                        </fieldset>
-                                    </form>
-                                </div>
-                                <div class="inputFlexChoice" id="imgFlexChoice">
-                                    <form class="inputForm" id="imgChoiceForm">
-                                        <fieldset class="inputFieldset" id="imgFieldset">
-                                            <legend class="inputFieldsetLabel" id="imgLabel">Image Models</legend>
-                                            <p class="inputHeader">Image Model</p>
-                                            <div class="inputContainer inputRadioContainer">
-                                                <input type="radio" class="inputInput inputRadioButton imgRadio" id="radioIMAGE" name="imgModel" value="IMAGEN" checked>
-                                                <label for="radioIMAGE" class="inputLabel inputRadioLabel">IMAGEN<br><span class="tSmall">$ 0.04</span></label>
-                                            </div>
-                                            <div class="inputContainer inputRadioContainer">
-                                                <input type="radio" class="inputInput inputRadioButton imgRadio" id="radioDALLE" name="imgModel" value="DALL-E">
-                                                <label for="radioDALLE" class="inputLabel inputRadioLabel">DALL-E<br><span class="tSmall">$ 0.08</span></label>
-                                            </div>
-                                            <p class="inputHeader">Settings</p>
-                                            <div class="inputContainer inputImagesContainer">
-                                                <select name="NumberOfImages" class="inputInput inputDropdown" id="nOfIMGs">
-                                                    <option value="1" selected>1</option>
-                                                    <option value="2">2</option>
-                                                    <option value="3">3</option>
-                                                    <option value="4">4</option>
-                                                    <option value="5">5</option>
-                                                    <option value="6">6</option>
-                                                    <option value="7">7</option>
-                                                    <option value="8">8</option>
-                                                </select>
-                                                <label for="NumberOfImages" class="inputLabel inputDropdownlLabel">Amount</label>
-                                            </div>
-                                            <div class="inputContainer inputCheckboxContainer">
-                                                <input type="checkbox" class="inputInput inputCheckbox" id="createIMGwithText" name="createIMGwithText">
-                                                <label for="createIMGwithText" class="inputLabel inputCheckboxLabel">with LLM answer</label>
-                                            </div>
-                                        </fieldset>
-                                    </form>
-                                </div>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
+                            <div class="inputFlexChoice" id="imgFlexChoice">
+                                <form class="inputForm" id="imgChoiceForm">
+                                    <fieldset class="inputFieldset" id="imgFieldset">
+                                        <legend class="inputFieldsetLabel" id="imgLabel">Image Models</legend>
+                                        <p class="inputHeader">Image Model</p>
+                                        <div class="inputContainer inputRadioContainer">
+                                            <input type="radio" class="inputInput inputRadioButton imgRadio" id="radioIMAGE" name="imgModel" value="IMAGEN" checked>
+                                            <label for="radioIMAGE" class="inputLabel inputRadioLabel">IMAGEN<br><span class="tSmall">$ 0.04</span></label>
+                                        </div>
+                                        <div class="inputContainer inputRadioContainer">
+                                            <input type="radio" class="inputInput inputRadioButton imgRadio" id="radioDALLE" name="imgModel" value="DALL-E">
+                                            <label for="radioDALLE" class="inputLabel inputRadioLabel">DALL-E<br><span class="tSmall">$ 0.08</span></label>
+                                        </div>
+                                        <p class="inputHeader">Settings</p>
+                                        <div class="inputContainer inputImagesContainer">
+                                            <select name="NumberOfImages" class="inputInput inputDropdown" id="nOfIMGs">
+                                                <option value="1" selected>1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                                <option value="6">6</option>
+                                                <option value="7">7</option>
+                                                <option value="8">8</option>
+                                            </select>
+                                            <label for="NumberOfImages" class="inputLabel inputDropdownlLabel">Amount</label>
+                                        </div>
+                                        <div class="inputContainer inputCheckboxContainer">
+                                            <input type="checkbox" class="inputInput inputCheckbox" id="createIMGwithText" name="createIMGwithText">
+                                            <label for="createIMGwithText" class="inputLabel inputCheckboxLabel">with LLM answer</label>
+                                        </div>
+                                    </fieldset>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -223,11 +246,11 @@
                     <div class="containerVert" id="bottomChatAndButtons">
                         <!-- <h1>Input:</h1> -->
                         <label for="inputField"></label>
-                        <textarea type="text" class="inputFieldSearch" id="inputFieldSearch" class="textarea" placeholder="Enter Text"></textarea>
+                        <textarea type="text" class="inputFieldSearch" id="inputFieldSearch" placeholder="Enter Text"></textarea>
                         <div id="hiddenInputMirror" class="inputFieldSearch"></div>
-                        <div class="containerVert relative">
+                        <div class="containerVert containerVertButtons relative">
                             <div class="containerHorWrapParent buttonGap" id="buttonContainer">
-                                <div class="containerHorWrap buttonGap">
+                                <div class="containerHorWrap containerHorWrapButtons buttonGap">
                                     <div class="buttonContainer">
                                         <button class="optionButtons" id="button3">
                                             <div class="material-symbols-outlined buttonIcons">mic</div>
@@ -241,7 +264,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="containerHorWrap buttonGap">
+                                <div class="containerHorWrap containerHorWrapButtons buttonGap">
                                     <div class="buttonContainer">
                                         <button class="optionButtons" id="button2">
                                             <div class="material-symbols-outlined buttonIcons">photo_library</div>
