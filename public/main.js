@@ -532,8 +532,18 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
     addReturnText("", "...  Chatterbot: Generating Voice");
     console.log("");
     console.log("VOICE - Starting Voice Generation");
+    console.log("VOICE - Model: " + modelVoice + " (" + voiceModel1 + " / " + voiceModel2 + ")");
 
     itteration++;
+
+    if (modelVoice == voiceModel1) {
+        voiceSliceCharackters = voiceSliceCharacktersZonos;
+        voiceSliceCharacktersOverlap = voiceSliceCharacktersOverlapZonos;
+    }
+    else if (modelVoice == voiceModel2) {
+        voiceSliceCharackters = voiceSliceCharacktersChatter;
+        voiceSliceCharacktersOverlap = voiceSliceCharacktersOverlapChatter;
+    }
 
     try {
         // Form Data
