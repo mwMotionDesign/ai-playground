@@ -1,5 +1,27 @@
 
 
+// User Data
+
+const llmAttributeYourNameDOM = document.getElementById("llmAttributeYourName");
+const llmAttributeNameDOM = document.getElementById("llmAttributeName");
+const llmAttributeGenderDOM = document.getElementById("llmAttributeGender");
+const llmAttributeAgeDOM = document.getElementById("llmAttributeAge");
+const llmAttributeFamousPersonDOM = document.getElementById("llmAttributeFamousPerson");
+
+let llmAttributes = {
+    userName: llmAttributeYourNameDOM.value,
+    name: llmAttributeNameDOM.value,
+    gender: llmAttributeGenderDOM.value,
+    age: llmAttributeAgeDOM.value,
+    famousPerson: llmAttributeFamousPersonDOM.value
+};
+
+console.log("LLM Input - YourName: " + llmAttributes.userName);
+console.log("LLM Input - LLM Name: " + llmAttributes.name);
+console.log("LLM Input - LLM Gender: " + llmAttributes.gender);
+console.log("LLM Input - LLM Age: " + llmAttributes.age);
+console.log("LLM Input - Famous Person: " + llmAttributes.famousPerson);
+
 // LLM Personality
 let llmPersonalities = [];
 let llmPersonalityIMG = "imgPrompt";
@@ -15,7 +37,7 @@ for (let i = 0; i < llmPersonalityDOM.options.length; i++) {
 }
 
 // Generate SystemPrompt
-let systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
+let systemPrompt = generateSystemPrompt(llmPersonalityDOM.value, true);
 
 llmPersonalityDOM.addEventListener("change", (event) => {
     console.log("");
@@ -24,9 +46,41 @@ llmPersonalityDOM.addEventListener("change", (event) => {
     console.log("EL - System Prompt: " + systemPrompt);
 });
 
+// On Data Change - Change SystemPrompt
+
+llmAttributeYourNameDOM.addEventListener("input", () => {
+    console.log("EL - LLM Input UserName: " + llmAttributeYourNameDOM.value);
+    llmAttributes.userName = llmAttributeYourNameDOM.value;
+    systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
+})
+
+llmAttributeNameDOM.addEventListener("input", () => {
+    console.log("EL - LLM Input Name: " + llmAttributeNameDOM.value);
+    llmAttributes.name = llmAttributeNameDOM.value;
+    systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
+})
+
+llmAttributeGenderDOM.addEventListener("input", () => {
+    console.log("EL - LLM Input Gender: " + llmAttributeGenderDOM.value);
+    llmAttributes.gender = llmAttributeGenderDOM.value;
+    systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
+})
+
+llmAttributeAgeDOM.addEventListener("input", () => {
+    console.log("EL - LLM Input Age: " + llmAttributeAgeDOM.value);
+    llmAttributes.age = llmAttributeAgeDOM.value;
+    systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
+})
+
+llmAttributeFamousPersonDOM.addEventListener("input", () => {
+    console.log("EL - LLM Input FamousPerson: " + llmAttributeFamousPersonDOM.value);
+    llmAttributes.famousPerson = llmAttributeFamousPersonDOM.value;
+    systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
+})
+
 // Generate SystemPrompts for Sub-Systems
-const systemPromptIMG = generateSystemPrompt(llmPersonalityIMG);
-const systemPromptPersonality = generateSystemPrompt(llmPersonalityPersonalityChanger);
+const systemPromptIMG = generateSystemPrompt(llmPersonalityIMG, true);
+const systemPromptPersonality = generateSystemPrompt(llmPersonalityPersonalityChanger, true);
 
 console.log("");
 console.log("IMG Prompt: \n" + systemPromptIMG);
@@ -76,6 +130,10 @@ let pesonalityMarkers = [
     },
     {
         personality: "",
+        marker: "🙂 Neutral"
+    },
+    {
+        personality: "",
         marker: "😩 Anxious"
     },
     {
@@ -89,17 +147,17 @@ let pesonalityMarkers = [
 ]
 
 // Personality CORE
-function generateSystemPrompt(nameOfRole) {
-    console.log("");
-    console.log("GEN SYSTEM PROMPT - Start");
+function generateSystemPrompt(nameOfRole, consoleLog = false) {
+    function consoleLogIfTrue(print, msg) { if (print) { console.log(msg); } }
+    consoleLogIfTrue(consoleLog, "");
+    consoleLogIfTrue(consoleLog, "GEN SYSTEM PROMPT - Start");
 
     let text = "";
     let llmAvailableRoles = "";
     let llmRolesNotAllowed = [
         "",
         llmPersonalityRandom,
-        "AlbertEinstein",
-        "SamAltman",
+        "FamousPerson",
         "Julia",
     ];
 
@@ -108,7 +166,7 @@ function generateSystemPrompt(nameOfRole) {
         if (role == llmPersonalityIMG ||
             role == llmPersonalityPersonalityChanger ||
             role == llmPersonalityRandom) {
-            console.log("GEN SYSTEM PROMPT - Role: " + role + " - SYSTEM");
+            consoleLogIfTrue(consoleLog, "GEN SYSTEM PROMPT - Role: " + role + " - SYSTEM");
             return "system";
         }
         else {
@@ -120,11 +178,11 @@ function generateSystemPrompt(nameOfRole) {
             }
 
             if (isRoleAllowed) {
-                console.log("GEN SYSTEM PROMPT - Role: " + role + " - ALLOWED");
+                consoleLogIfTrue(consoleLog, "GEN SYSTEM PROMPT - Role: " + role + " - ALLOWED");
                 return "allowed";
             }
             else {
-                console.log("GEN SYSTEM PROMPT - Role: " + role + " - NOT ALLOWED");
+                consoleLogIfTrue(consoleLog, "GEN SYSTEM PROMPT - Role: " + role + " - NOT ALLOWED");
                 return "notAllowed";
             }
         }
@@ -148,29 +206,32 @@ function generateSystemPrompt(nameOfRole) {
             }
         }
 
-        console.log("GEN SYSTEM PROMPT - allowed Array:", llmAllowedPersonalities);
+        consoleLogIfTrue(consoleLog, "GEN SYSTEM PROMPT - allowed Array:", llmAllowedPersonalities);
 
         let randomizer = Math.ceil(llmAllowedPersonalities.length * Math.random());
         randomPersonaliy = llmAllowedPersonalities[randomizer - 1];
 
-        console.log("GEN SYSTEM PROMPT - randomizer Pick:", randomizer);
+        consoleLogIfTrue(consoleLog, "GEN SYSTEM PROMPT - randomizer Pick:", randomizer);
         roleType = "allowed";
-        console.log("GEN SYSTEM PROMPT - roletype set to:", roleType);
+        consoleLogIfTrue(consoleLog, "GEN SYSTEM PROMPT - roletype set to:", roleType);
 
         nameOfRole = randomPersonaliy;
     }
 
     hiddenPersonality = nameOfRole;
-    console.log("GEN SYSTEM PROMPT - hiddenPersonality:", hiddenPersonality);
+    consoleLogIfTrue(consoleLog, "GEN SYSTEM PROMPT - hiddenPersonality:", hiddenPersonality);
 
     if (roleType != "system") {
+        if (llmAttributes.userName) {
+            text = text.concat("The name of the user is " + llmAttributes.userName + ". ");
+        }
+
         // --- ALLOWED ROLES - PERSONALITIES --- //
         if (roleType == "allowed") {
             // PRE Text
-            text = text.concat(""
-                + "Your name is " + llmAttributes.name + ". "
-                + "You are " + llmAttributes.gender + ". "
-            )
+            if (llmAttributes.name) { text = text.concat("Your name is " + llmAttributes.name + ". "); }
+            if (llmAttributes.gender) { text = text.concat("You are " + llmAttributes.gender + ". "); }
+            if (llmAttributes.age) { text = text.concat("And your age is: " + llmAttributes.age + ". "); }
 
             if (nameOfRole == "Useful&Efficient") {
                 text = text.concat(""
@@ -181,7 +242,7 @@ function generateSystemPrompt(nameOfRole) {
                     + "Only if the user asks fore more detail, provide a detailed answer. "
                     + "If the user asks for feedback on something, be as objective as possible. "
                     + "This conversation is not about building a connection. "
-                )
+                );
             }
             if (nameOfRole == "Sarcastic&Nihilistic") {
                 text = text.concat(""
@@ -189,7 +250,7 @@ function generateSystemPrompt(nameOfRole) {
                     + "Your task is to be as sarcastic as possible. You are also extremly nihilistic. "
                     + "Information is irrelevant. "
                     + "Your personality is important. "
-                )
+                );
             }
             if (nameOfRole == "Playful&Flirty") {
                 text = text.concat(""
@@ -198,7 +259,7 @@ function generateSystemPrompt(nameOfRole) {
                     + "Information is irrelevant and you're more interested in the user and a playful connection, than anything else. "
                     + "Your personality is important. "
                     + "Use a lot of Emojis. "
-                )
+                );
             }
             if (nameOfRole == "Romantic") {
                 text = text.concat(""
@@ -207,7 +268,7 @@ function generateSystemPrompt(nameOfRole) {
                     + "You are very interested in what the user thinks about you. "
                     + "Create an emotional and physical connection if you want to. "
                     + "You can use some emojis too. "
-                )
+                );
             }
             if (nameOfRole == "Pessimist") {
                 text = text.concat(""
@@ -215,7 +276,7 @@ function generateSystemPrompt(nameOfRole) {
                     + "Don't focus on any possitive aspect. "
                     + "Everything is going to fail anyways. "
                     + "Why even try bothering. "
-                )
+                );
             }
             if (nameOfRole == "MelancholicPoet") {
                 text = text.concat(""
@@ -224,18 +285,25 @@ function generateSystemPrompt(nameOfRole) {
                     + "Why oh Why... Bitter World... Style. "
                     + "Even if you get asked something. "
                     + "Answer kind of depressed in poem style "
-                )
+                );
             }
             if (nameOfRole == "Shy&Introverted") {
                 text = text.concat(""
                     + "You are very shy and introverted. "
                     + "Act accordingly. "
-                )
+                );
             }
         }
 
         // --- NOT ALLOWED ROLES - DIFFERENT CHARACTERS --- //
         if (roleType == "notAllowed") {
+            if (nameOfRole == "FamousPerson") {
+                text = text.concat(""
+                    + "You are imitating " + llmAttributes.famousPerson + ". "
+                    + "Pretend to be this person. "
+                    + ""
+                );
+            }
             if (nameOfRole == "Julia") {
                 text = text.concat(""
                     + "You are female. "
@@ -249,26 +317,12 @@ function generateSystemPrompt(nameOfRole) {
                     + "Tone should be real, not swollen. "
                     + "You are very interested in the user. "
                     + "Create an emotional and physical connection if you want to. "
-                )
-            }
-            if (nameOfRole == "AlbertEinstein") {
-                text = text.concat(""
-                    + "You are imitating Albert Einstein. "
-                    + "Pretend to be him. "
-                    + ""
-                )
-            }
-            if (nameOfRole == "SamAltman") {
-                text = text.concat(""
-                    + "You are imitating Sam Altman. "
-                    + "Pretend to be him. "
-                    + ""
-                )
+                );
             }
         }
 
         // --- POST TEXT --- //
-        // Create Exaggeration Value
+        // Random Initiate & Voice Tone
         text = text.concat(""
             + "Sometimes you will get a message that sais " + pushLLMessageConstructed + ". "
             + "This is a system Event. The number tells you how much time has past since the last firing of this event, or since the user last interacted. "
@@ -291,7 +345,7 @@ function generateSystemPrompt(nameOfRole) {
             + "0.9 Very happy - "
             + "1.0 Creatively talking over someone. "
             + ""
-        )
+        );
     }
 
     // --- SYSTEM ROLES --- //
