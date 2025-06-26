@@ -305,7 +305,7 @@ async function generateText(systemPromptToSend = "", text = "", nOfTokens = 10, 
             else if (llmExag == 0.8) {
                 loadSpeechPattern("Happy");
             }
-            else if (llmExag == 0.8) {
+            else if (llmExag == 0.9) {
                 loadSpeechPattern("VeryHappy");
             }
             else if (llmExag == 1.0) {

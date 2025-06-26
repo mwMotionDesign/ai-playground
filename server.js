@@ -411,11 +411,11 @@ app.post("/transcribeAudio", uploadAudio.single("audio"), async (request, respon
         output += data.toString('utf8');
     });
 
-    // let errorOutput = ''; // Für mögliche Fehlermeldungen vom Python-Skript
-    // pythonProcess.stderr.on('data', (data) => {
-    //     errorOutput += data.toString('utf8');
-    //     console.error(`Python stderr: ${data.toString('utf8')}`);
-    // });
+    let errorOutput = ''; // Für mögliche Fehlermeldungen vom Python-Skript
+    pythonProcess.stderr.on('data', (data) => {
+        errorOutput += data.toString('utf8');
+        // console.error(`Python stderr: ${data.toString('utf8')}`);
+    });
 
     pythonProcess.on('close', async (code) => {
         if (code === 0) {
@@ -461,7 +461,7 @@ app.post("/transcribeAudio", uploadAudio.single("audio"), async (request, respon
         } else {
             console.error("Python script exited with error code:", code);
             // console.error("Python error details:", errorOutput.trim());
-            // response.status(500).send("Whisper Script Failed: " + errorOutput.trim());
+            response.status(500).send("Whisper Script Failed: " + errorOutput.trim());
         }
     });
 });
@@ -537,8 +537,6 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
     console.log("");
     console.log("Create New File?: -" + JSON.parse(request.body.newFile));
 
-    zonosParams = JSON.parse(request.body.zonosOptions);
-
     if (JSON.parse(request.body.newFile)) {
         filename = getTimestampFilename(".wav");
     }
@@ -604,6 +602,8 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
         });
     }
     else if (voiceModel == "Zonos") {
+        zonosParams = JSON.parse(request.body.zonosOptions);
+
         console.log("");
         console.log("Audio Path: " + audioPath);
         console.log("");
