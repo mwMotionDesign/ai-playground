@@ -15,17 +15,17 @@ promptIMGpost = "";
 
 // Global Variables - Change
 
-let llmAttributes = {
-    name: "Nova",
-    gender: "female"
-};
-
 const nOfTokens = 600;
 const nOfTokensIMG = 300;
 const nOfTokensPersonality = 10;
 
-const voiceSliceCharackters = 200;
-const voiceSliceCharacktersOverlap = 50;
+const voiceSliceCharacktersZonos = 120;
+const voiceSliceCharacktersOverlapZonos = 30;
+
+const voiceSliceCharacktersChatter = 500;
+const voiceSliceCharacktersOverlapChatter = 50;
+
+const audioQueueItterations = 20;
 
 let pushLLMmessage = "CREATE CONVERSATION";
 
@@ -38,14 +38,6 @@ const imgModel2 = "IMAGEN";
 const voiceModel1 = "Zonos";
 const voiceModel2 = "Chatterbox";
 
-// 0.1 and 1.2
-// 0.1 monotone, desinterested
-// 0.2 slow, tender
-// 0.2 calm
-// 0.4 neutral tone and speed
-// 0.6 happy
-// 0.7 very happy
-// 1.2 extremely overexcited, angry, loud, cringy
 
 let zonosOptions = {
     text: "",
@@ -103,6 +95,9 @@ let hiddenPersonality = "";
 let firstAction = true;
 let isLoading = false;
 let isRecording = false;
+
+let voiceSliceCharackters = 0;
+let voiceSliceCharacktersOverlap = 0;
 
 let conversationHistory = [];
 
