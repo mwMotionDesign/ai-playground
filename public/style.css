@@ -52,8 +52,8 @@
     --buttonHeight: 60px;
 
     --widthLog: 210px;
-    --widthLeft: 399px;
-    --widthRight: 448px;
+    --widthLeft: 270px;
+    --widthRight: 449px;
 }
 
 *,
@@ -120,7 +120,8 @@ h6 {
     font-weight: 500;
 }
 
-#inputFieldSearch {
+#inputFieldSearch,
+textarea {
     font-family: 'UnitRounded', 'Courier New', Courier, monospace;
     font-weight: 500;
 }
@@ -280,6 +281,7 @@ h2 {
     position: relative;
     min-width: calc(var(--widthLog) + var(--widthLeft) + var(--widthRight));
     width: 1800px;
+    /* width: 100%; */
     max-width: 100%;
     overflow: hidden;
     resize: horizontal;
@@ -326,7 +328,7 @@ h2 {
 
 #inputContent {
     min-width: var(--widthLeft);
-    width: 500px;
+    width: 610px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -379,59 +381,59 @@ h2 {
     width: 10px;
 }
 
-.containerHorWrapParent {
-    width: 100%;
-    max-width: 100%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-    align-items: stretch;
-    background-color: var(--debugColor);
-}
-
-.containerHorWrap {
-    flex: 1 1 auto;
-    /* width: 100%; */
-    /* min-width: 399px; */
-    max-width: 100%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: stretch;
-    background-color: var(--debugColor);
-}
-
-.containerHor,
-.containerHorIn {
-    width: 100%;
-    max-width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: stretch;
-    background-color: var(--debugColor);
-}
-
+.containerHorWrapParent,
+.containerHorWrap,
 .containerVert,
-.containerVertIn {
-    width: 100%;
-    max-width: 100%;
+.containerHor,
+.containerHorInWrap,
+.containerHVertIn,
+.containerHorIn {
     display: flex;
-    flex-direction: column;
     justify-content: space-between;
-    justify-content: flex-start;
     align-items: stretch;
+    max-width: 100%;
     background-color: var(--debugColor);
+    gap: 12px 16px;
+}
+
+.containerHorWrapParent,
+.containerHorWrap,
+.containerHorInWrap {
+    flex-wrap: wrap;
 }
 
 .containerHorWrapParent,
 .containerHorWrap,
 .containerHor,
-.containerVert {
-    gap: 20px 20px;
-    /* background-color: rgba(0, 0, 255, 0.2); */
+.containerHorInWrap,
+.containerHorIn {
+    flex-direction: row;
+}
+
+.containerVert,
+.containerVertIn {
+    flex-direction: column;
+}
+
+.containerHorWrap {
+    flex: 1 1 350px;
+}
+
+.containerHorInWrap {
+    flex: 0 1;
+    width: calc(100% - 8px);
+    justify-content: flex-start;
+    gap: 0px 0px;
+}
+
+
+
+.containerVertButtons {
+    width: 100%;
+}
+
+.containerHorWrapButtons {
+    flex: 1 1 auto;
 }
 
 .buttonGap {
@@ -442,32 +444,58 @@ h2 {
 /* INPUTS */
 
 .inputFlexChoice {
-    flex: 0 1 200px;
+    flex: 1 0;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
 }
 
-#llmFlexChoice {
-    flex: 1 0 180px;
-}
-
-#imgFlexChoice {
-    flex: 1 0 160px;
-}
-
+/* Audio Models */
 #chatterbotFlexChoice {
-    flex: 1 0 360px;
+    flex: 200 0 200px;
+    min-width: 200px;
 }
 
 #audioModelsLeft {
-    flex: 1 0 165px;
+    flex: 90 0 180px;
+    min-width: 180px;
 }
 
 #audioModelsRight {
-    flex: 1 0 120px;
+    flex: 160 0 160px;
+    min-width: 160px;
 }
+
+/* Dropzone */
+.dropzone {
+    flex: 30 0 120px;
+    min-width: 120px;
+    min-height: 60px;
+}
+
+/* Language Models */
+#llmFlexChoice {
+    flex: 200 0 200px;
+    min-width: 200px;
+}
+
+#llmModelsLeft {
+    flex: 90 0 180px;
+    min-width: 180px;
+}
+
+#llmModelsRight {
+    flex: 140 0 140px;
+    min-width: 140px;
+}
+
+/* Image Models */
+#imgFlexChoice {
+    flex: 40 0 160px;
+    min-width: 160px;
+}
+
 
 .inputForm {
     width: 100%;
@@ -520,6 +548,10 @@ h2 {
     margin: 0px 0px 0px 10px;
 }
 
+.inputTextLabel {
+    flex: 0 1;
+}
+
 .inputInput {
     width: 40px;
     text-align: center;
@@ -552,11 +584,13 @@ h2 {
 
 #llmPersonality {
     width: calc(100% - 10px);
+    max-width: 200px;
 }
 
 
 #llmVoiceMood {
     width: calc(100% - 40px);
+    max-width: 200px;
 }
 
 
@@ -576,6 +610,29 @@ h2 {
     border: 1px solid var(--normalTextAndOutlines);
     background-color: var(--normalTextAndOutlines);
     box-shadow: inset 0px 0px 0px 5px var(--backgroundColor);
+}
+
+.inputTextContainer {
+    overflow: hidden;
+    margin: 0px 0px 8px 0px;
+}
+
+.inputLLMattribute {
+    width: 80px;
+    height: 20px;
+    max-width: 80px;
+    overflow: hidden;
+    resize: none;
+    text-align: left;
+}
+
+.inputLLMattribute:focus {
+    outline: none
+}
+
+#llmAttributeYourName {
+    width: calc(100% - 10px);
+    max-width: 200px;
 }
 
 .inputNumberContainer {
@@ -692,13 +749,11 @@ h2 {
 /* FILE UPLOAD */
 
 .dropzone {
-    flex: 1 0 120px;
-    width: 100%;
-    min-height: 60px;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    margin: 7px 0px -2px 0px;
 
     text-align: center;
     color: var(--logText);
@@ -853,8 +908,9 @@ h1 {
 }
 
 #bottomChatAndButtons {
+    width: 100%;
     flex: 0 0;
-    padding: 0px 20px;
+    padding: 5px 20px 0px;
     align-items: center;
     filter: drop-shadow(0px -1px 1px rgba(255, 255, 255, 0.4));
     background-color: var(--backgroundResults);
