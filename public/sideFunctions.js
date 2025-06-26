@@ -263,6 +263,8 @@ function outputAudio(path, { autoplay = false, autoplayQueue = false, addToQueue
         autoplayQueues[audioItteration].push(newAudio);
 
         newAudio.addEventListener('ended', () => {
+            console.log("");
+            console.log("AUDIO QUEUE - Start");
             playAduioQueue(newAudio, audioItteration);
         });
     }
@@ -277,8 +279,6 @@ function outputAudio(path, { autoplay = false, autoplayQueue = false, addToQueue
 let audioSearchItteration = 0;
 
 function playAduioQueue(currentAudio, placeInQueue) {
-    console.log("");
-    console.log("AUDIO QUEUE - Start");
     for (let i = 0; i < autoplayQueues[placeInQueue].length; i++) {
         if (autoplayQueues[placeInQueue][i] == currentAudio) {
             if (autoplayQueues[placeInQueue][i + 1]) {
@@ -290,7 +290,7 @@ function playAduioQueue(currentAudio, placeInQueue) {
             } else {
                 console.log("AUDIO QUEUE - Place: " + (i) + " - Queue Place: " + placeInQueue + "\nEnd reached - Waiting for next Audio");
                 audioSearchItteration++
-                if (audioSearchItteration < 20) {
+                if (audioSearchItteration < audioQueueItterations) {
                     setTimeout(() => { playAduioQueue(currentAudio, placeInQueue); }, 1000);
                 }
                 else {
@@ -363,7 +363,11 @@ function clearResults() {
 
 let mood = 0;
 
+loadSpeechPattern(voiceMood);
+
 function loadSpeechPattern(keyMood) {
+    console.log("Changing Voice Mood to: " + keyMood);
+
     if (keyMood == "VictimDesperate") {
         mood = 0.9;
         zonosOptions = zonosOptionsStandard;
