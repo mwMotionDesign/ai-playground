@@ -19,8 +19,8 @@ const nOfTokens = 600;
 const nOfTokensIMG = 300;
 const nOfTokensPersonality = 10;
 
-const voiceSliceCharacktersZonos = 120;
-const voiceSliceCharacktersOverlapZonos = 30;
+const voiceSliceCharacktersZonos = 300;
+const voiceSliceCharacktersOverlapZonos = 50;
 
 const voiceSliceCharacktersChatter = 500;
 const voiceSliceCharacktersOverlapChatter = 50;
