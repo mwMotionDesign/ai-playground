@@ -108,9 +108,19 @@ app.post("/createAItext", async (request, response) => {
 
         if (data.model == textModel1) {
             cost = calculateCost(responseAI.data.usage, 0.4, 1.6);
+
+            cumulativeCosts = addToCosts("GPT-4.1 mini_Input", cost.costInput);
+            cumulativeCosts = addToCosts("GPT-4.1 mini_Output", cost.costOutput);
+            console.log("Cumulative Costs:");
+            console.log(cumulativeCosts);
         }
         else if (data.model == textModel2) {
             cost = calculateCost(responseAI.data.usage, 2, 8);
+
+            cumulativeCosts = addToCosts("GPT-4.1_Input", cost.costInput);
+            cumulativeCosts = addToCosts("GPT-4.1_Output", cost.costOutput);
+            console.log("Cumulative Costs:");
+            console.log(cumulativeCosts);
         }
 
         console.log("");
@@ -124,7 +134,8 @@ app.post("/createAItext", async (request, response) => {
         response.json({
             status: "200 - Succesful PostRequest",
             data: aiAnswer,
-            cost: cost.cost
+            cost: cost.cost,
+            cumulativeCosts: cumulativeCosts.total
         });
 
         if (data.buildHistory) {
@@ -221,6 +232,10 @@ app.post("/createAIimages", async (request, response) => {
                 cost = 12;
             }
 
+            cumulativeCosts = addToCosts("DALL_E", cost);
+            console.log("Cumulative Costs:");
+            console.log(cumulativeCosts);
+
             console.log("");
             console.log("Cost", cost);
             console.log("");
@@ -234,7 +249,8 @@ app.post("/createAIimages", async (request, response) => {
             response.json({
                 status: "200 - Succesful PostRequest",
                 data: aiAnswer,
-                cost: cost
+                cost: cost,
+                cumulativeCosts: cumulativeCosts.total
             });
 
             response.end();
@@ -328,10 +344,15 @@ app.post("/createAIimages", async (request, response) => {
                     }
                 });
 
+                cumulativeCosts = addToCosts("IMAGEN", cost);
+                console.log("Cumulative Costs:");
+                console.log(cumulativeCosts);
+
                 response.json({
                     status: "200 - Succesful PostRequest",
                     data: imgURLs,
-                    cost: cost
+                    cost: cost,
+                    cumulativeCosts: cumulativeCosts.total
                 });
 
                 console.log("");
@@ -454,9 +475,15 @@ app.post("/transcribeAudio", uploadAudio.single("audio"), async (request, respon
                 await fsp.unlink(transcriptPath);
             }
 
+            cumulativeCosts = addToCosts("Whisper", 0);
+            console.log("Cumulative Costs:");
+            console.log(cumulativeCosts);
+
             response.send({
                 text: output.trim(),
-                audioPath: path.join("/Audiofiles/Transcripts", filename)
+                audioPath: path.join("/Audiofiles/Transcripts", filename),
+                cost: 0,
+                cumulativeCosts: cumulativeCosts.total
             });
         } else {
             console.error("Python script exited with error code:", code);
@@ -594,7 +621,7 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
 
                 const oldPath = path.join(__dirname, 'Audiofiles', 'chatterbotOutput.wav');
 
-                saveAndSend(oldPath);
+                saveAndSend(oldPath, voiceModel);
             } else {
                 console.error('AI ERROR:', code);
                 response.status(500).send("Chatterbox Script Failed!");
@@ -691,7 +718,7 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
 
                     clearFolder(gradioTempFolder, true);
 
-                    saveAndSend(newPath);
+                    saveAndSend(newPath, voiceModel);
                 }
             } catch (error) {
                 console.log("Error: " + error);
@@ -717,7 +744,7 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
         };
     }
 
-    async function saveAndSend(oldPath) {
+    async function saveAndSend(oldPath, voiceModel) {
         const newPath = path.join(__dirname, 'Audiofiles', filename.split(".")[0].concat('-Voice.wav'));
         const relativePath = '/Audiofiles/' + filename.split(".")[0] + '-Voice.wav';
 
@@ -732,7 +759,16 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
             await fsp.rename(tempFilePath, oldPath);
         }
 
-        response.send({ audioPath: relativePath });
+        if (voiceModel == "Chatterbox") {
+            cumulativeCosts = addToCosts("Chatterbox", 0);
+        }
+        else if (voiceModel == "Zonos") {
+            cumulativeCosts = addToCosts("Zonos", 0);
+        }
+        console.log("Cumulative Costs:");
+        console.log(cumulativeCosts);
+
+        response.send({ audioPath: relativePath, cost: 0, cumulativeCosts: cumulativeCosts.total });
 
         fs.rename(oldPath, newPath, (err) => {
             if (err) {
@@ -840,13 +876,29 @@ app.post("/translateText", async (request, response) => {
 
         console.log("Translation:", translatedText);
 
-        response.json(translatedText);
+        let cost = calculateTranslationCost(text);
+        cumulativeCosts = addToCosts("Translate", cost);
+        console.log("Cumulative Costs:");
+        console.log(cumulativeCosts);
+        console.log("Text Length: " + text.length);
+        console.log("Cost: " + cost);
+
+        response.json({
+            translatedText: translatedText,
+            cost: cost,
+            cumulativeCosts: cumulativeCosts.total
+        });
     } catch (error) {
         console.warn("❌ Fehler bei der Übersetzung:", error.message);
         response.status(500).json({ error: "Failed to translate text." });
     }
 
-    async function translateText(text, targetLanguage) {
+    function calculateTranslationCost(text) {
+        const chars = text.length;
+        const costPerChar = (2000 / 1000000) // 20 $ / 1 Mio
+
+        const cost = chars * costPerChar;
+        return cost;
     }
 });
 
@@ -1051,6 +1103,50 @@ function calculateCost(tokens, Input, Output) {
     return { cost, costInput, costOutput };
 }
 
+const costDIR = path.join(__dirname, "Memory", "cost");
+if (!fs.existsSync(costDIR)) { fs.mkdirSync(costDIR); }
+const costFilePath = path.join(costDIR, "cumulativeCosts.json");
+
+
+// if (fs.existsSync(costFilePath)) {
+//     fs.unlinkSync(costFilePath);
+// }
+
+
+let cumulativeCosts = loadCosts();
+console.log(cumulativeCosts);
+
+function loadCosts() {
+    if (!fs.existsSync(costFilePath)) {
+        const costs = {
+            total: 0,
+            Whisper: 0,
+            Chatterbox: 0,
+            Zonos: 0,
+            "GPT-4.1 mini_Input": 0,
+            "GPT-4.1 mini_Output": 0,
+            "GPT-4.1_Input": 0,
+            "GPT-4.1_Output": 0,
+            Translate: 0,
+            IMAGEN: 0,
+            DALL_E: 0,
+            lastReset: getTimestampFilename("")
+        };
+        fs.writeFileSync(costFilePath, JSON.stringify(costs, null, 2), "utf8");
+        return costs;
+    } else {
+        return JSON.parse(fs.readFileSync(costFilePath, "utf8"));
+    }
+}
+
+function addToCosts(model, amount) {
+    if (!cumulativeCosts[model]) cumulativeCosts[model] = 0;
+    cumulativeCosts[model] += amount;
+    cumulativeCosts.total += amount;
+    fs.writeFileSync(costFilePath, JSON.stringify(cumulativeCosts, null, 2), "utf8");
+    return loadCosts()
+}
+
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 async function normalizeLoudness(inputAudioPath, outputAudioPath) {
@@ -1097,7 +1193,7 @@ async function normalizeFolderLoudness(inputAudioFolder, outputAudioFolder) {
 }
 
 clearFolder(audiofilesDIR, false, ".wav");
-clearFolder(memoryDIR, true);
+clearFolder(memoryDIR, false, ".json");
 
 async function clearFolder(folderPath, deleteAll = false, filetype = "FILETYPE IN HERE") {
     const entries = await fsp.readdir(folderPath, { withFileTypes: true });

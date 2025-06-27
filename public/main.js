@@ -5,6 +5,7 @@ addDescription();
 
 let keyRequest = true;
 let costSum = 0;
+let cumulativeCosts = 0;
 
 async function generateResponse(type, text = "") {
     console.log("");
@@ -68,7 +69,7 @@ async function generateResponse(type, text = "") {
         console.log("GENERATE RESPONSE - ENDING");
         isRecording = false;
         costSum = costSum + responseCost;
-        addReturnText("", "Cost sum: " + (responseCost).toFixed(2) + " / " + (costSum).toFixed(2) + " Cents");
+        addReturnText("", "Cost sum: " + (responseCost).toFixed(2) + " c / " + (costSum).toFixed(2) + " c / $ " + (cumulativeCosts / 100).toFixed(2));
         endLoading();
         outputDivider();
     }
@@ -364,6 +365,7 @@ async function fetchText(systemPromptToSend, prompt, tokens, buildHistory) {
         const responseAI = await fetch("/createAItext", options);
         const jsonAI = await responseAI.json();
 
+        cumulativeCosts = jsonAI.cumulativeCosts.toFixed(2);
         addReturnText("<div class='material-symbols-outlined returnIcons cGreen'>done</div>", " " + (jsonAI.cost).toFixed(2) + " Cents");
 
         responseCost = responseCost + parseFloat(jsonAI.cost);
@@ -431,6 +433,7 @@ async function generateImages(text, imgModel) {
                     console.log("IMAGES - Amount: " + jsonAI.data.length + " Images");
                     console.log("IMAGES - Imagepaths:" + jsonAI.data);
 
+                    cumulativeCosts = jsonAI.cumulativeCosts.toFixed(2);
                     addReturnText("<div class='material-symbols-outlined returnIcons cGreen'>done</div>", " " + (jsonAI.cost).toFixed(2) + " Cents");
 
                     responseCost = responseCost + parseFloat(jsonAI.cost);
@@ -516,8 +519,13 @@ async function generateTranscript(audio) {
 
         console.log("TRANSCRIPT - from Whisper:", result.text);
         console.log("TRANSCRIPT - Audio Path:", result.audioPath);
+        console.log("TRANSCRIPT - Cost:", result.cost);
 
-        addReturnText("<div class='material-symbols-outlined returnIcons cGreen'>done</div>", " 0.00 Cents");
+        cumulativeCosts = result.cumulativeCosts.toFixed(2);
+        addReturnText("<div class='material-symbols-outlined returnIcons cGreen'>done</div>", " " + (result.cost).toFixed(2) + " Cents");
+
+        responseCost = responseCost + parseFloat(result.cost);
+
         return { text: result.text, audioPath: result.audioPath };
     } catch (error) {
         addReturnText("<div class='material-symbols-outlined returnIcons cRed'>close</div>", " ERROR");
@@ -529,7 +537,6 @@ async function generateTranscript(audio) {
 let nOfFiles = 0;
 
 async function generateSpeechFromText(text = "", newFile = true, exag = -1, itteration = 0) {
-    addReturnText("", "...  Chatterbot: Generating Voice");
     console.log("");
     console.log("VOICE - Starting Voice Generation");
     console.log("VOICE - Model: " + modelVoice + " (" + voiceModel1 + " / " + voiceModel2 + ")");
@@ -537,10 +544,12 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
     itteration++;
 
     if (modelVoice == voiceModel1) {
+        addReturnText("", "...  Zonos: Generating Voice");
         voiceSliceCharackters = voiceSliceCharacktersZonos;
         voiceSliceCharacktersOverlap = voiceSliceCharacktersOverlapZonos;
     }
     else if (modelVoice == voiceModel2) {
+        addReturnText("", "...  Chatterbot: Generating Voice");
         voiceSliceCharackters = voiceSliceCharacktersChatter;
         voiceSliceCharacktersOverlap = voiceSliceCharacktersOverlapChatter;
     }
@@ -609,7 +618,9 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
 
         if (nOfFiles <= 1 && itteration == 1) {
             outputAudio(result.audioPath, { autoplay: true });
-            addReturnText("<div class='material-symbols-outlined returnIcons cGreen'>done</div>", " 0.00 Cents");
+            cumulativeCosts = result.cumulativeCosts.toFixed(2);
+            addReturnText("<div class='material-symbols-outlined returnIcons cGreen'>done</div>", " " + (result.cost).toFixed(2) + " Cents");
+            responseCost = responseCost + parseFloat(result.cost);
         }
         else if (nOfFiles > 1) {
             if (itteration == 1) {
@@ -620,7 +631,9 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
             }
 
             if (itteration == nOfFiles) {
-                addReturnText("<div class='material-symbols-outlined returnIcons cGreen'>done</div>", " 0.00 Cents");
+                cumulativeCosts = result.cumulativeCosts.toFixed(2);
+                addReturnText("<div class='material-symbols-outlined returnIcons cGreen'>done</div>", " " + (result.cost).toFixed(2) + " Cents");
+                responseCost = responseCost + parseFloat(result.cost);
                 nOfFiles = 0;
             }
             else {
@@ -655,9 +668,12 @@ async function translateToLanguage(text, targetLanguage = "en") {
             });
             const jsonAI = await response.json();
 
-            console.log("TRANSLATE - Translation:", jsonAI);
+            cumulativeCosts = jsonAI.cumulativeCosts.toFixed(2);
+            addReturnText("<div class='material-symbols-outlined returnIcons cGreen'>done</div>", " " + (jsonAI.cost).toFixed(2) + " Cents");
+            responseCost = responseCost + parseFloat(jsonAI.cost);
+            console.log("TRANSLATE - Translation:", jsonAI.translatedText);
 
-            return jsonAI;
+            return jsonAI.translatedText;
         } catch (error) {
             console.error("TRANSLATE - AI RESPONSE ERROR:", error);
         }
