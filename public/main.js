@@ -138,7 +138,12 @@ async function buildText(text = "", isForwarded = false) {
         systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
     }
 
-    textResult = await generateText(systemPrompt, text, nOfTokens, true);
+    if (roleType == "allowed") {
+        textResult = await generateText(systemPrompt, text, nOfTokens, true);
+    }
+    else {
+        textResult = await generateText(systemPrompt, text, nOfTokens, false);
+    }
 
     // Add Answer to Conversation History - Add Personality to Asnwer - Output Text
     if (!isForwarded) {
@@ -350,7 +355,8 @@ async function fetchText(systemPromptToSend, prompt, tokens, buildHistory) {
         tokens: tokens,
         model: model,
         buildHistory: buildHistory,
-        personality: hiddenPersonality
+        personality: hiddenPersonality,
+        personalityRole: roleType
     };
 
     let modelName

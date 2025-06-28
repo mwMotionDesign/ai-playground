@@ -86,7 +86,16 @@ async function createAItext(request) {
         frequency_penalty: 2
     }
 
-    aiPrompt.messages = buildMessagesFromSession(sessionFilePath, data.systemPrompt, data.prompt, data.buildHistory);
+    let buildMemory = false;
+
+    if (data.personality == "ServerMemory") {
+        buildMemory = true;
+    }
+    else if (data.personalityRole == "allowed") {
+        data.systemPrompt = await loadLongTermMemory(data.systemPrompt);
+    }
+
+    aiPrompt.messages = buildMessagesFromSession(sessionFilePath, data.systemPrompt, data.prompt, data.buildHistory, buildMemory);
 
     console.log("");
     console.log("AI Parameters: ");
@@ -107,13 +116,13 @@ async function createAItext(request) {
         let cost;
 
         if (data.model == textModel1) {
-            cost = calculateCost(responseAI.data.usage, 0.4, 1.6);
+            cost = calculateLLMcost(responseAI.data.usage, 0.4, 1.6);
 
             cumulativeCosts = addToCosts("GPT-4.1 mini_Input", cost.costInput);
             cumulativeCosts = addToCosts("GPT-4.1 mini_Output", cost.costOutput);
         }
         else if (data.model == textModel2) {
-            cost = calculateCost(responseAI.data.usage, 2, 8);
+            cost = calculateLLMcost(responseAI.data.usage, 2, 8);
 
             cumulativeCosts = addToCosts("GPT-4.1_Input", cost.costInput);
             cumulativeCosts = addToCosts("GPT-4.1_Output", cost.costOutput);
@@ -158,7 +167,7 @@ async function createAItext(request) {
     }
 }
 
-function buildMessagesFromSession(filePath, aiMessage, userMessage, buildHistory) {
+function buildMessagesFromSession(filePath, aiMessage, userMessage, buildHistory, buildMemory) {
     const messages = [{
         role: "system",
         content: aiMessage
@@ -185,10 +194,22 @@ function buildMessagesFromSession(filePath, aiMessage, userMessage, buildHistory
         }
     }
 
-    messages.push({
-        role: "user",
-        content: userMessage
-    });
+    if (buildMemory) {
+        for (const entry of userMessage) {
+            if (entry.user) {
+                messages.push({
+                    role: "user",
+                    content: entry.user
+                });
+            }
+        }
+    }
+    else {
+        messages.push({
+            role: "user",
+            content: userMessage
+        });
+    }
 
     return messages;
 }
@@ -202,6 +223,18 @@ function saveToSessionFile(filePath, entry) {
 
     data.push(entry);
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
+}
+
+function calculateLLMcost(tokens, Input, Output) {
+    Input = Input * 100;
+    Output = Output * 100;
+
+    const costInput = (tokens.prompt_tokens / 1000000) * Input;
+    const costOutput = (tokens.completion_tokens / 1000000) * Output;
+
+    const cost = costInput + costOutput;
+
+    return { cost, costInput, costOutput };
 }
 
 
@@ -984,7 +1017,7 @@ async function getAImodels(request) {
     console.log("--- Getting AI Models ---");
 
     const promiseModels = await openAI.listModels();
-    const jsonModels = await promiseModels.data.data;
+    const jsonModels = promiseModels.data.data;
     let responseObject = [];
 
     for (let i = 0; i < jsonModels.length; i++) {
@@ -1011,24 +1044,99 @@ async function getAImodels(request) {
 
 // Memory
 
-async function summarizeMemory() {
-    try {
-        const data = {
-            body: {
-                systemPrompt: "Antworte '200'",
-                prompt: "Testnachricht",
-                tokens: 10,
-                model: textModel1,
-                buildHistory: false,
-                personality: "Server"
-            }
-        };
+const longTermMemoryDIR = path.join(memoryDIR, "longTermMemory");
+if (!fs.existsSync(longTermMemoryDIR)) { fs.mkdirSync(longTermMemoryDIR); }
+const longTermMemoryFilePath = path.join(longTermMemoryDIR, "longTermMemory.txt");
+if (!fs.existsSync(longTermMemoryFilePath)) { fs.writeFileSync(longTermMemoryFilePath, JSON.stringify("No memory created yet.", null, 2), "utf8"); }
 
-        const result = await createAItext(data);
-        console.log("Antwort vom LLM:", result.data);
-    } catch (error) {
-        console.error("❌ Fehler in /createAItext:", error.message);
+async function summarizeSessionForMemory() {
+    const memoryPrompt = ""
+        + "You are an assistant for an AI who generates a long term memory that will be added to the sytsem Prompt of an AI. "
+        + "In the first user message you will get the current memory file. "
+        + "You will get every message of a new, not yet added conversation, one after another. "
+        + "The whole conversation will be send in the second user message. "
+        + "The personality value was the personality the AI asnwered with. "
+        + "It's sometimes random, sometimes chosen by the user and sometimes chosen by the AI itself . "
+        + "----- "
+        + "Your task is to create a new memory output for important topics the user and the AI talked about. Those are: "
+        + "- Name, Age, Location, Gender, job and other useful information about the user. "
+        + "- Friends and relationships. Who are they and how could you define the relationship. What did they do together. "
+        + "- Interpretation of the preferences of the users topics with a score of how sure you are that this topic is liked by the user. "
+        + "This is for you next generation to help you prioritize topics. "
+        + "- The kind of relationship the user has with the AI. How do they communicate, what does the user like and what not. "
+        + "- Anything else that you think is important. "
+        + "----- "
+        + "Your output will replace the currrent memory, so you have to prioritize which infos are most important. "
+        + "Don't format in JSON, just plain Text for the new memory file. "
+        + "Keep the length of the memory below about 2000 tokens. "
+        + "Please only create the memory and nothing else. "
+        + "Format it in a way it is readable for a human. Headline, bulletpoints, or something you find fitting. "
+        + "Please write the summary in English. "
+        + "It will override the old memory file. "
+        + "";
+
+    // First user message: content of longTermMemory.txt
+    let longTermMemory = "";
+    try {
+        longTermMemory = fs.readFileSync(longTermMemoryFilePath, "utf8");
+        longTermMemory = longTermMemory.replace(/\r\n/g, "\n").replace(/\r/g, "");
+    } catch (err) {
+        console.warn("No longTermMemory found.");
     }
+
+    // Second user message: all session JSONs in Memory root (exclude subdirs)
+    const memoryFiles = fs.readdirSync(memoryDIR, { withFileTypes: true })
+        .filter(entry => entry.isFile() && entry.name.endsWith(".json"))
+        .map(entry => path.join(memoryDIR, entry.name));
+
+    let fullConversation = "";
+
+    for (const file of memoryFiles) {
+        try {
+            const jsonArray = JSON.parse(fs.readFileSync(file, "utf8"));
+            const stringifiedEntries = jsonArray.map(entry => JSON.stringify(entry));
+            fullConversation += stringifiedEntries.join(", ") + ", ";
+        } catch (error) {
+            console.warn("Error while reading memory: ", file, error.message);
+        }
+    }
+
+    const jsonPrompt = [{ user: longTermMemory }, { user: fullConversation }];
+
+    const data = {
+        body: {
+            systemPrompt: memoryPrompt,
+            prompt: jsonPrompt,
+            tokens: 3000,
+            model: textModel1,
+            buildHistory: false,
+            buildMemory: true,
+            personality: "ServerMemory",
+        }
+    };
+
+    if (fullConversation) {
+        try {
+            const result = await createAItext(data);
+            clearFolder(memoryDIR, false, ".json");
+            if (fs.existsSync(longTermMemoryFilePath)) {
+                fs.unlinkSync(longTermMemoryFilePath);
+                fs.writeFileSync(longTermMemoryFilePath, result.data, "utf8");
+            }
+        } catch (error) {
+            console.error("Error in /createAItext:", error.message);
+        }
+    }
+    else {
+        console.error("No Session File found!");
+    }
+
+}
+
+async function loadLongTermMemory(systemPrompt) {
+    let longTermMemory = fs.readFileSync(longTermMemoryFilePath, "utf8");
+    systemPrompt = systemPrompt.concat("\n\n", longTermMemory.replace(/\r\n/g, "\n").replace(/\r/g, ""));
+    return systemPrompt
 }
 
 // Cost
@@ -1124,18 +1232,6 @@ function getTimestampFilename(extension) {
     return filename;
 }
 
-function calculateCost(tokens, Input, Output) {
-    Input = Input * 100;
-    Output = Output * 100;
-
-    const costInput = (tokens.prompt_tokens / 1000000) * Input;
-    const costOutput = (tokens.completion_tokens / 1000000) * Output;
-
-    const cost = costInput + costOutput;
-
-    return { cost, costInput, costOutput };
-}
-
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 async function normalizeLoudness(inputAudioPath, outputAudioPath) {
@@ -1185,8 +1281,8 @@ async function normalizeFolderLoudness(inputAudioFolder, outputAudioFolder) {
 
 // await normalizeFolderLoudness(voiceSampleDIR, voiceSampleLoudnessDIR);
 console.log("");
+
 clearFolder(audiofilesDIR, false, ".wav");
-clearFolder(memoryDIR, false, ".json");
 
 startZonos(() => {
     zonosData = [
@@ -1225,7 +1321,7 @@ startZonos(() => {
     isZonosReady = true;
 });
 
-// await summarizeMemory();
+await summarizeSessionForMemory();
 
 
 
@@ -1237,7 +1333,7 @@ app.post("/createAItext", async (request, response) => {
 
         response.json(answer);
     } catch (error) {
-        console.error("❌ Fehler in /createAItext:", error.message);
+        console.error("❌ Error in /createAItext:", error.message);
         response.sendStatus(500);
     }
 });
@@ -1248,7 +1344,7 @@ app.post("/createAIimages", async (request, response) => {
 
         response.json(answer);
     } catch (error) {
-        console.error("❌ Fehler in /createAIimages:", error.message);
+        console.error("❌ Error in /createAIimages:", error.message);
         response.sendStatus(500);
     }
 });
@@ -1259,7 +1355,7 @@ app.post("/transcribeAudio", uploadAudio.single("audio"), async (request, respon
 
         response.json(answer);
     } catch (error) {
-        console.error("❌ Fehler in /transcribeAudio:", error.message);
+        console.error("❌ Error in /transcribeAudio:", error.message);
         response.sendStatus(500);
     }
 });
@@ -1270,7 +1366,7 @@ app.post("/generateSpeech", uploadVoiceSample.single("voiceSample"), async (requ
 
         response.json(answer);
     } catch (error) {
-        console.error("❌ Fehler in /generateSpeech:", error.message);
+        console.error("❌ Error in /generateSpeech:", error.message);
         response.sendStatus(500);
     }
 });
@@ -1281,7 +1377,7 @@ app.post("/translateText", async (request, response) => {
 
         response.json(answer);
     } catch (error) {
-        console.error("❌ Fehler in /translateText:", error.message);
+        console.error("❌ Error in /translateText:", error.message);
         response.sendStatus(500);
     }
 });
@@ -1292,7 +1388,7 @@ app.get("/getAImodels", async (request, response) => {
 
         response.json(answer);
     } catch (error) {
-        console.error("❌ Fehler in /getAimodels:", error.message);
+        console.error("❌ Error in /getAimodels:", error.message);
         response.sendStatus(500);
     }
 });
