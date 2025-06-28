@@ -1,6 +1,6 @@
 
 
-// User Data
+// --- USER DATA --- //
 
 const llmAttributeYourNameDOM = document.getElementById("llmAttributeYourName");
 const llmAttributeNameDOM = document.getElementById("llmAttributeName");
@@ -22,13 +22,15 @@ console.log("LLM Input - LLM Gender: " + llmAttributes.gender);
 console.log("LLM Input - LLM Age: " + llmAttributes.age);
 console.log("LLM Input - Famous Person: " + llmAttributes.famousPerson);
 
-// LLM Personality
+
+
+// --- LLM PERSONALITY --- //
+
 let llmPersonalities = [];
 let llmPersonalityIMG = "imgPrompt";
 let llmPersonalityPersonalityChanger = "personalityChanger";
 let llmPersonalityRandom = "Random";
 
-// Get and Listen to Dropdown Options
 let llmPersonalityDOM = document.getElementById("llmPersonality");
 
 for (let i = 0; i < llmPersonalityDOM.options.length; i++) {
@@ -47,33 +49,32 @@ llmPersonalityDOM.addEventListener("change", (event) => {
 });
 
 // On Data Change - Change SystemPrompt
-
 llmAttributeYourNameDOM.addEventListener("input", () => {
-    console.log("EL - LLM Input UserName: " + llmAttributeYourNameDOM.value);
+    // console.log("EL - LLM Input UserName: " + llmAttributeYourNameDOM.value);
     llmAttributes.userName = llmAttributeYourNameDOM.value;
     systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
 })
 
 llmAttributeNameDOM.addEventListener("input", () => {
-    console.log("EL - LLM Input Name: " + llmAttributeNameDOM.value);
+    // console.log("EL - LLM Input Name: " + llmAttributeNameDOM.value);
     llmAttributes.name = llmAttributeNameDOM.value;
     systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
 })
 
 llmAttributeGenderDOM.addEventListener("input", () => {
-    console.log("EL - LLM Input Gender: " + llmAttributeGenderDOM.value);
+    // console.log("EL - LLM Input Gender: " + llmAttributeGenderDOM.value);
     llmAttributes.gender = llmAttributeGenderDOM.value;
     systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
 })
 
 llmAttributeAgeDOM.addEventListener("input", () => {
-    console.log("EL - LLM Input Age: " + llmAttributeAgeDOM.value);
+    // console.log("EL - LLM Input Age: " + llmAttributeAgeDOM.value);
     llmAttributes.age = llmAttributeAgeDOM.value;
     systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
 })
 
 llmAttributeFamousPersonDOM.addEventListener("input", () => {
-    console.log("EL - LLM Input FamousPerson: " + llmAttributeFamousPersonDOM.value);
+    // console.log("EL - LLM Input FamousPerson: " + llmAttributeFamousPersonDOM.value);
     llmAttributes.famousPerson = llmAttributeFamousPersonDOM.value;
     systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
 })
@@ -146,7 +147,7 @@ let pesonalityMarkers = [
     },
 ]
 
-// Personality CORE
+// PERSONALITY CORE
 function generateSystemPrompt(nameOfRole, consoleLog = false) {
     function consoleLogIfTrue(print, msg) { if (print) { console.log(msg); } }
     consoleLogIfTrue(consoleLog, "");
@@ -400,13 +401,14 @@ function generateSystemPrompt(nameOfRole, consoleLog = false) {
     return text;
 }
 
-// LLM Activate random
+
+
+// --- LLM RANDOM INTERACTION --- //
 
 const llmRandomInitiate = document.getElementById("llmRandomInitate");
 let llmRandom = llmRandomInitiate.checked;
 
 llmRandomInitiate.addEventListener("change", () => {
-    console.log("");
     llmRandom = llmRandomInitiate.checked;
     console.log("EL - LLM Random Initiate: " + llmRandom);
     stopRandomTimer()
@@ -421,7 +423,7 @@ minimumRandomTimeInMinutes = LLMrandomMin.value;
 maximumRandomTimeInMinutes = LLMrandomMax.value;
 
 LLMrandomMin.addEventListener("change", () => {
-    console.log("EL -Changing LLM Random Minimum: " + LLMrandomMin.value);
+    // console.log("EL -Changing LLM Random Minimum: " + LLMrandomMin.value);
     minimumRandomTimeInMinutes = LLMrandomMin.value;
     stopRandomTimer()
     if (llmRandom) {
@@ -430,7 +432,7 @@ LLMrandomMin.addEventListener("change", () => {
 });
 
 LLMrandomMax.addEventListener("change", () => {
-    console.log("EL -Changing LLM Random Maximum: " + LLMrandomMax.value);
+    // console.log("EL -Changing LLM Random Maximum: " + LLMrandomMax.value);
     maximumRandomTimeInMinutes = LLMrandomMax.value;
     stopRandomTimer()
     if (llmRandom) {
@@ -438,7 +440,9 @@ LLMrandomMax.addEventListener("change", () => {
     }
 });
 
-// Input Field
+
+
+// --- INPUT FIELD --- //
 
 const hiddenInput = document.getElementById("hiddenInputMirror");
 
@@ -466,7 +470,9 @@ inputField.addEventListener("input", () => {
     }
 });
 
-// Buttons
+
+
+// --- BUTTONS --- //
 
 const controlHide = document.getElementById("hideControls");
 controlHide.style.display = "none";
@@ -582,36 +588,47 @@ document.addEventListener("keydown", (event) => {
 let buttonText = button3.querySelector("p").innerHTML.toString();
 
 
-// LLM & Images
+
+// --- LLM --- //
 
 const modelRadio = document.querySelectorAll(".gptRadio");
-const createVoiceLLM = document.getElementById("createVoiceLLM");
-const imgRadio = document.querySelectorAll(".imgRadio");
-const nOfImgs = document.getElementById("nOfIMGs");
-const createIMGwithText = document.getElementById("createIMGwithText");
 const translateDOM = document.getElementById("translate");
+const createVoiceLLM = document.getElementById("createVoiceLLM");
 
 let model = textModel1;
-let voiceLLM = createVoiceLLM.checked;
-let imgModel = imgModel2;
-let nIMGs = nOfImgs.value;
-let imgWithText = createIMGwithText.checked;
 let translate = translateDOM.checked;
+let voiceLLM = createVoiceLLM.checked;
 
 for (let i = 0; i < modelRadio.length; i++) {
     modelRadio[i].addEventListener("change", () => {
-        console.log("Changing Model: " + modelRadio[i].value);
+        console.log("EL - Changing Model: " + modelRadio[i].value);
         model = modelRadio[i].value;
     });
 }
+translateDOM.addEventListener("change", () => {
+    console.log("EL - Translate: " + translateDOM.checked);
+    translate = translateDOM.checked;
+});
 createVoiceLLM.addEventListener("change", () => {
-    console.log("");
     console.log("EL - Changing Voice for LLM: " + createVoiceLLM.checked);
     voiceLLM = createVoiceLLM.checked;
 });
+
+
+
+// --- IMAGES --- //
+
+const imgRadio = document.querySelectorAll(".imgRadio");
+const nOfImgs = document.getElementById("nOfIMGs");
+const createIMGwithText = document.getElementById("createIMGwithText");
+
+let imgModel = imgModel2;
+let nIMGs = nOfImgs.value;
+let imgWithText = createIMGwithText.checked;
+
 for (let i = 0; i < imgRadio.length; i++) {
     imgRadio[i].addEventListener("change", () => {
-        console.log("Changing Model: " + imgRadio[i].value);
+        console.log("EL - Changing Model: " + imgRadio[i].value);
         imgModel = imgRadio[i].value;
     });
 }
@@ -620,18 +637,13 @@ nOfImgs.addEventListener("change", (event) => {
     console.log("EL - Changing Number of Images: " + nIMGs);
 });
 createIMGwithText.addEventListener("change", () => {
-    console.log("");
     console.log("EL - Changing Image with LLM: " + createIMGwithText.checked);
     imgWithText = createIMGwithText.checked;
 });
-translateDOM.addEventListener("change", () => {
-    console.log("");
-    console.log("EL - Translate: " + translateDOM.checked);
-    translate = translateDOM.checked;
-});
 
 
-// Dropzone
+
+// --- DROPZONE --- //
 
 const dropzone = document.getElementById('audioSampleDropzone');
 const audioSampleFile = document.getElementById('inputAudioSample');
@@ -672,69 +684,36 @@ function isValidFile(file) {
     }
 }
 
-// Voice Settings
 
-// Voice Moods
-let voiceMoods = [];
-let voiceMood = "";
 
-// Get and Listen to Dropdown Options
-let llmVoiceMoodDOM = document.getElementById("llmVoiceMood");
+// --- VOICE --- //
 
-for (let i = 0; i < llmVoiceMoodDOM.options.length; i++) {
-    const option = llmVoiceMoodDOM.options[i].value;
-    voiceMoods.push(option);
-    if (llmVoiceMoodDOM.options[i].selected) {
-        voiceMood = llmVoiceMoodDOM.options[i].value;
-    }
-}
-// console.log("Current Voice Mood: " + voiceMood);
-// console.log("Vocie Moods: " + voiceMoods);
-
-llmVoiceMoodDOM.addEventListener("change", (event) => {
-    voiceMood = event.target.value;
-    console.log("EL - Voice Mood set to: " + event.target.value);
-    loadSpeechPattern(voiceMood);
-});
-
-// Checkbox for LLM chooses Voice Mood
-const llmChoosesVoiceDOM = document.getElementById("llmChooseVoice");
-let llmChoosesVoice = llmChoosesVoiceDOM.checked;
-
-llmChoosesVoiceDOM.addEventListener("change", () => {
-    console.log("EL - LLM chooses Voice: " + llmChoosesVoiceDOM.checked);
-    llmChoosesVoice = llmChoosesVoiceDOM.checked;
-})
-
-// Voice Settings
-
+const modelVoiceDOM = document.querySelectorAll(".voiceRadio");
 const createVoice = document.getElementById("createVoice");
 const sendAudioSample = document.getElementById("sendAudioSample");
-const cbExaggeration = document.getElementById("cbExaggeration");
-const cbPase = document.getElementById("cbPase");
-const cbTemperature = document.getElementById("cbTemperature");
-const sendTextToLLM = document.getElementById("sendTextToLLM");
-const modelVoiceDOM = document.querySelectorAll(".voiceRadio");
 
 let modelVoice = voiceModel1;
-// console.log("Voice Model: " + modelVoice);
 
 for (let i = 0; i < modelVoiceDOM.length; i++) {
     modelVoiceDOM[i].addEventListener("change", () => {
-        console.log("Changing Voice Model: " + modelVoiceDOM[i].value);
+        console.log("EL - Changing Voice Model: " + modelVoiceDOM[i].value);
         modelVoice = modelVoiceDOM[i].value;
     });
 }
+createVoice.addEventListener("change", () => {
+    console.log("EL - Changing Voice for Transcript: " + createVoice.checked);
+    cbValues.createVoice = createVoice.checked;
+});
+sendAudioSample.addEventListener("change", () => {
+    console.log("EL - Change Send Audio Sample: " + sendAudioSample.checked);
+    cbValues.sendAudioSample = sendAudioSample.checked;
+});
 
-let cbValues = {
-    createVoice: createVoice.checked,
-    sendAudioSample: sendAudioSample.checked,
-    cbExaggeration: cbExaggeration.value,
-    cbPase: cbPase.value,
-    cbTemperature: cbTemperature.value
-};
+// Voice Settings
 
-let textToLLM = sendTextToLLM.checked;
+const cbExaggeration = document.getElementById("cbExaggeration");
+const cbPase = document.getElementById("cbPase");
+const cbTemperature = document.getElementById("cbTemperature");
 
 let exaggerationValue = document.getElementById("exaggerationValue");
 let paceValue = document.getElementById("paceValue");
@@ -748,36 +727,17 @@ exaggerationValue.textContent = Number(cbExaggeration.value).toFixed(2).concat("
 paceValue.textContent = Number(cbPase.value).toFixed(2).concat(" - ", paceValueValueContent);
 temperatureValue.textContent = Number(cbTemperature.value).toFixed(2).concat(" - ", temperatureValueContent);
 
-sendAudioSample.addEventListener("change", () => {
-    console.log("");
-    console.log("EL - Change Send Audio Sample: " + sendAudioSample.checked);
-    cbValues.sendAudioSample = sendAudioSample.checked;
-});
 cbExaggeration.addEventListener("change", () => {
-    console.log("");
     console.log("EL - Change CB Exaggeration: " + cbExaggeration.value);
     cbValues.cbExaggeration = cbExaggeration.value;
 });
 cbPase.addEventListener("change", () => {
-    console.log("");
     console.log("EL - Change CB Pase: " + cbPase.value);
     cbValues.cbPase = cbPase.value;
 });
 cbTemperature.addEventListener("change", () => {
-    console.log("");
     console.log("EL - Change CB Temperature: " + cbTemperature.value);
     cbValues.cbTemperature = cbTemperature.value;
-});
-sendTextToLLM.addEventListener("change", () => {
-    console.log("");
-    console.log("EL - Change Text To LLM: " + sendTextToLLM.checked);
-    textToLLM = sendTextToLLM.checked;
-});
-
-createVoice.addEventListener("change", () => {
-    console.log("");
-    console.log("EL - Changing Voice for Transcript: " + createVoice.checked);
-    cbValues.createVoice = createVoice.checked;
 });
 cbExaggeration.addEventListener("input", () => {
     exaggerationValue.textContent = Number(cbExaggeration.value).toFixed(2).concat(" - ", exaggerationValueContent);
@@ -787,4 +747,53 @@ cbPase.addEventListener("input", () => {
 });
 cbTemperature.addEventListener("input", () => {
     temperatureValue.textContent = Number(cbTemperature.value).toFixed(2).concat(" - ", temperatureValueContent);
+});
+
+let cbValues = {
+    createVoice: createVoice.checked,
+    sendAudioSample: sendAudioSample.checked,
+    cbExaggeration: cbExaggeration.value,
+    cbPase: cbPase.value,
+    cbTemperature: cbTemperature.value
+};
+
+// Voice Mood
+let llmVoiceMoodDOM = document.getElementById("llmVoiceMood");
+const llmChoosesVoiceDOM = document.getElementById("llmChooseVoice");
+
+let voiceMoods = [];
+let voiceMood = "";
+let llmChoosesVoice = llmChoosesVoiceDOM.checked;
+
+for (let i = 0; i < llmVoiceMoodDOM.options.length; i++) {
+    const option = llmVoiceMoodDOM.options[i].value;
+    voiceMoods.push(option);
+    if (llmVoiceMoodDOM.options[i].selected) {
+        voiceMood = llmVoiceMoodDOM.options[i].value;
+    }
+}
+
+llmVoiceMoodDOM.addEventListener("change", (event) => {
+    voiceMood = event.target.value;
+    console.log("EL - Voice Mood set to: " + event.target.value);
+    loadSpeechPattern(voiceMood);
+});
+
+llmChoosesVoiceDOM.addEventListener("change", () => {
+    console.log("EL - LLM chooses Voice: " + llmChoosesVoiceDOM.checked);
+    llmChoosesVoice = llmChoosesVoiceDOM.checked;
+})
+
+
+
+// --- TRANSCRIPT --- //
+
+const sendTextToLLM = document.getElementById("sendTextToLLM");
+
+let textToLLM = sendTextToLLM.checked;
+
+sendTextToLLM.addEventListener("change", () => {
+    console.log("");
+    console.log("EL - Change Text To LLM: " + sendTextToLLM.checked);
+    textToLLM = sendTextToLLM.checked;
 });
