@@ -1,13 +1,16 @@
 
 
+// --- RANDOM INITIATE --- //
+
 let firstInitiateRandomMessage = true;
 let randomTimerID = null;
 let randomTimerRunning = false;
 
 function userInactive(time = 0) {
-    console.log("");
-    console.log("RANDOM TIMER - Start");
     if (llmRandom && !randomTimerRunning) {
+        console.log("");
+        console.log("RANDOM TIMER - Start");
+
         if (firstInitiateRandomMessage) {
             randomTimer(randomStartTime);
         }
@@ -61,6 +64,10 @@ function stopRandomTimer() {
 
 const resultPage = document.getElementById("resultContainer");
 const resultPageEntries = document.getElementById("result");
+
+
+
+// --- OUTPUT RESULTS --- //
 
 function addDescription() {
     addReturnText("", "Description loaded!");
@@ -178,11 +185,6 @@ function outputText(type, text) {
     resultPageEntries.scrollTop = resultPageEntries.scrollHeight;
 }
 
-function copyToInput(text) {
-    inputField.value = removePersonalityMarkers(formatToText(text));
-    inputField.dispatchEvent(new Event("input"));
-}
-
 function outputIMGs(imgArray, imgPrompt) {
     if (imgArray.length > 0) {
         let newIMGsContainer = document.createElement("div");
@@ -237,7 +239,7 @@ function outputIMGs(imgArray, imgPrompt) {
     }
 }
 
-let audioItteration = -1;
+let queueItterator = -1;
 let autoplayQueues = [];
 
 function outputAudio(path, { autoplay = false, autoplayQueue = false, addToQueue = false } = {}) {
@@ -247,25 +249,29 @@ function outputAudio(path, { autoplay = false, autoplayQueue = false, addToQueue
     let newAudio = document.createElement("audio");
     newAudio.classList.add("resultAudio");
     newAudio.src = path;
+
+    let queueID;
+
     if (autoplay) {
         newAudio.autoplay = true;
     }
     if (autoplayQueue || addToQueue) {
         if (autoplayQueue) {
-            audioItteration++;
+            queueItterator++;
             console.log("");
-            console.log("Audio Itterater: " + audioItteration++);
+            // console.log("Queue Itterater: " + queueItterator);
             newAudio.autoplay = true;
         }
-        if (!autoplayQueues[audioItteration]) {
-            autoplayQueues[audioItteration] = [];
+        queueID = queueItterator;
+        // console.log("QueueID: " + queueID);
+
+        if (!autoplayQueues[queueItterator]) {
+            autoplayQueues[queueItterator] = [];
         }
-        autoplayQueues[audioItteration].push(newAudio);
+        autoplayQueues[queueItterator].push(newAudio);
 
         newAudio.addEventListener('ended', () => {
-            console.log("");
-            console.log("AUDIO QUEUE - Start");
-            playAduioQueue(newAudio, audioItteration);
+            playAduioQueue(newAudio, queueID);
         });
     }
     newAudio.controls = true;
@@ -278,20 +284,20 @@ function outputAudio(path, { autoplay = false, autoplayQueue = false, addToQueue
 
 let audioSearchItteration = 0;
 
-function playAduioQueue(currentAudio, placeInQueue) {
-    for (let i = 0; i < autoplayQueues[placeInQueue].length; i++) {
-        if (autoplayQueues[placeInQueue][i] == currentAudio) {
-            if (autoplayQueues[placeInQueue][i + 1]) {
-                console.log("AUDIO QUEUE - Audio Found on Place: " + (i + 1) + " - Queue Place: " + placeInQueue);
-                autoplayQueues[placeInQueue][i + 1].currentTime = 0;
-                autoplayQueues[placeInQueue][i + 1].play();
+function playAduioQueue(audioFilePath, queueID) {
+    for (let i = 0; i < autoplayQueues[queueID].length; i++) {
+        if (autoplayQueues[queueID][i] == audioFilePath) {
+            if (autoplayQueues[queueID][i + 1]) {
+                console.log("AUDIO QUEUE - Audio Found on Queue: " + queueID + " - Place: " + (i + 1));
+                autoplayQueues[queueID][i + 1].currentTime = 0;
+                autoplayQueues[queueID][i + 1].play();
                 audioSearchItteration = 0;
                 break;
             } else {
-                console.log("AUDIO QUEUE - Place: " + (i) + " - Queue Place: " + placeInQueue + "\nEnd reached - Waiting for next Audio");
+                console.log("AUDIO QUEUE - Audio Found on Queue: " + queueID + " - Place: " + (i + 1) + " - End reached - Waiting for next Audio");
                 audioSearchItteration++
                 if (audioSearchItteration < audioQueueItterations) {
-                    setTimeout(() => { playAduioQueue(currentAudio, placeInQueue); }, 1000);
+                    setTimeout(() => { playAduioQueue(audioFilePath, queueID); }, 50);
                 }
                 else {
                     audioSearchItteration = 0;
@@ -308,6 +314,17 @@ function outputDivider() {
     result.appendChild(newText);
 }
 
+function clearResults() {
+    result.innerHTML = "";
+    firstAction = true;
+    addReturnText("", "&nbsp;");
+    addReturnText("", "--- CLEAR ---");
+}
+
+
+
+// --- RETURN --- //
+
 function addReturnText(html, text) {
     let newDiv = document.createElement("div");
     newDiv.classList.add("returnTextContainer");
@@ -321,11 +338,22 @@ function addReturnText(html, text) {
     returnDiv.appendChild(newDiv);
 }
 
+
+
+// --- PROCESS --- //
+
 function startLoading() {
     controlHide.style.display = "inherit";
     isLoading = true;
     logoIMG.style.display = "none";
     loadingIMG.style.display = "inherit";
+}
+
+function addInitialLog(text, firstLine) {
+    if (firstLine) {
+        addReturnText("", "&nbsp;");
+    }
+    addReturnText("", "<span class='tBold'>AI request send for: " + text + " ...</span>");
 }
 
 function endLoading() {
@@ -335,13 +363,6 @@ function endLoading() {
     isLoading = false;
     loadingIMG.style.display = "none";
     logoIMG.style.display = "inherit";
-}
-
-function addInitialLog(text, firstLine) {
-    if (firstLine) {
-        addReturnText("", "&nbsp;");
-    }
-    addReturnText("", "<span class='tBold'>AI request send for: " + text + " ...</span>");
 }
 
 function focusInputField() {
@@ -354,76 +375,10 @@ function focusInputField() {
     }
 }
 
-function clearResults() {
-    result.innerHTML = "";
-    firstAction = true;
-    addReturnText("", "&nbsp;");
-    addReturnText("", "--- CLEAR ---");
+function copyToInput(text) {
+    inputField.value = removePersonalityMarkers(formatToText(text));
+    inputField.dispatchEvent(new Event("input"));
 }
-
-let mood = 0;
-
-loadSpeechPattern(voiceMood);
-
-function loadSpeechPattern(keyMood) {
-    console.log("Changing Voice Mood to: " + keyMood);
-
-    if (keyMood == "VictimDesperate") {
-        mood = 0.9;
-        zonosOptions = zonosOptionsStandard;
-        zonosOptions.e6 = 1.00;       // Victim / Desperate
-    }
-    else if (keyMood == "Sad") {
-        mood = 0.1;
-        zonosOptions = zonosOptionsStandard;
-        zonosOptions.e2 = 1.00;       // Sadness
-    }
-    else if (keyMood == "AnxiousNervousNeedy") {
-        mood = 0.7;
-        zonosOptions = zonosOptionsStandard;
-        zonosOptions.e4 = 1.00;       // Anxious / Nervours / Needy
-    }
-    else if (keyMood == "PresentingBulltePoints") {
-        mood = 0.3;
-        zonosOptions = zonosOptionsStandard;
-        zonosOptions.e5 = 1.00;       // Presenting / BulletPoints
-    }
-    else if (keyMood == "Reading") {
-        mood = 0.4;
-        zonosOptions = zonosOptionsStandard;
-        zonosOptions.e8 = 1.00;       // Reading
-    }
-    else if (keyMood == "NeutralTeacher") {
-        mood = 0.3;
-        zonosOptions = zonosOptionsStandard;
-        zonosOptions.e3 = 1.00;       // Neutral / Teacher
-    }
-    else if (keyMood == "Neutral") {
-        mood = 0.4;
-        zonosOptions = zonosOptionsStandard;
-        zonosOptions.e1 = 0.30;       // Happiness
-    }
-    else if (keyMood == "Happy") {
-        mood = 0.5;
-        zonosOptions = zonosOptionsStandard;
-        zonosOptions.e1 = 0.60;       // Happiness
-    }
-    else if (keyMood == "VeryHappy") {
-        mood = 0.6;
-        zonosOptions = zonosOptionsStandard;
-        zonosOptions.e1 = 1.00;       // Happiness
-    }
-    else if (keyMood == "CreativeTalkOver") {
-        mood = 1.0;
-        zonosOptions = zonosOptionsStandard;
-        zonosOptions.e7 = 1.00;       // Creative / Talking over
-    }
-
-    llmVoiceMoodDOM.value = keyMood;
-}
-
-
-// Third Functions
 
 function formatAIanswer(inputText) {
     let text = inputText;
@@ -518,19 +473,85 @@ function removePersonalityMarkers(inputText) {
     let slicedText = "";
 
     for (i = 0; i < pesonalityMarkers.length; i++) {
-        console.log("REMOVE MARKER - pM: " + pesonalityMarkers[i].marker);
-        console.log("REMOVE MARKER - pMLength: " + pesonalityMarkers[i].marker.length);
+        // console.log("REMOVE MARKER - pM: " + pesonalityMarkers[i].marker);
+        // console.log("REMOVE MARKER - pMLength: " + pesonalityMarkers[i].marker.length);
         slicedText = inputText.slice(0, pesonalityMarkers[i].marker.length);
-        console.log("REMOVE MARKER - slicedText: " + slicedText);
+        // console.log("REMOVE MARKER - slicedText: " + slicedText);
         if (slicedText == pesonalityMarkers[i].marker) {
-            console.log("REMOVE MARKER - TREFFER: " + slicedText);
+            console.log("REMOVE MARKER - Found: " + slicedText);
             inputText = inputText.slice(pesonalityMarkers[i].marker.length + 1);
             console.log("REMOVE MARKER - New Text: " + inputText);
             return inputText;
         }
     }
+
+    console.log("REMOVE MARKER - Done");
     return inputText;
 }
+
+let mood = 0;
+
+loadSpeechPattern(voiceMood, false);
+
+function loadSpeechPattern(keyMood, log = true) {
+    if (log) { console.log("Changing Voice Mood to: " + keyMood); }
+
+    if (keyMood == "VictimDesperate") {
+        mood = 0.9;
+        zonosOptions = zonosOptionsStandard;
+        zonosOptions.e6 = 1.00;       // Victim / Desperate
+    }
+    else if (keyMood == "Sad") {
+        mood = 0.1;
+        zonosOptions = zonosOptionsStandard;
+        zonosOptions.e2 = 1.00;       // Sadness
+    }
+    else if (keyMood == "AnxiousNervousNeedy") {
+        mood = 0.7;
+        zonosOptions = zonosOptionsStandard;
+        zonosOptions.e4 = 1.00;       // Anxious / Nervours / Needy
+    }
+    else if (keyMood == "PresentingBulltePoints") {
+        mood = 0.3;
+        zonosOptions = zonosOptionsStandard;
+        zonosOptions.e5 = 1.00;       // Presenting / BulletPoints
+    }
+    else if (keyMood == "Reading") {
+        mood = 0.4;
+        zonosOptions = zonosOptionsStandard;
+        zonosOptions.e8 = 1.00;       // Reading
+    }
+    else if (keyMood == "NeutralTeacher") {
+        mood = 0.3;
+        zonosOptions = zonosOptionsStandard;
+        zonosOptions.e3 = 1.00;       // Neutral / Teacher
+    }
+    else if (keyMood == "Neutral") {
+        mood = 0.4;
+        zonosOptions = zonosOptionsStandard;
+        zonosOptions.e1 = 0.30;       // Happiness
+    }
+    else if (keyMood == "Happy") {
+        mood = 0.5;
+        zonosOptions = zonosOptionsStandard;
+        zonosOptions.e1 = 0.60;       // Happiness
+    }
+    else if (keyMood == "VeryHappy") {
+        mood = 0.6;
+        zonosOptions = zonosOptionsStandard;
+        zonosOptions.e1 = 1.00;       // Happiness
+    }
+    else if (keyMood == "CreativeTalkOver") {
+        mood = 1.0;
+        zonosOptions = zonosOptionsStandard;
+        zonosOptions.e7 = 1.00;       // Creative / Talking over
+    }
+
+    llmVoiceMoodDOM.value = keyMood;
+}
+
+
+// Third Functions
 
 function isMobile() {
     return /Android|iPhone/i.test(navigator.userAgent)
@@ -538,13 +559,12 @@ function isMobile() {
 
 async function getAImodels() {
     console.log("");
-    console.log("GET AI MODELS - Start");
+    console.log("GET AI MODELS");
     try {
         const responseAI = await fetch("/getAImodels");
         const jsonAI = await responseAI.json();
         const aiObject = jsonAI.responseObject;
 
-        console.log("GET AI MODELS - AI Models:");
         let tempString = "";
 
         for (let i = 0; i < aiObject.length; i++) {

@@ -3,6 +3,10 @@
 focusInputField();
 addDescription();
 
+
+
+// --- START --- //
+
 let keyRequest = true;
 let costSum = 0;
 let cumulativeCosts = 0;
@@ -74,6 +78,10 @@ async function generateResponse(type, text = "") {
         outputDivider();
     }
 }
+
+
+
+// --- BUILD REQUESTS --- //
 
 let inputValue = "";
 
@@ -252,6 +260,9 @@ async function buildVocie(text = "", newFile = true, exag = -1, itteration = 0) 
 }
 
 
+
+// --- API CALLS --- //
+
 let responseCost = 0;
 
 async function generateText(systemPromptToSend = "", text = "", nOfTokens = 10, buildHistory = false) {
@@ -268,18 +279,18 @@ async function generateText(systemPromptToSend = "", text = "", nOfTokens = 10, 
         responseText = await fetchText(systemPromptToSend, text, nOfTokens, buildHistory);
         console.log("");
     } catch (error) {
-        addReturnText("<div class='material-symbols-outlined returnIcons cRed'>close</div>", " ERROR");
-        console.log("AI RESPONSE ERROR:");
-        console.error(error);
+        handleError("GENERATE TEXT - ERROR: Generating Text: ", error);
     }
 
     let llmExag = cbExaggeration;
     if (systemPromptToSend != systemPromptIMG && systemPromptToSend != systemPromptPersonality) {
         console.log("GENERATE TEXT - Response Generate Text Length: ", responseText.length);
+
         llmExag = responseText.slice(0, 3);
-        console.log("GENERATE TEXT - Exaggeration Extract: ", llmExag);
         responseText = responseText.slice(4, responseText.length);
+
         console.log("GENERATE TEXT - Cut Text Length: ", responseText.length);
+        console.log("GENERATE TEXT - Exaggeration Extract: ", llmExag);
 
         if (llmChoosesVoice) {
             if (llmExag == 0.1) {
@@ -321,6 +332,7 @@ async function generateText(systemPromptToSend = "", text = "", nOfTokens = 10, 
     let responseTextFormatted = formatAIanswer(responseText);
     responseText = formatToText(responseText);
 
+    console.log("");
     console.log("GENERATE TEXT - responseText:" + responseText);
     console.log("GENERATE TEXT - responseTextFormatted:" + responseTextFormatted);
 
@@ -362,8 +374,10 @@ async function fetchText(systemPromptToSend, prompt, tokens, buildHistory) {
     // console.log("RECORDING - "Fetch Text Options: ", options);
 
     try {
-        const responseAI = await fetch("/createAItext", options);
-        const jsonAI = await responseAI.json();
+        const response = await fetch("/createAItext", options);
+        if (!response.ok) throw new Error("FETCH TEXT - ERROR - CODE: " + response.status);
+
+        const jsonAI = await response.json();
 
         cumulativeCosts = jsonAI.cumulativeCosts.toFixed(2);
         addReturnText("<div class='material-symbols-outlined returnIcons cGreen'>done</div>", " " + (jsonAI.cost).toFixed(2) + " Cents");
@@ -374,9 +388,7 @@ async function fetchText(systemPromptToSend, prompt, tokens, buildHistory) {
 
         return jsonAI.data;
     } catch (error) {
-        addReturnText("<div class='material-symbols-outlined returnIcons cRed'>close</div>", " ERROR");
-        console.log("AI RESPONSE ERROR:");
-        console.error(error);
+        handleError("FETCH TEXT - ERROR: Fetching Text: ", error);
     }
 }
 
@@ -426,12 +438,16 @@ async function generateImages(text, imgModel) {
 
             for (i = 0; i < nIMGsTemp; i++) {
                 try {
-                    const responseAI = await fetch("/createAIimages", options);
-                    const jsonAI = await responseAI.json();
+                    const response = await fetch("/createAIimages", options);
+                    if (!response.ok) throw new Error("IMAGES - ERROR - CODE: " + response.status);
+
+                    const jsonAI = await response.json();
 
                     console.log("IMAGES - Response:");
-                    console.log("IMAGES - Amount: " + jsonAI.data.length + " Images");
-                    console.log("IMAGES - Imagepaths:" + jsonAI.data);
+                    console.log("IMAGES - Amount: " + jsonAI.data.length + " Image/s");
+                    for (i = 0; i < jsonAI.data.length; i++) {
+                        console.log("IMAGES - Imagepath " + (i + 1) + ": " + jsonAI.data[0]);
+                    }
 
                     cumulativeCosts = jsonAI.cumulativeCosts.toFixed(2);
                     addReturnText("<div class='material-symbols-outlined returnIcons cGreen'>done</div>", " " + (jsonAI.cost).toFixed(2) + " Cents");
@@ -440,9 +456,7 @@ async function generateImages(text, imgModel) {
 
                     responseIMGs.push(...jsonAI.data);
                 } catch (error) {
-                    addReturnText("<div class='material-symbols-outlined returnIcons cRed'>close</div>", " ERROR");
-                    console.log("AI RESPONSE ERROR:");
-                    console.error(error);
+                    handleError("IMAGES - ERROR: Fetching Images: ", error);
                 }
             }
 
@@ -451,6 +465,7 @@ async function generateImages(text, imgModel) {
     }
     else {
         addReturnText("<div class='material-symbols-outlined returnIcons cRed'>close</div>", "Please enter Image prompt!");
+        endLoading();
         return;
     }
 }
@@ -509,17 +524,17 @@ async function generateTranscript(audio) {
     formData.append("audio", audio, "input.wav");
 
     try {
-        const res = await fetch("/transcribeAudio", {
+        const response = await fetch("/transcribeAudio", {
             method: "POST",
             body: formData
         });
+        if (!response.ok) throw new Error("TRANSCRIPT - ERROR - CODE: " + response.status);
 
-        const result = await res.json();
+        const result = await response.json();
         result.text = formatToText(result.text);
 
-        console.log("TRANSCRIPT - from Whisper:", result.text);
+        console.log("TRANSCRIPT - Whisper:", result.text);
         console.log("TRANSCRIPT - Audio Path:", result.audioPath);
-        console.log("TRANSCRIPT - Cost:", result.cost);
 
         cumulativeCosts = result.cumulativeCosts.toFixed(2);
         addReturnText("<div class='material-symbols-outlined returnIcons cGreen'>done</div>", " " + (result.cost).toFixed(2) + " Cents");
@@ -528,9 +543,7 @@ async function generateTranscript(audio) {
 
         return { text: result.text, audioPath: result.audioPath };
     } catch (error) {
-        addReturnText("<div class='material-symbols-outlined returnIcons cRed'>close</div>", " ERROR");
-        console.log("AI RESPONSE ERROR:");
-        console.error(error);
+        handleError("TRANSCRIPT - ERROR: Fetching Transcript: ", error);
     }
 }
 
@@ -584,7 +597,7 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
 
         if (modelVoice == voiceModel1) {
             formData.append("zonosOptions", JSON.stringify(zonosOptions));
-            console.log("VOICE - zonosOptions: " + JSON.stringify(zonosOptions));
+            console.log("VOICE - zonosOptions: ", zonosOptions);
         }
 
         else if (modelVoice == voiceModel2) {
@@ -608,12 +621,13 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
         }
 
         // Fetch
-        const res = await fetch("/generateSpeech", {
+        const response = await fetch("/generateSpeech", {
             method: "POST",
             body: formData,
         });
+        if (!response.ok) throw new Error("VOICE - ERROR - CODE: " + response.status);
 
-        const result = await res.json();
+        const result = await response.json();
         console.log("VOICE - Result Audiopath:", result.audioPath);
 
         if (nOfFiles <= 1 && itteration == 1) {
@@ -641,9 +655,7 @@ async function generateSpeechFromText(text = "", newFile = true, exag = -1, itte
             }
         }
     } catch (error) {
-        addReturnText("<div class='material-symbols-outlined returnIcons cRed'>close</div>", " ERROR");
-        console.log("AI RESPONSE ERROR:");
-        console.error(error);
+        handleError("VOICE - ERROR: Fetching Voice: ", error);
     }
 }
 
@@ -666,16 +678,30 @@ async function translateToLanguage(text, targetLanguage = "en") {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
             });
+            if (!response.ok) throw new Error("TRANSLATE - ERROR - CODE: " + response.status);
+
             const jsonAI = await response.json();
 
             cumulativeCosts = jsonAI.cumulativeCosts.toFixed(2);
             addReturnText("<div class='material-symbols-outlined returnIcons cGreen'>done</div>", " " + (jsonAI.cost).toFixed(2) + " Cents");
             responseCost = responseCost + parseFloat(jsonAI.cost);
             console.log("TRANSLATE - Translation:", jsonAI.translatedText);
+            console.log("");
 
             return jsonAI.translatedText;
         } catch (error) {
-            console.error("TRANSLATE - AI RESPONSE ERROR:", error);
+            handleError("TRANSLATE - ERROR: Fetching Translation: ", error);
         }
     }
+}
+
+
+
+// --- ERROR HANDLING --- //
+
+function handleError(context, error) {
+    console.error(`${context}:`, error);
+
+    addReturnText("<div class='material-symbols-outlined returnIcons cRed'>close</div>", " ERROR");
+    endLoading();
 }
