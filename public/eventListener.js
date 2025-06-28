@@ -39,6 +39,7 @@ for (let i = 0; i < llmPersonalityDOM.options.length; i++) {
 }
 
 // Generate SystemPrompt
+let roleType = "allowed";
 let systemPrompt = generateSystemPrompt(llmPersonalityDOM.value, true);
 
 llmPersonalityDOM.addEventListener("change", (event) => {
@@ -162,7 +163,7 @@ function generateSystemPrompt(nameOfRole, consoleLog = false) {
         "Julia",
     ];
 
-    let roleType = checkRole(nameOfRole);
+    roleType = checkRole(nameOfRole);
     function checkRole(role) {
         if (role == llmPersonalityIMG ||
             role == llmPersonalityPersonalityChanger ||
