@@ -118,14 +118,14 @@ async function createAItext(request) {
         if (data.model == textModel1) {
             cost = calculateLLMcost(responseAI.data.usage, 0.4, 1.6);
 
-            cumulativeCosts = addToCosts("GPT-4.1 mini_Input", cost.costInput);
-            cumulativeCosts = addToCosts("GPT-4.1 mini_Output", cost.costOutput);
+            cumulativeCosts = await addToCosts("GPT-4.1 mini_Input", cost.costInput);
+            cumulativeCosts = await addToCosts("GPT-4.1 mini_Output", cost.costOutput);
         }
         else if (data.model == textModel2) {
             cost = calculateLLMcost(responseAI.data.usage, 2, 8);
 
-            cumulativeCosts = addToCosts("GPT-4.1_Input", cost.costInput);
-            cumulativeCosts = addToCosts("GPT-4.1_Output", cost.costOutput);
+            cumulativeCosts = await addToCosts("GPT-4.1_Input", cost.costInput);
+            cumulativeCosts = await addToCosts("GPT-4.1_Output", cost.costOutput);
         }
 
         console.log("");
@@ -313,14 +313,14 @@ async function createAIimages(request) {
 
         aiAnswer[0] = filePath;
 
+        cumulativeCosts = await addToCosts("DALL_E", cost);
+
         let answer = {
             status: "200 - Succesful PostRequest",
             data: aiAnswer,
             cost: cost,
             cumulativeCosts: cumulativeCosts.total
         };
-
-        cumulativeCosts = addToCosts("DALL_E", cost);
 
         return answer
     }
@@ -536,7 +536,7 @@ async function transcribeAudio(request) {
                     await fsp.unlink(transcriptPath);
                 }
 
-                cumulativeCosts = addToCosts("Whisper", 0);
+                cumulativeCosts = await addToCosts("Whisper", 0);
 
                 resolve({
                     text: output.trim(),
@@ -868,10 +868,10 @@ async function generateSpeech(request) {
             });
 
             if (voiceModel == "Chatterbox") {
-                cumulativeCosts = addToCosts("Chatterbox", 0);
+                cumulativeCosts = await addToCosts("Chatterbox", 0);
             }
             else if (voiceModel == "Zonos") {
-                cumulativeCosts = addToCosts("Zonos", 0);
+                cumulativeCosts = await addToCosts("Zonos", 0);
             }
 
             resolve({
@@ -988,7 +988,7 @@ async function translateText(request) {
     console.log("Translation:", translatedText);
 
     let cost = calculateTranslationCost(text);
-    cumulativeCosts = addToCosts("Translate", cost);
+    cumulativeCosts = await addToCosts("Translate", cost);
     console.log("Text Length: " + text.length);
 
     let answer = {
@@ -1050,6 +1050,9 @@ const longTermMemoryFilePath = path.join(longTermMemoryDIR, "longTermMemory.txt"
 if (!fs.existsSync(longTermMemoryFilePath)) { fs.writeFileSync(longTermMemoryFilePath, JSON.stringify("No memory created yet.", null, 2), "utf8"); }
 
 async function summarizeSessionForMemory() {
+    console.log("");
+    console.log("Summarize Memory:");
+
     const memoryPrompt = ""
         + "You are an assistant for an AI who generates a long term memory that will be added to the sytsem Prompt of an AI. "
         + "In the first user message you will get the current memory file. "
@@ -1123,6 +1126,7 @@ async function summarizeSessionForMemory() {
                 fs.unlinkSync(longTermMemoryFilePath);
                 fs.writeFileSync(longTermMemoryFilePath, result.data, "utf8");
             }
+            console.error("New memory written!");
         } catch (error) {
             console.error("Error in /createAItext:", error.message);
         }
@@ -1184,7 +1188,7 @@ function loadCosts(print = false) {
     }
 }
 
-function addToCosts(model, amount, print = false) {
+async function addToCosts(model, amount, print = false) {
     console.log("");
     console.log("Cost: " + model + " | " + amount);
 
