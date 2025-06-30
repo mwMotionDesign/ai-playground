@@ -128,10 +128,15 @@ async function buildText(text = "", isForwarded = false) {
     //     llmPersonalityDOM.value = llmPersonalityRandom;
     // }
 
+    let tempRoleType = roleType;
+
     // LLM Chooses Personality
     if (changePersonalityAuto || llmPersonalityDOM.value == llmPersonalityRandom && !isForwarded) {
         if (changePersonalityAuto) {
+            roleType = "system";
+            addReturnText("", "... forwarding to Personality Choise");
             const newPersonalityResult = await generateText(systemPromptPersonality, JSON.stringify(conversationHistory), nOfTokensPersonality, false);
+            roleType = tempRoleType;
             llmPersonalityDOM.value = newPersonalityResult.responseText;
         }
 
@@ -184,7 +189,10 @@ async function buildText(text = "", isForwarded = false) {
         addReturnText("", "... forwarding to Prompt Generation");
         console.log("");
         console.log("BUILD TEXT - Conversation History: ", conversationHistory);
+        tempRoleType = roleType;
+        roleType = "system";
         const imgPromptResult = await generateText(systemPromptIMG, JSON.stringify(conversationHistory), nOfTokensIMG, false);
+        roleType = tempRoleType
         addReturnText("", "... forwarding to Image");
         await buildImages(imgPromptResult.responseText);
     }
@@ -539,6 +547,7 @@ async function generateTranscript(audio) {
         const result = await response.json();
         result.text = formatToText(result.text);
 
+        console.log("TRANSCRIPT - Result:", result);
         console.log("TRANSCRIPT - Whisper:", result.text);
         console.log("TRANSCRIPT - Audio Path:", result.audioPath);
 
