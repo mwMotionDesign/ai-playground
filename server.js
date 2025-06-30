@@ -88,6 +88,10 @@ async function createAItext(request) {
 
     let buildMemory = false;
 
+    console.log("");
+    console.log("Personality: " + data.personality);
+    console.log("PersonalityRole: " + data.personalityRole);
+
     if (data.personality == "ServerMemory") {
         buildMemory = true;
     }
@@ -408,7 +412,7 @@ async function createAIimages(request) {
             console.log("AI Response:");
             console.log(imgURLs);
 
-            cumulativeCosts = addToCosts("IMAGEN", cost);
+            cumulativeCosts = await addToCosts("IMAGEN", cost);
 
             return answer
         } else {
@@ -819,7 +823,7 @@ async function generateSpeech(request) {
                     // console.log("[Generate Zonos] Result: " + JSON.stringify(result));
                     return null;
                 } catch (error) {
-                    reject(new Error("Zonos Script Failed: " + error.trim()));
+                    reject(new Error("Zonos Script Failed: " + error));
                 }
             }
             else {
@@ -838,7 +842,7 @@ async function generateSpeech(request) {
                     // console.log("[Generate Zonos] Result: " + JSON.stringify(result));
                     return result;
                 } catch (error) {
-                    reject(new Error("Zonos Script Failed: " + error.trim()));
+                    reject(new Error("Zonos Script Failed: " + error));
                 }
             }
         }
@@ -1199,7 +1203,7 @@ async function addToCosts(model, amount, print = false) {
 
     fs.writeFileSync(costFilePath, JSON.stringify(cumulativeCosts, null, 2), "utf8");
 
-    return loadCosts(print)
+    return loadCosts()
 }
 
 // File Handling
