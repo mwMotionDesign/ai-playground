@@ -97,104 +97,109 @@ async function buildText(text = "", isForwarded = false) {
     addInitialLog("Text", keyRequest);
     keyRequest = false;
 
-    if (text == "" && inputValue != "") {
-        outputText("header", "Input");
-        outputText("link", inputValue);
-
-        if (translate) {
-            addReturnText("", "... forwarding to Translation");
-            inputValueOld = inputValue;
-            inputValue = await translateToLanguage(inputValue);
-
-            outputText("noLink", "<span class='tBold'>Translation</span>");
+    try {
+        if (text == "" && inputValue != "") {
+            outputText("header", "Input");
             outputText("link", inputValue);
-        }
-    }
 
-    // Push to Conversation History
-    if (!isForwarded && text != pushLLMessageConstructed) {
-        if (text != "") {
-            message = ({ role: "User", message: text });
-        }
-        else if (inputValue != "") {
-            message = ({ role: "User", message: inputValue });
-        }
-        conversationHistory.push(message);
-        console.log("BUILD TEXT - Conversation History: ", conversationHistory);
-    }
+            if (translate) {
+                addReturnText("", "... forwarding to Translation");
+                inputValueOld = inputValue;
+                inputValue = await translateToLanguage(inputValue);
 
-    // Random Personality
-    // if (llmPersonalityDOM.value == llmPersonalityRandom && !changePersonalityAuto) {
-    //     llmPersonalityDOM.value = llmPersonalityRandom;
-    // }
-
-    let tempRoleType = roleType;
-
-    // LLM Chooses Personality
-    if (changePersonalityAuto || llmPersonalityDOM.value == llmPersonalityRandom && !isForwarded) {
-        if (changePersonalityAuto) {
-            roleType = "system";
-            addReturnText("", "... forwarding to Personality Choise");
-            const newPersonalityResult = await generateText(systemPromptPersonality, JSON.stringify(conversationHistory), nOfTokensPersonality, false);
-            roleType = tempRoleType;
-            llmPersonalityDOM.value = newPersonalityResult.responseText;
-        }
-
-        systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
-    }
-
-    if (roleType == "allowed") {
-        textResult = await generateText(systemPrompt, text, nOfTokens, true);
-    }
-    else {
-        textResult = await generateText(systemPrompt, text, nOfTokens, false);
-    }
-
-    // Add Answer to Conversation History - Add Personality to Asnwer - Output Text
-    if (!isForwarded) {
-        message = ({ role: "AI", message: textResult.responseText });
-        conversationHistory.push(message);
-
-        let manipulatedOutput = "";
-        for (i = 0; i < pesonalityMarkers.length; i++) {
-            if (pesonalityMarkers[i].personality == hiddenPersonality) {
-                manipulatedOutput = "<span class='tBold'>".concat(pesonalityMarkers[i].marker, "</span><br>", textResult.responseTextFormatted);
+                outputText("noLink", "<span class='tBold'>Translation</span>");
+                outputText("link", inputValue);
             }
         }
 
-        if (manipulatedOutput == "") {
-            manipulatedOutput = textResult.responseTextFormatted;
+        // Push to Conversation History
+        if (!isForwarded && text != pushLLMessageConstructed) {
+            if (text != "") {
+                message = ({ role: "User", message: text });
+            }
+            else if (inputValue != "") {
+                message = ({ role: "User", message: inputValue });
+            }
+            conversationHistory.push(message);
+            console.log("BUILD TEXT - Conversation History: ", conversationHistory);
         }
 
-        // if (llmPersonalityDOM.value == llmPersonalityRandom || changePersonalityAuto) {
-        //     for (i = 0; i < pesonalityMarkers.length; i++) {
-        //         if (pesonalityMarkers[i].personality == hiddenPersonality) {
-        //             manipulatedOutput = "<span class='tBold'>".concat(pesonalityMarkers[i].marker, "</span><br>", textResult.responseTextFormatted);
-        //         }
-        //     }
-        // }
-        // else {
-        //     manipulatedOutput = textResult.responseTextFormatted;
+        // Random Personality
+        // if (llmPersonalityDOM.value == llmPersonalityRandom && !changePersonalityAuto) {
+        //     llmPersonalityDOM.value = llmPersonalityRandom;
         // }
 
-        outputText("header", "Large Language Model");
-        outputText("link", manipulatedOutput);
-    }
+        let tempRoleType = roleType;
 
-    if (voiceLLM && !isForwarded) {
-        addReturnText("", "... forwarding to Voice");
-        await buildVocie(textResult.responseText, true, textResult.mood);
+        // LLM Chooses Personality
+        if (changePersonalityAuto || llmPersonalityDOM.value == llmPersonalityRandom && !isForwarded) {
+            if (changePersonalityAuto) {
+                roleType = "system";
+                addReturnText("", "... forwarding to Personality Choise");
+                const newPersonalityResult = await generateText(systemPromptPersonality, JSON.stringify(conversationHistory), nOfTokensPersonality, false);
+                roleType = tempRoleType;
+                llmPersonalityDOM.value = newPersonalityResult.responseText;
+            }
+
+            systemPrompt = generateSystemPrompt(llmPersonalityDOM.value);
+        }
+
+        if (roleType == "allowed") {
+            textResult = await generateText(systemPrompt, text, nOfTokens, true);
+        }
+        else {
+            textResult = await generateText(systemPrompt, text, nOfTokens, false);
+        }
+
+        // Add Answer to Conversation History - Add Personality to Asnwer - Output Text
+        if (!isForwarded) {
+            message = ({ role: "AI", message: textResult.responseText });
+            conversationHistory.push(message);
+
+            let manipulatedOutput = "";
+            for (i = 0; i < pesonalityMarkers.length; i++) {
+                if (pesonalityMarkers[i].personality == hiddenPersonality) {
+                    manipulatedOutput = "<span class='tBold'>".concat(pesonalityMarkers[i].marker, "</span><br>", textResult.responseTextFormatted);
+                }
+            }
+
+            if (manipulatedOutput == "") {
+                manipulatedOutput = textResult.responseTextFormatted;
+            }
+
+            // if (llmPersonalityDOM.value == llmPersonalityRandom || changePersonalityAuto) {
+            //     for (i = 0; i < pesonalityMarkers.length; i++) {
+            //         if (pesonalityMarkers[i].personality == hiddenPersonality) {
+            //             manipulatedOutput = "<span class='tBold'>".concat(pesonalityMarkers[i].marker, "</span><br>", textResult.responseTextFormatted);
+            //         }
+            //     }
+            // }
+            // else {
+            //     manipulatedOutput = textResult.responseTextFormatted;
+            // }
+
+            outputText("header", "Large Language Model");
+            outputText("link", manipulatedOutput);
+        }
+
+        if (voiceLLM && !isForwarded) {
+            addReturnText("", "... forwarding to Voice");
+            await buildVocie(textResult.responseText, true, textResult.mood);
+        }
+        if (imgWithText && !isForwarded) {
+            addReturnText("", "... forwarding to Prompt Generation");
+            console.log("");
+            console.log("BUILD TEXT - Conversation History: ", conversationHistory);
+            tempRoleType = roleType;
+            roleType = "system";
+            const imgPromptResult = await generateText(systemPromptIMG, JSON.stringify(conversationHistory), nOfTokensIMG, false);
+            roleType = tempRoleType
+            addReturnText("", "... forwarding to Image");
+            await buildImages(imgPromptResult.responseText);
+        }
     }
-    if (imgWithText && !isForwarded) {
-        addReturnText("", "... forwarding to Prompt Generation");
-        console.log("");
-        console.log("BUILD TEXT - Conversation History: ", conversationHistory);
-        tempRoleType = roleType;
-        roleType = "system";
-        const imgPromptResult = await generateText(systemPromptIMG, JSON.stringify(conversationHistory), nOfTokensIMG, false);
-        roleType = tempRoleType
-        addReturnText("", "... forwarding to Image");
-        await buildImages(imgPromptResult.responseText);
+    catch (error) {
+        addReturnText("<div class='material-symbols-outlined returnIcons cRed'>close</div>", " Request stopped!");
     }
 }
 
@@ -208,9 +213,14 @@ async function buildImages(text = "") {
     addInitialLog("Images", keyRequest);
     keyRequest = false;
 
-    imgResult = await generateImages(imgPrompt, imgModel);
+    try {
+        imgResult = await generateImages(imgPrompt, imgModel);
 
-    outputIMGs(imgResult.responseIMGs, imgResult.text);
+        outputIMGs(imgResult.responseIMGs, imgResult.text);
+    }
+    catch (error) {
+        addReturnText("<div class='material-symbols-outlined returnIcons cRed'>close</div>", " Request stopped!");
+    }
 }
 
 async function buildTranscript() {
@@ -222,24 +232,29 @@ async function buildTranscript() {
 
         outputText("header", "Transcript");
 
-        transcriptResult = await generateRecording();
+        try {
+            transcriptResult = await generateRecording();
 
-        if (translate) {
+            if (translate) {
+                outputText("link", transcriptResult.text);
+                outputText("noLink", "<span class='tBold'>Translation</span>");
+                addReturnText("", "... forwarding to Translation");
+                transcriptResult.text = await translateToLanguage(transcriptResult.text);
+            }
+
             outputText("link", transcriptResult.text);
-            outputText("noLink", "<span class='tBold'>Translation</span>");
-            addReturnText("", "... forwarding to Translation");
-            transcriptResult.text = await translateToLanguage(transcriptResult.text);
-        }
 
-        outputText("link", transcriptResult.text);
-
-        if (cbValues.createVoice) {
-            addReturnText("", "... forwarding to Voice");
-            await buildVocie(transcriptResult.text, false);
+            if (cbValues.createVoice) {
+                addReturnText("", "... forwarding to Voice");
+                await buildVocie(transcriptResult.text, false);
+            }
+            if (textToLLM) {
+                addReturnText("", "... forwarding to LLM");
+                await buildText(transcriptResult.text);
+            }
         }
-        if (textToLLM) {
-            addReturnText("", "... forwarding to LLM");
-            await buildText(transcriptResult.text);
+        catch (error) {
+            addReturnText("<div class='material-symbols-outlined returnIcons cRed'>close</div>", " Request stopped!");
         }
     }
     else {
@@ -269,7 +284,12 @@ async function buildVocie(text = "", newFile = true, exag = -1, itteration = 0) 
 
     text = formatForSpeech(text);
 
-    await generateSpeechFromText(text, newFile, exag, itteration);
+    try {
+        await generateSpeechFromText(text, newFile, exag, itteration);
+    }
+    catch (error) {
+        addReturnText("<div class='material-symbols-outlined returnIcons cRed'>close</div>", " Request stopped!");
+    }
 }
 
 
@@ -291,65 +311,66 @@ async function generateText(systemPromptToSend = "", text = "", nOfTokens = 10, 
     try {
         responseText = await fetchText(systemPromptToSend, text, nOfTokens, buildHistory);
         console.log("");
-    } catch (error) {
-        handleError("GENERATE TEXT - ERROR: Generating Text: ", error);
-    }
 
-    let llmExag = cbExaggeration;
-    if (systemPromptToSend != systemPromptIMG && systemPromptToSend != systemPromptPersonality) {
-        console.log("GENERATE TEXT - Response Generate Text Length: ", responseText.length);
+        let llmExag = cbExaggeration;
+        if (systemPromptToSend != systemPromptIMG && systemPromptToSend != systemPromptPersonality) {
+            console.log("GENERATE TEXT - Response Generate Text Length: ", responseText.length);
 
-        llmExag = responseText.slice(0, 3);
-        responseText = responseText.slice(4, responseText.length);
+            llmExag = responseText.slice(0, 3);
+            responseText = responseText.slice(4, responseText.length);
 
-        console.log("GENERATE TEXT - Cut Text Length: ", responseText.length);
-        console.log("GENERATE TEXT - Exaggeration Extract: ", llmExag);
+            console.log("GENERATE TEXT - Cut Text Length: ", responseText.length);
+            console.log("GENERATE TEXT - Exaggeration Extract: ", llmExag);
 
-        if (llmChoosesVoice) {
-            if (llmExag == 0.1) {
-                loadSpeechPattern("VictimDesperate");
-            }
-            else if (llmExag == 0.2) {
-                loadSpeechPattern("Sad");
-            }
-            else if (llmExag == 0.3) {
-                loadSpeechPattern("AnxiousNervousNeedy");
-            }
-            else if (llmExag == 0.4) {
-                loadSpeechPattern("PresentingBulltePoints");
-            }
-            else if (llmExag == 0.5) {
-                loadSpeechPattern("Reading");
-            }
-            else if (llmExag == 0.6) {
-                loadSpeechPattern("NeutralTeacher");
-            }
-            else if (llmExag == 0.7) {
-                loadSpeechPattern("Neutral");
-            }
-            else if (llmExag == 0.8) {
-                loadSpeechPattern("Happy");
-            }
-            else if (llmExag == 0.9) {
-                loadSpeechPattern("VeryHappy");
-            }
-            else if (llmExag == 1.0) {
-                loadSpeechPattern("CreativeTalkOver");
-            }
-            else {
-                loadSpeechPattern("Neutral");
+            if (llmChoosesVoice) {
+                if (llmExag == 0.1) {
+                    loadSpeechPattern("VictimDesperate");
+                }
+                else if (llmExag == 0.2) {
+                    loadSpeechPattern("Sad");
+                }
+                else if (llmExag == 0.3) {
+                    loadSpeechPattern("AnxiousNervousNeedy");
+                }
+                else if (llmExag == 0.4) {
+                    loadSpeechPattern("PresentingBulltePoints");
+                }
+                else if (llmExag == 0.5) {
+                    loadSpeechPattern("Reading");
+                }
+                else if (llmExag == 0.6) {
+                    loadSpeechPattern("NeutralTeacher");
+                }
+                else if (llmExag == 0.7) {
+                    loadSpeechPattern("Neutral");
+                }
+                else if (llmExag == 0.8) {
+                    loadSpeechPattern("Happy");
+                }
+                else if (llmExag == 0.9) {
+                    loadSpeechPattern("VeryHappy");
+                }
+                else if (llmExag == 1.0) {
+                    loadSpeechPattern("CreativeTalkOver");
+                }
+                else {
+                    loadSpeechPattern("Neutral");
+                }
             }
         }
+
+        let responseTextFormatted = formatAIanswer(responseText);
+        responseText = formatToText(responseText);
+
+        console.log("");
+        console.log("GENERATE TEXT - responseText:" + responseText);
+        console.log("GENERATE TEXT - responseTextFormatted:" + responseTextFormatted);
+
+        return { inputText, responseText, responseTextFormatted, mood };
     }
-
-    let responseTextFormatted = formatAIanswer(responseText);
-    responseText = formatToText(responseText);
-
-    console.log("");
-    console.log("GENERATE TEXT - responseText:" + responseText);
-    console.log("GENERATE TEXT - responseTextFormatted:" + responseTextFormatted);
-
-    return { inputText, responseText, responseTextFormatted, mood };
+    catch (error) {
+        console.log("Request stop forwarded!");
+    }
 }
 
 
