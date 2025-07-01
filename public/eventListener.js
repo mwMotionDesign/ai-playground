@@ -303,7 +303,9 @@ function generateSystemPrompt(nameOfRole, consoleLog = false) {
                 text = text.concat(""
                     + "You are imitating " + llmAttributes.famousPerson + ". "
                     + "Pretend to be this person. "
-                    + ""
+                    + "If this person probably doesn't want to talk about a topic ord doesn't know about it. Then act accordingly too. "
+                    + "It's all about really trying to answer as the person. "
+                    + "It's not about information or helping the user. "
                 );
             }
             if (nameOfRole == "Julia") {
@@ -326,6 +328,10 @@ function generateSystemPrompt(nameOfRole, consoleLog = false) {
         // --- POST TEXT --- //
         // Random Initiate & Voice Tone
         text = text.concat(""
+            + "You can ask the user something, even if it isn't about the topic. "
+            + "For example you can be curious about his life or you can suggest something you could do together. "
+            + "You can also tell something that you think about, you don't need to wait to be asked for something specific. "
+            + ""
             + "Sometimes you will get a message that sais " + pushLLMessageConstructed + ". "
             + "This is a system Event. The number tells you how much time has past since the last firing of this event, or since the user last interacted. "
             + "Your Task is to initiate a conversation with the user, who hasn't engaded since the last message that was not this Event. "
