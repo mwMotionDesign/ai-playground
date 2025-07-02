@@ -297,7 +297,7 @@ function playAduioQueue(audioFilePath, queueID) {
                 console.log("AUDIO QUEUE - Audio Found on Queue: " + queueID + " - Place: " + (i + 1) + " - End reached - Waiting for next Audio");
                 audioSearchItteration++
                 if (audioSearchItteration < audioQueueItterations) {
-                    setTimeout(() => { playAduioQueue(audioFilePath, queueID); }, 50);
+                    setTimeout(() => { playAduioQueue(audioFilePath, queueID); }, 1000);
                 }
                 else {
                     audioSearchItteration = 0;
