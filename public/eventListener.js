@@ -130,6 +130,9 @@ let pesonalityMarkers = [
         personality: "Shy&Introverted",
         marker: "😦 Shy & Introverted"
     },
+]
+
+let personalityMarkersLater = [
     {
         personality: "",
         marker: "🙂 Neutral"
@@ -699,7 +702,7 @@ const modelVoiceDOM = document.querySelectorAll(".voiceRadio");
 const createVoice = document.getElementById("createVoice");
 const sendAudioSample = document.getElementById("sendAudioSample");
 
-let modelVoice = voiceModel1;
+let modelVoice = voiceModel2;
 
 for (let i = 0; i < modelVoiceDOM.length; i++) {
     modelVoiceDOM[i].addEventListener("change", () => {
