@@ -1,5 +1,12 @@
 # Michaverse AI Tool
 
+<div align="center">
+<img src="Hero.jpg" 
+     alt="Michaverse AI Tool" 
+     style="width: 100%;
+            height: auto;">
+</div>
+
 ## 🎬 Demo Videos
 
 **Instagram**: [Summary](https://www.instagram.com/p/DLwDIhvK2zw/)
