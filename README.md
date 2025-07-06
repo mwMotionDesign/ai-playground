@@ -1,8 +1,8 @@
-# Michaverse AI Tool
+# Michaverse AI Playground
 
 <div align="center">
 <img src="Hero.jpg" 
-     alt="Michaverse AI Tool" 
+     alt="Michaverse AI Playground" 
      style="width: 100%;
             height: auto;">
 </div>
@@ -47,8 +47,75 @@ Functionality
 
 ---
 
-## Folder Structure
+## Installation
 
+### 1. Clone the repo
+```bash
+git clone https://github.com/Michaverse/ai-playground.git
+cd ai-playground
+```
+
+
+### 2. Integrate lokal Models
+
+Setup Python environment(s)
+> Different local AI Models use different Python versions!
+Please follow the installation Instructions for each AI Model
+
+> You will also need to install CUDA
+and PyTorch for each venv (Must be matching your CUDA Version / For me: 2.5.1+cu121)
+
+
+```bash
+# Whisper
+activate scripts/venv-whisper/scripts/Activate.ps1
+source scripts/venv-whisper/bin/activate
+pip install -r requirements-whisper.txt
+
+# Chatterbox
+activate scripts/venv-chatterbox/scripts/Activate.ps1
+source scripts/venv-chatterbox/bin/activate
+pip install -r requirements-chatterbox.txt
+```
+
+
+#### Zonos
+clone the repo to /repos
+Overwrite certain scripts after initialising (see scripts/zonos-edited-scripts)
+
+
+#### Testing:
+```bash
+.\scripts\nameOfVenv\Scripts\Activate.ps1
+python --version
+# Shows Python Version for venv
+python -c "import torch; print(torch.version.cuda, torch.cuda.is_available())"
+# Shows torch Cuda Version and if it recognized your Graphics Card
+```
+
+
+### 3. Setup `.env` file
+
+For the use of the APIs you will need to have access to Google and OpenAI APIs
+
+Create a `.env` file in the root directory with:
+```env
+PORT = yourPORT
+OPEN_AI_KEY = "yourOpenAIKey"
+CAIP_PROJECT_ID = "yourGoogleProjectId"
+```
+
+
+### 4. Launch the tool
+```bash
+npm install
+npm run loop
+```
+
+---
+
+## Folder Structure
+```bash
 📁 ai-tool
 ├── readme.md
 ├── server.js
@@ -89,67 +156,6 @@ Functionality
 │   └── Zonos-for-windows/
 ├── .git/
 └── node_modules/
-
----
-
-## Installation
-
-### 1. Clone the repo
-```bash
-git clone https://github.com/Michaverse/ai-playground.git
-cd ai-playground
-```
-
-### 2. Integrate lokal Models
-
-Setup Python environment(s)
-> Different local AI Models use different Python versions!
-Please follow the installation Instructions for each AI Model
-
-You will also need to install CUDA
-and PyTorch for each venv (Must be matching your CUDA Version / For me: 2.5.1+cu121)
-
-
-```bash
-# Whisper
-activate scripts/venv-whisper/scripts/Activate.ps1
-source scripts/venv-whisper/bin/activate
-pip install -r requirements-whisper.txt
-
-# Chatterbox
-activate scripts/venv-chatterbox/scripts/Activate.ps1
-source source scripts/venv-chatterbox/bin/activate
-pip install -r requirements-chatterbox.txt
-```
-
-#### Zonos
-clone the repo to /repos
-Overwrite certain scripts after initialising (see scripts/zonos-edited-scripts)
-
-Testing:
-```bash
-.\scripts\nameOfVenv\Scripts\Activate.ps1
-python --version
-# Shows Python Version for venv
-python -c "import torch; print(torch.version.cuda, torch.cuda.is_available())"
-# Shows torch Cuda Version and if it recognized your Graphics Card
-```
-
-### 3. Setup `.env` file
-
-For the use of the APIs you will need to have access to Google and OpenAI APIs
-
-Create a `.env` file in the root directory with:
-```env
-PORT = yourPORT
-OPEN_AI_KEY = "yourOpenAIKey"
-CAIP_PROJECT_ID = "yourGoogleProjectId"
-```
-
-### 4. Launch the tool
-```bash
-npm install
-npm run loop
 ```
 
 ---
