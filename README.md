@@ -8,9 +8,19 @@
 </div>
  
 ## 🎬 Demo Videos
-**Instagram**: [Summary](https://www.instagram.com/p/DLwDIhvK2zw/)
-
-**YouTube**: [Full Breakdown](https://www.youtube.com/watch?v=X06M-wwQNo4)
+**YouTube**: [Summary](https://youtu.be/q1a7zJ5FmFk)
+<iframe width="800" height="450" src="https://youtu.be/q1a7zJ5FmFk" 
+    title="YouTube video player" frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allowfullscreen>
+</iframe>
+ 
+**YouTube**: [Full Breakdown](https://youtu.be/X06M-wwQNo4)
+<iframe width="800" height="450" src="https://youtu.be/X06M-wwQNo4" 
+    title="YouTube video player" frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    allowfullscreen>
+</iframe>
  
 ---
  
