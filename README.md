@@ -6,21 +6,20 @@
      style="width: 100%;
             height: auto;">
 </div>
+
+**GitHub Repo**: [github.com/mwMotionDesign/ai-playground](https://github.com/mwMotionDesign/ai-playground)
  
 ## 🎬 Demo Videos
-**YouTube**: [Summary](https://youtu.be/q1a7zJ5FmFk)
-<iframe width="800" height="450" src="https://youtu.be/q1a7zJ5FmFk" 
-    title="YouTube video player" frameborder="0" 
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-    allowfullscreen>
-</iframe>
+
+<img src="Thumbnail.jpg" 
+     alt="AI Playground Thumbnail" 
+     style="width: 300px;
+            height: auto;">
+</div>
  
+**YouTube**: [Summary](https://youtu.be/q1a7zJ5FmFk)
+
 **YouTube**: [Full Breakdown](https://youtu.be/X06M-wwQNo4)
-<iframe width="800" height="450" src="https://youtu.be/X06M-wwQNo4" 
-    title="YouTube video player" frameborder="0" 
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-    allowfullscreen>
-</iframe>
  
 ---
  
