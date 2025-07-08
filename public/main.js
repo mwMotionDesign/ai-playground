@@ -278,8 +278,10 @@ async function buildVocie(text = "", newFile = true, exag = -1, itteration = 0) 
                 text = "The input field is empty, you dumb little bitch!"
             }
         }
-        outputText("header", "Voice");
-        outputText("link", text);
+        else {
+            outputText("header", "Voice");
+            outputText("link", text);
+        }
     }
 
     text = formatForSpeech(text);
