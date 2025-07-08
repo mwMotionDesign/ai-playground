@@ -441,11 +441,12 @@ function formatToText(inputText) {
 
 function formatForSpeech(inputText) {
     let text = inputText;
+    console.log("BEFORE:", text);
 
     try {
         text = text
             .replace(/\p{Extended_Pictographic}/gu, "")                         // alle Emojis rauswerfen
-            .replace(/\p{Emoji_Modifier_Base}|\p{Emoji_Component}/gu, "")       // optional: Variation Selectors entfernen (z.B. VS16)
+            // .replace(/\p{Emoji_Modifier_Base}|\p{Emoji_Component}/gu, "")       // optional: Variation Selectors entfernen (z.B. VS16)
             .replace(/\<[^>]*\>/g, "")
             .replace(/—/g, " - ")
             .replace(/–/g, " - ")
@@ -460,6 +461,7 @@ function formatForSpeech(inputText) {
             .trim()
             ;
 
+        console.log("AFTER:", text);
         return text;
     } catch (error) {
         console.log(text);
