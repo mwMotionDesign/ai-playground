@@ -160,11 +160,11 @@ npm run loop
 
 ## Possible Roadmap
 
+- [X] Bugfix of Text Formatting when sending to Voice Model
 - [ ] API alternatives of Local Models for faster response time
 - [ ] Electron Export
 - [ ] Upload Images and Files for LLM
 - [ ] Let AI talk to itself
-- [ ] Bugfix of Text Formatting when sending to Voice Model
 
 ---
 
