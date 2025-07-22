@@ -16,6 +16,8 @@
      style="width: 300px;
             height: auto;">
 </div>
+
+> Disclaimer: Voice samples in this video are generated using AI voice models trained on publicly available voice data. These voices are synthetically generated and are not intended to impersonate or misrepresent any real individual.
  
 **YouTube**: [Summary](https://youtu.be/q1a7zJ5FmFk)
 
