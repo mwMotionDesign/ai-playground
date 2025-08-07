@@ -356,7 +356,7 @@ async function createAIimages(request) {
 
         const clientOptions = {};
         const predictionServiceClient = new PredictionServiceClient(clientOptions);
-        const modelPath = `projects/${projectId}/locations/${location}/publishers/google/models/imagen-4.0-generate-preview-05-20`;
+        const modelPath = `projects/${projectId}/locations/${location}/publishers/google/models/imagen-4.0-generate-preview-06-06`;
 
         if (!projectId) {
             throw new Error("CAIP_PROJECT_ID environment variable is not set. Please set it in your .env file.");
